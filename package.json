@@ -1,0 +1,25 @@
+{
+  "name": "rma",
+  "version": "0.5.1",
+  "description": "Ruby macro powered assembler",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node_modules/babel-cli/bin/babel-node.js src/index.js",
+    "build-compiler": "pegjs -o src/grammar/grammar.js src/grammar/grammar.pegjs",
+    "build": "node_modules/babel-cli/bin/babel.js src --source-maps --out-dir ./dist"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "pegjs": "^0.10.0"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
