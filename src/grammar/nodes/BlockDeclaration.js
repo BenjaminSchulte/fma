@@ -20,4 +20,15 @@ export default class BlockDeclaration extends Declaration {
     this.children.addChild(child);
     return this;
   }
+
+  getChildren() {
+    return this.children.getChildren();
+  }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serializeList(this.getChildren())
+    ];
+  }
 }

@@ -19,4 +19,12 @@ export default class IfStatement extends StatementList {
 
     return this;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serialize(this.condition),
+      s.serialize(this.otherwise)
+    ];
+  }
 }

@@ -8,7 +8,7 @@ export default class Argument extends ExpressionNode {
     this.name = name;
 
     this.defaultValue = null;
-    this.type = ParameterType.ARGUMENT;
+    this.argumentType = ParameterType.ARGUMENT;
   }
 
   setDefaultValue(value) {
@@ -16,8 +16,17 @@ export default class Argument extends ExpressionNode {
     return this;
   }
 
-  setType(type) {
-    this.type = type;
+  setType(argumentType) {
+    this.argumentType = argumentType;
     return this;
+  }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serialize(this.name),
+      s.serialize(this.defaultValue),
+      s.serializeString(this.argumentType)
+    ];
   }
 }

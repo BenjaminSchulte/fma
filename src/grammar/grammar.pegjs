@@ -25,7 +25,7 @@ Stmt
       console.log('TODO: POST');
     }
 
-    return stmt;
+    return c(new n.ExpressionStatement(stmt));
   }
   / ModuleDeclaration   // OK
   / MacroDeclaration    // OK
@@ -84,12 +84,10 @@ CaseStmtWhens
   }
 
 ExprOrCommand
-  = expr:Expr param:ExprAfter? {
-    return c(new n.CallExpression(expr)).setParameters(param ? param : []);
-  }
+  = expr:Expr
 
 ExprAfter
-  = __ args:CallArgs { return args; }
+  = args:CallArgs { return args; }
 
 Expr
   = item:CalcExpr cond:InlineCondition? {
@@ -136,6 +134,7 @@ ExprItem
 ExprList
   = _ "<<" _ item:ExprItem { return ["<<", item] }
   / _ ">>" _ item:ExprItem { return [">>", item] }
+  / _ "==" _ item:ExprItem { return ["==", item] }
   / _ "!=" _ item:ExprItem { return ["!=", item] }
   / _ "+=" _ item:ExprItem { return ["+=", item] }
   / _ "-=" _ item:ExprItem { return ["-=", item] }
@@ -233,6 +232,7 @@ PrimaryAfter
   / "::" value:IDENTIFIER { return c(new n.ChildExpression(null)).setChild(value); }
   / "[" _ expr:Expr _ "]" { return c(new n.ChildExpression(null)).setChild(expr); }
   / _ "(" _ args:CallArgs? _ ")" { return c(new n.CallExpression(null)).setParameters(args || []); }
+  / __ param:CallArgs { return c(new n.CallExpression(null)).setParameters(param ? param : []); }
 
 Primary
   = value:PrimaryValue after:PrimaryAfter* {
@@ -252,11 +252,11 @@ PrimaryValue
 
 CallArg
   = name:IDENTIFIER ":" _ value:ExprItem { return c(new n.Parameter(value)).setName(name); }
-  / "&" value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.BLOCK); }
-  / "*" value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.ARGUMENTS); }
-  / "**" value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.KEYWORD_ARGUMENTS); }
-  / InlineBlock { return c(new n.Parameter(value)).setType(n.ParameterTypes.BLOCK); }
-  / ExprItem { return c(new n.Parameter(value)); }
+  / "&" !_ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.BLOCK); }
+  / "*" !_ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.ARGUMENTS); }
+  / "**" !_ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.KEYWORD_ARGUMENTS); }
+  / value:InlineBlock { return c(new n.Parameter(value)).setType(n.ParameterTypes.BLOCK); }
+  / value:ExprItem { return c(new n.Parameter(value)); }
 
 CallArgs
   = arg:CallArg args:CallArgsList* { return [arg].concat(args); }
@@ -282,7 +282,7 @@ DoBlock
         .setChildren(block)
         .setArguments(args)
       )
-    ).setType(f.ParameterTypes.BLOCK);
+    ).setType(n.ParameterTypes.BLOCK);
   }
 
 InlineBlock

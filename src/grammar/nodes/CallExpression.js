@@ -12,4 +12,15 @@ export default class CallExpression extends NestedExpressionNode {
     this.parameters.setChildren(parameters);
     return this;
   }
+
+  getParameters() {
+    return this.parameters.getChildren();
+  }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serializeList(this.parameters.getChildren())
+    ];
+  }
 }

@@ -11,4 +11,11 @@ export default class ChildExpression extends NestedExpressionNode {
     this.child = child;
     return this;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serialize(this.child)
+    ];
+  }
 }

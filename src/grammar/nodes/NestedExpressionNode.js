@@ -10,4 +10,11 @@ export default class NestedExpressionNode extends ExpressionNode {
   setParent(parent) {
     this.parent = parent;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serialize(this.parent)
+    ];
+  }
 }

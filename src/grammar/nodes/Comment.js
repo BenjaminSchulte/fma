@@ -4,6 +4,18 @@ export default class Comment extends Node {
   constructor(text) {
     super();
 
-    console.log('Comment: ', text);
+    this.text = text;
+  }
+
+  isDocComment() {
+    return this.text.length && this.text[0] === ';';
+  }
+
+  getDocComment() {
+    return this.text.substr(1);
+  }
+
+  shouldBeSerialized() {
+    return false;
   }
 }

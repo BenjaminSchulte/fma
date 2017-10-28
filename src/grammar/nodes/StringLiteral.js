@@ -5,4 +5,11 @@ export default class StringLiteral extends ExpressionNode {
     super();
     this.identifier = identifier;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serialize(this.identifier)
+    ];
+  }
 }

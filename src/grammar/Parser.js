@@ -4,14 +4,27 @@ const grammar = require('./grammar');
 const fs = require('fs');
 
 export default class Parser {
-  constructor(configuration) {
-    this.configuration = configuration;
+  constructor(project) {
+    this.project = project;
   }
 
-  async parseString(content, fileName) {
+  async parseString(content, fileName="<unknown>") {
+    var result;
+
     Location.setCurrentFile(fileName);
 
-    const result = grammar.parse(content);
+    try {
+      result = grammar.parse(content);
+    } catch(err) {
+      var prefix = '';
+      if (err.location) {
+        prefix = (new Location(err.location.start.line, err.location.start.column)).toString() + ': ';
+      }
+
+      this.project.log('error', prefix + err.message);
+
+      throw err;
+    }
 
     return result;
   }

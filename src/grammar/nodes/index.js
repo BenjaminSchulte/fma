@@ -7,6 +7,7 @@ import ClassDeclaration from './ClassDeclaration';
 import Comment from './Comment';
 import ConstantExpression from './ConstantExpression';
 import ElseStatement from './ElseStatement';
+import ExpressionStatement from './ExpressionStatement';
 import FunctionDeclaration from './FunctionDeclaration';
 import Identifier from './Identifier';
 import IdentifierList from './IdentifierList';
@@ -19,7 +20,7 @@ import NumericLiteral from './NumericLiteral';
 import NotExpression from './NotExpression';
 import Parameter from './Parameter';
 import ParameterList from './ParameterList';
-import ParameterTypes from './ParameterTypes';
+import * as ParameterTypes from './ParameterTypes';
 import Program from './Program';
 import StringLiteral from './StringLiteral';
 import SwitchCase from './SwitchCase';
@@ -35,6 +36,7 @@ export {
   Comment,
   ConstantExpression,
   ElseStatement,
+  ExpressionStatement,
   FunctionDeclaration,
   Identifier,
   IdentifierList,

@@ -12,4 +12,11 @@ export default class IdentifierList extends ExpressionList {
 
     return this;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      this.isRoot ? 1 : 0
+    ];
+  }
 }

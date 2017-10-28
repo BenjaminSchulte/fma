@@ -13,4 +13,11 @@ export default class FunctionDeclaration extends BlockDeclaration {
 
     return this;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serializeList(this.decorators.getChildren())
+    ];
+  }
 }

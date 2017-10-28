@@ -12,4 +12,11 @@ export default class SwitchCase extends StatementList {
 
     return this;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serialize(this.value)
+    ];
+  }
 }

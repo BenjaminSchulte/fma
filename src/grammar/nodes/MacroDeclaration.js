@@ -13,4 +13,15 @@ export default class MacroDeclaration extends BlockDeclaration {
 
     return this;
   }
+
+  getArguments() {
+    return this.arguments.getChildren();
+  }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serializeList(this.arguments.getChildren())
+    ];
+  }
 }

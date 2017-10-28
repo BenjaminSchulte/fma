@@ -18,7 +18,8 @@
     "pegjs": "^0.10.0"
   },
   "dependencies": {
-    "babel-runtime": "^6.26.0"
+    "babel-runtime": "^6.26.0",
+    "winston": "^3.0.0-rc1"
   },
   "author": "",
   "license": "ISC"

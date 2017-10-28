@@ -6,4 +6,11 @@ export default class NumericLiteral extends ExpressionNode {
 
     this.number = number;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      this.number
+    ];
+  }
 }

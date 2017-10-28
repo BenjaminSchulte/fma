@@ -6,4 +6,11 @@ export default class Declaration extends Node {
 
     this.name = name;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serialize(this.name)
+    ];
+  }
 }

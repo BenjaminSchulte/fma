@@ -6,4 +6,11 @@ export default class IdentifierName extends ExpressionNode {
 
     this.name = name;
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serializeString(this.name)
+    ];
+  }
 }

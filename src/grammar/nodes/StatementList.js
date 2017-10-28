@@ -24,4 +24,12 @@ export default class StatementList extends Node {
 
     return this;
   }
+
+  getChildren() {
+    return this.children;
+  }
+
+  serialize(s) {
+    return [super.serialize(s), s.serializeList(this.children)];
+  }
 }
