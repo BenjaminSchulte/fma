@@ -22,11 +22,20 @@ Stmt
   = LabelDeclaration    // OK
   / stmt:ExprOrCommand post:PostStmt? {
     if (post) {
-      console.log('TODO: POST');
+      if (post.type() === 'Parameter') {
+        stmt = c(new n.CallExpression(stmt)).setParameters([post]);
+        stmt = c(new n.ExpressionStatement(stmt));
+      } else {
+        post.setChildren([c(new n.ExpressionStatement(stmt))]);
+        stmt = post;
+      }
+    } else {
+      stmt = c(new n.ExpressionStatement(stmt));
     }
 
-    return c(new n.ExpressionStatement(stmt));
+    return stmt;
   }
+  / RequireStatement
   / ModuleDeclaration   // OK
   / MacroDeclaration    // OK
   / FunctionDeclaration // OK
@@ -38,9 +47,12 @@ LabelDeclaration
   = ident:IDENTIFIER ":" { return c(new n.LabelDeclaration(ident)); }
 
 PostStmt
-  = __ keyword_if __ Expr
-  / __ keyword_unless __ Expr
-  / __ DoBlock
+  = __ keyword_if __ expr:Expr { return c(new n.IfStatement()).setCondition(expr); }
+  / __ keyword_unless __ expr:Expr { return c(new n.IfStatement()).setCondition(c(new n.NotExpression(expr))); }
+  / __ block:DoBlock { return block }
+
+RequireStatement
+  = keyword_require __ expr:Expr { return c(new n.RequireStatement(expr)) }
 
 IfStmt
   = keyword_if __ condition:ExprOrCommand block:Block elseifs:ElseIfStmt* otherwise:ElseStmt? keyword_end {
@@ -147,13 +159,13 @@ ExprList
   / _ "&&" _ item:ExprItem { return ["&&", item] }
   / _ "+" _ item:ExprItem { return ["+", item] }
   / _ "-" _ item:ExprItem { return ["-", item] }
-  / _ "*" _ item:ExprItem { return ["*", item] }
+  / _ "*" __ item:ExprItem { return ["*", item] }
   / _ "/" _ item:ExprItem { return ["/", item] }
   / _ "<" _ item:ExprItem { return ["<", item] }
   / _ ">" _ item:ExprItem { return [">", item] }
   / _ "=" _ item:ExprItem { return ["=", item] }
   / _ "%" _ item:ExprItem { return ["%", item] }
-  / _ "&" _ item:ExprItem { return ["&", item] }
+  / _ "&" __ item:ExprItem { return ["&", item] }
   / _ "|" _ item:ExprItem { return ["|", item] }
 
 Decorator
@@ -230,6 +242,7 @@ Command
 PrimaryAfter
   = "." value:IDENTIFIER { return c(new n.ChildExpression(null)).setChild(value); }
   / "::" value:IDENTIFIER { return c(new n.ChildExpression(null)).setChild(value); }
+  / ".." expr:Expr { return c(new n.RangeExpression(null, expr)); }
   / "[" _ expr:Expr _ "]" { return c(new n.ChildExpression(null)).setChild(expr); }
   / _ "(" _ args:CallArgs? _ ")" { return c(new n.CallExpression(null)).setParameters(args || []); }
   / __ param:CallArgs { return c(new n.CallExpression(null)).setParameters(param ? param : []); }
@@ -248,13 +261,17 @@ PrimaryValue
   / String
   / IDENTIFIER
   / Array
+  / keyword_true { return c(new n.BooleanLiteral(true)) }
+  / keyword_false { return c(new n.BooleanLiteral(false)) }
+  / keyword_nil { return c(new n.NilLiteral()) }
   / "(" _ expr:Expr _ ")" { return expr; }
 
 CallArg
   = name:IDENTIFIER ":" _ value:ExprItem { return c(new n.Parameter(value)).setName(name); }
-  / "&" !_ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.BLOCK); }
-  / "*" !_ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.ARGUMENTS); }
-  / "**" !_ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.KEYWORD_ARGUMENTS); }
+  / "&" !__ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.BLOCK); }
+  / "*" !__ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.ARGUMENTS); }
+  / "**" !__ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.KEYWORD_ARGUMENTS); }
+  / "@" !__ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.CONTEXT); }
   / value:InlineBlock { return c(new n.Parameter(value)).setType(n.ParameterTypes.BLOCK); }
   / value:ExprItem { return c(new n.Parameter(value)); }
 
@@ -278,9 +295,9 @@ ArrayListItem
 DoBlock
   = keyword_do _ args:BlockArgs? block:Block keyword_end {
     return c(
-      new f.Parameter(c(new f.MacroDeclaration(null))
+      new n.Parameter(c(new n.MacroDeclaration(null))
         .setChildren(block)
-        .setArguments(args)
+        .setArguments(args || [])
       )
     ).setType(n.ParameterTypes.BLOCK);
   }
@@ -359,6 +376,10 @@ keyword_def = "def"
 keyword_when = "when"
 keyword_class = "class"
 keyword_else = "else"
+keyword_require = "require"
+keyword_true = "true"
+keyword_false = "false"
+keyword_nil = "nil"
 
 ReservedWord
   = "if"
@@ -373,6 +394,10 @@ ReservedWord
   / "def"
   / "when"
   / "else"
+  / "require"
+  / "true"
+  / "false"
+  / "nil"
 
 // ------------------------------------------------------------------
 //   Core content generation

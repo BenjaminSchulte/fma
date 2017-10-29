@@ -1,5 +1,6 @@
 import Argument from './Argument';
 import ArrayDeclaration from './ArrayDeclaration';
+import BooleanLiteral from './BooleanLiteral';
 import CalculateExpression from './CalculateExpression';
 import CallExpression from './CallExpression';
 import ChildExpression from './ChildExpression';
@@ -16,12 +17,15 @@ import IfStatement from './IfStatement';
 import LabelDeclaration from './LabelDeclaration';
 import MacroDeclaration from './MacroDeclaration';
 import ModuleDeclaration from './ModuleDeclaration';
+import NilLiteral from './NilLiteral';
 import NumericLiteral from './NumericLiteral';
 import NotExpression from './NotExpression';
 import Parameter from './Parameter';
 import ParameterList from './ParameterList';
 import * as ParameterTypes from './ParameterTypes';
 import Program from './Program';
+import RangeExpression from './RangeExpression';
+import RequireStatement from './RequireStatement';
 import StringLiteral from './StringLiteral';
 import SwitchCase from './SwitchCase';
 import SwitchStatement from './SwitchStatement';
@@ -29,6 +33,7 @@ import SwitchStatement from './SwitchStatement';
 export {
   Argument,
   ArrayDeclaration,
+  BooleanLiteral,
   CalculateExpression,
   CallExpression,
   ChildExpression,
@@ -45,12 +50,15 @@ export {
   LabelDeclaration,
   MacroDeclaration,
   ModuleDeclaration,
+  NilLiteral,
   NumericLiteral,
   NotExpression,
   Parameter,
   ParameterList,
   ParameterTypes,
   Program,
+  RangeExpression,
+  RequireStatement,
   StringLiteral,
   SwitchCase,
   SwitchStatement

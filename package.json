@@ -1,5 +1,5 @@
 {
-  "name": "rma",
+  "name": "pasm",
   "version": "0.5.1",
   "description": "Ruby macro powered assembler",
   "main": "dist/index.js",

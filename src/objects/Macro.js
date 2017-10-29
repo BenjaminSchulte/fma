@@ -43,8 +43,9 @@ export default class MacroObject extends NamedObject {
     }
 
     context.injectParent(this.parentContext);
+    context.getObject().setMember('self', this.parentContext.getObject());
 
-    return await context.processMany(this.children);
+    return (await context.processMany(this.children)).getObject();
   }
 
   async callWithParameters(calleeContext, ...args) {

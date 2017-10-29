@@ -13,6 +13,5 @@ export default class ExpressionStatement extends AbstractInterpreter {
     }
 
     return new ValueAccessor(expressionResult);
-
   }
 }

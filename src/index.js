@@ -24,6 +24,7 @@ const run = async () => {
 
   await parse('./src/core.pasm');
   await parse('./src/asm/snes65816/snes65816.pasm');
+  await parse('./engine.pasm');
 }
 
 process.on('unhandledRejection', (reason) => {

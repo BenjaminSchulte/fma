@@ -23,6 +23,26 @@ module Snes65816
     end
   end
 
+  ;; The location class
+  class Location
+    macro initialize(bank=nil, address=nil)
+      self.bank = bank
+      self.address = address
+    end
+  end
+
+  ;; The scope variable
+  class Scope
+    macro initialize
+      self.P = 0
+    end
+  end
+
+  ;; Configures the ROM
+  macro configure_banks(banks, address, shadows_banks=nil, shadows_addresses=nil)
+    Compiler.print "configure_banks BANK ", banks, " ADDRESS ", address, " SHADOW BANK ", shadows_banks, " ADDRESS ", shadows_addresses
+  end
+
 end
 
 ;; Extends the number class to support ASM core handling
@@ -78,4 +98,13 @@ S = Snes65816::Register.new "S"
 macro dp(number)
   number.dp
   number
+end
+
+;; Decorator for location
+macro locate_at(bank=nil, address=nil)
+  Compiler.each_function do
+    Compiler.print "TODO: location"
+
+    yield
+  end
 end

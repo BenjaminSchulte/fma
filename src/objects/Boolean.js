@@ -7,6 +7,10 @@ export default class BooleanObject extends AbstractObject {
     this.value = value;
   }
 
+  isTrue() {
+    return this.value;
+  }
+
   getValue() {
     return this.value;
   }

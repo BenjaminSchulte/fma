@@ -1,5 +1,6 @@
 import Context from './Context';
 import Block from '../objects/Block';
+import Parameter from '../objects/Parameter';
 import ArrayObject from '../objects/Array';
 import HashObject from '../objects/Hash';
 import UndefinedObject from '../objects/Undefined';
@@ -36,14 +37,48 @@ export default class ArgumentList {
 
   buildContext(calleeContext, params, parent = null) {
     const block = new Block();
-    const context = new Context(calleeContext.getInterpreter(), block, parent);
+    var context = new Context(calleeContext.getInterpreter(), block, parent);
 
     var args = [];
     var kwargs = {};
     var blockObject = null;
 
     for (let param of params) {
-      args.push(param);
+      if (param.type() === 'Parameter') {
+        switch (param.parameterType) {
+          case Parameter.TYPE_ARGUMENT:
+            args.push(param.value);
+            break;
+
+          case Parameter.TYPE_NAMED_ARGUMENT:
+            kwargs[param.name] = param.value;
+            break;
+
+          case Parameter.TYPE_BLOCK:
+            blockObject = param.value.getMacro();
+            break;
+
+          case Parameter.TYPE_CONTEXT:
+            context = new Context(calleeContext.getInterpreter(), param.value);
+            break;
+
+          case Parameter.TYPE_ARGUMENTS:
+            args = args.concat(param.value.getItems());
+            break;
+
+          case Parameter.TYPE_KEYWORD_ARGUMENTS:
+            const items = param.value.getItems();
+            for (let key in items) {
+              kwargs[key] = items[key];
+            }
+            break;
+
+          default:
+            throw new InterpreterError('Parameter type not supported, yet: ' + param.parameterType);
+        }
+      } else {
+        args.push(param);
+      }
     }
 
     var argumentsName = null;
@@ -70,9 +105,9 @@ export default class ArgumentList {
           } else if (args.length) {
             block.setMember(arg.name, args.shift());
           } else if (arg.defaultValue) {
-            //context.setMember(arg.name, )
-            throw new InterpreterError('TODO: default value');
+            block.setMember(arg.name, arg.defaultValue);
           } else {
+            console.log(arg);
             throw new InterpreterError(`Missing argument for macro: ${arg.name}`)
           }
           break;
@@ -93,6 +128,8 @@ export default class ArgumentList {
       }
 
       block.setMember(blockName, blockObject);
+    } else if (blockObject) {
+      block.setMember('yield', blockObject);
     }
 
     block.setMember('callee', calleeContext.getObject());

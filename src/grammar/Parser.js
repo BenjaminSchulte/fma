@@ -2,6 +2,7 @@ import Location from './Location';
 
 const grammar = require('./grammar');
 const fs = require('fs');
+const path = require('path');
 
 export default class Parser {
   constructor(project) {
@@ -36,5 +37,9 @@ export default class Parser {
     }
 
     return await this.parseString(content, file);
+  }
+
+  async parseRelativeFile(file, dir) {
+    return await this.parseFile(path.join(dir, file));
   }
 }

@@ -19,6 +19,12 @@ export default class CalculateExpression extends AbstractInterpreter {
 
   async processCalculation(left, operator, right) {
     if (operator === '=') {
+      if (right.type() === 'Undefined') {
+        var leftType = left.getTarget();
+        var leftName = leftType.name ? leftType.name : leftType.type();
+        this.log('warn', `Assigning Undefined to ${leftName}.${left.getName()}`)
+      }
+
       left.define(right);
       return left;
     }

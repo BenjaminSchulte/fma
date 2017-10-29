@@ -9,6 +9,10 @@ export default class Location {
     return this.line;
   }
 
+  getFile() {
+    return this.file;
+  }
+
   static setCurrentFile(currentFile) {
     Location.currentFile = currentFile;
   }

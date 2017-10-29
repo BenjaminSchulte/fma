@@ -1,6 +1,7 @@
 import InternalValueClass from './InternalValueClass';
 import InternalValue from '../objects/InternalValue';
 import PluginUtils from '../plugin/PluginUtils';
+import BooleanObject from '../objects/Boolean';
 
 export default class NumberType extends InternalValueClass {
   constructor(parent) {
@@ -13,6 +14,15 @@ export default class NumberType extends InternalValueClass {
     PluginUtils.onInstance(this, 'to_s', [], async (self, context) => {
       const value = new InternalValue(self.getMember('__value').value.toString());
       return await context.create('String', value);
+    })
+
+    PluginUtils.onInstance(this, 'to_n', [], async (self, context) => {
+      return self;
+    })
+
+    PluginUtils.onInstance(this, 'to_b', [], async (self, context) => {
+      const value = self.getMember('__value').value;
+      return new BooleanObject(value != 0);
     })
 
     this.operatorBoolean('==', (a, b) => { return a == b; });

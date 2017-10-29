@@ -83,10 +83,11 @@ export default class Context {
     try {
       return await instance.process();
     } catch(err) {
-      if (err.isInterpreterError) {
+      if (!err.doNotShowError) {
         this.getInterpreter().log('error', node.getLocation().toString() + ': ' + err.toString());
         console.error(err);
-        throw Error('There was at least one unrecoverable error while compiling.');
+        err = new Error('There was at least one unrecoverable error while compiling.');
+        err.doNotShowError = true;
       }
       throw err;
     }
@@ -100,7 +101,7 @@ export default class Context {
     }
 
     if (!result) {
-      result = new UndefinedObject();
+      result = new ValueAccessor(new UndefinedObject());
     }
 
     return result;
