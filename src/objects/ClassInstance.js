@@ -49,7 +49,7 @@ export default class ClassInstanceObject extends ObjectClass {
     list.buildFromStringList(['*args', '**kwargs', '&block'])
 
     const Macro = require('./Macro').default;
-    const macro = new Macro();
+    const macro = new Macro(member.name);
     macro.setArguments(list);
     macro.setCallback(async (context) => {
       const callContext = await member.getArguments().buildContextByProxy(context);

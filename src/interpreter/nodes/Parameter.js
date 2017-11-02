@@ -1,12 +1,24 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import ParameterObject from '../../objects/Parameter';
 import ValueAccessor from '../ValueAccessor';
+import MacroPointer from '../../objects/MacroPointer';
 import {ParameterTypes} from '../../grammar/nodes';
 
 export default class Parameter extends AbstractInterpreter {
   async process() {
+    var value;
 
-    const value = await this.context.resolve(this.node.value);
+    if (this.node.parameterType === ParameterTypes.BLOCK) {
+      value = await this.context.process(this.node.value);
+      if (value.getObjectType() === 'Macro') {
+        value = new ValueAccessor(new MacroPointer(value.getObject()));
+      } else if (value.getObjectType() !== 'MacroPointer') {
+        throw new Error('Block parameter must be MacroPointer, but is: ' + value.getObjectType());
+      }
+    } else {
+      value = await this.context.resolve(this.node.value);
+    }
+
     const parameter = new ParameterObject(value.getObject(), this.getParameterType())
 
     if (this.node.name) {

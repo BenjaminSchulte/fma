@@ -3,10 +3,8 @@ import PluginUtils from '../plugin/PluginUtils';
 import BooleanObject from '../objects/Boolean';
 
 export default class InternalValueClass extends Class {
-  constructor(name, parent) {
+  constructor(name) {
     super(name);
-
-    this.extendsClass(parent);
   }
 
   initializeMembers() {
@@ -23,15 +21,23 @@ export default class InternalValueClass extends Class {
     this.operator(operator, async(a, b) => { return new BooleanObject(callback(a, b)); })
   }
 
+  getConvertMethodName() {
+    return '';
+  }
+
+  getTargetType() {
+    return ''
+  }
+
   operator(operator, callback) {
     PluginUtils.onInstance(this, operator, ['other'], async (self, other, context) => {
-      if (!other.hasMember('to_s')) {
-        throw new Error(`Can not compare String with ${other.type()}`)
+      if (!other.hasMember(this.getConvertMethodName())) {
+        throw new Error(`Can not convert ${other.type()} to ${this.getTargetType()}`)
       }
 
-      const otherValue = await other.getMember('to_s').callWithParameters(context.getContext())
-      if (otherValue.type() !== 'String') {
-        throw new Error(`${other.type()}.to_s method must return a String`);
+      const otherValue = await other.getMember(this.getConvertMethodName()).callWithParameters(context.getContext())
+      if (otherValue.type() !== this.getTargetType()) {
+        throw new Error(`${other.type()}.${this.getConvertMethodName()} method must return a ${this.getTargetType()}`);
       }
 
       const left = self.getMember('__value').value;

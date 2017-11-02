@@ -13,10 +13,16 @@ export default class MacroDeclaration extends AbstractInterpreter {
     if (this.node.name) {
       name = await this.context.getProcessor(this.node.name).asString();
 
-      node = await this.context.withoutParents().resolveChild(name);
+      if (this.node.isRoot) {
+        node = await this.context.getRoot().resolveChild(name);
+      } else {
+        node = await this.context.withoutParents().resolveChild(name);
+      }
       if (!node.isUndefined() && node.getObjectType() !== 'Macro') {
         this.log('warn', `The object ${node.getName()} has already been defined, but is redefined as Macro.`);
       }
+    } else {
+      name = `<inlinemacro:${MacroDeclaration.nextInlineBlockId++}>`;
     }
 
     const macro = new MacroObject(name);
@@ -45,3 +51,5 @@ export default class MacroDeclaration extends AbstractInterpreter {
     return list;
   }
 }
+
+MacroDeclaration.nextInlineBlockId = 1;

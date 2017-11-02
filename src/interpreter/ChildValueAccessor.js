@@ -31,6 +31,7 @@ export default class ChildValueAccessor extends ValueAccessor {
   define(object) {
     this.child = object;
     this.object.setMember(this.childName, object);
+    object.setParent(this.object);
     return object;
   }
 }

@@ -23,7 +23,10 @@ Stmt
   / stmt:ExprOrCommand post:PostStmt? {
     if (post) {
       if (post.type() === 'Parameter') {
-        stmt = c(new n.CallExpression(stmt)).setParameters([post]);
+        if (stmt.type() !== 'CallExpression') {
+          stmt = c(new n.CallExpression(stmt));
+        }
+        stmt.addParameters([post]);
         stmt = c(new n.ExpressionStatement(stmt));
       } else {
         post.setChildren([c(new n.ExpressionStatement(stmt))]);
@@ -54,8 +57,16 @@ PostStmt
 RequireStatement
   = keyword_require __ expr:Expr { return c(new n.RequireStatement(expr)) }
 
+IfKeyword
+  = keyword_if { return false }
+  / keyword_unless { return true }
+
 IfStmt
-  = keyword_if __ condition:ExprOrCommand block:Block elseifs:ElseIfStmt* otherwise:ElseStmt? keyword_end {
+  = negate:IfKeyword __ condition:ExprOrCommand block:Block elseifs:ElseIfStmt* otherwise:ElseStmt? keyword_end {
+    if (negate) {
+      condition = c(new n.NotExpression(condition));
+    }
+
     var cur = c(new n.IfStatement()).setChildren(block).setCondition(condition);
 
     for (let elseif of elseifs) {
@@ -102,9 +113,13 @@ ExprAfter
   = args:CallArgs { return args; }
 
 Expr
-  = item:CalcExpr cond:InlineCondition? {
+  = constant:"#"? _ item:CalcExpr cond:InlineCondition? {
     if (cond) {
       console.log('TODO: Inline condition');
+    }
+
+    if (constant) {
+      item = c(new n.ConstantExpression(item));
     }
 
     return item;
@@ -127,17 +142,20 @@ CalcExpr
   }
 
 ExprItem
-  = constant:"#"? _ not:"!"? _ root:"::"? primary:Primary {
+  = not:"!"? _ root:"::"? primary:Primary {
     if (root) {
-      console.log('Todo: root');
+      switch (primary.type()) {
+      case 'Identifier':
+        primary.setIsRoot();
+        break;
+
+      default:
+        throw new Error('Can not set ROOT on ' + primary.type());
+      }
     }
 
     if (not) {
       primary = c(new n.NotExpression(primary));
-    }
-
-    if (constant) {
-      primary = c(new n.ConstantExpression(primary));
     }
 
     return primary;
@@ -185,8 +203,8 @@ FunctionDeclaration
   }
 
 MacroDeclaration
-  = keyword_macro __ name:IDENTIFIER args:AnyMacroArgs? block:Block keyword_end {
-    return c(new n.MacroDeclaration(name)).setChildren(block).setArguments(args ? args : []);
+  = keyword_macro __ root:"::"? name:IDENTIFIER args:AnyMacroArgs? block:Block keyword_end {
+    return c(new n.MacroDeclaration(name)).setIsRoot(!!root).setChildren(block).setArguments(args ? args : []);
   }
 
 AnyMacroArgs
@@ -243,7 +261,7 @@ PrimaryAfter
   = "." value:IDENTIFIER { return c(new n.ChildExpression(null)).setChild(value); }
   / "::" value:IDENTIFIER { return c(new n.ChildExpression(null)).setChild(value); }
   / ".." expr:Expr { return c(new n.RangeExpression(null, expr)); }
-  / "[" _ expr:Expr _ "]" { return c(new n.ChildExpression(null)).setChild(expr); }
+  / "[" _ expr:Expr _ "]" { return c(new n.ChildExpression(null)).setChild(expr).setIsResolved(true); }
   / _ "(" _ args:CallArgs? _ ")" { return c(new n.CallExpression(null)).setParameters(args || []); }
   / __ param:CallArgs { return c(new n.CallExpression(null)).setParameters(param ? param : []); }
 
@@ -261,19 +279,20 @@ PrimaryValue
   / String
   / IDENTIFIER
   / Array
+  / Hash
   / keyword_true { return c(new n.BooleanLiteral(true)) }
   / keyword_false { return c(new n.BooleanLiteral(false)) }
   / keyword_nil { return c(new n.NilLiteral()) }
   / "(" _ expr:Expr _ ")" { return expr; }
 
 CallArg
-  = name:IDENTIFIER ":" _ value:ExprItem { return c(new n.Parameter(value)).setName(name); }
+  = name:IDENTIFIER ":" !":" _ value:Expr { return c(new n.Parameter(value)).setName(name); }
   / "&" !__ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.BLOCK); }
   / "*" !__ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.ARGUMENTS); }
   / "**" !__ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.KEYWORD_ARGUMENTS); }
   / "@" !__ value:ExprItem { return c(new n.Parameter(value)).setType(n.ParameterTypes.CONTEXT); }
   / value:InlineBlock { return c(new n.Parameter(value)).setType(n.ParameterTypes.BLOCK); }
-  / value:ExprItem { return c(new n.Parameter(value)); }
+  / value:Expr { return c(new n.Parameter(value)); }
 
 CallArgs
   = arg:CallArg args:CallArgsList* { return [arg].concat(args); }
@@ -282,13 +301,22 @@ CallArgsList
   = _ "," _ arg:CallArg { return arg; }
 
 Array
-  = "[" _ items:ArrayListItems? _ "]" { return c(new n.ArrayDeclaration()).setChildren(items ? items : []); }
+  = "[" _t items:ArrayListItems? _t "]" { return c(new n.ArrayDeclaration()).setChildren(items ? items : []); }
+
+Hash
+  = "{" _t items:HashListItems? _t "}" { return c(new n.HashDeclaration()).setItems(items ? items : []); }
+
+HashListItems
+  = name:IDENTIFIER ":" !":" _ value:Expr items:HashListItem* { return [{name, value}].concat(items) }
+
+HashListItem
+  = _t "," _t name:IDENTIFIER ":" !":" _ value:Expr { return {name, value}; }
 
 ArrayListItems
   = item:Expr items:ArrayListItem* { return [item].concat(items); }
 
 ArrayListItem
-  = _ "," _ item:Expr { return item }
+  = _t "," _t item:Expr { return item }
 
 //Expr_Value
 
@@ -332,13 +360,13 @@ DoubleStringContent
   / InlineExpression
 
 InlineExpression
-  = "#{" _ expr:Expr _ "}" { return expr; }
+  = "#{" _ expr:Expr _ "}" { return c(new n.InlineExpression(expr)); }
 
 // ------------------------------------------------------------------
 //   Token
 // ------------------------------------------------------------------
 InlineIdentifier
-  = "\\{" _ Expr _ "}"
+  = "\\{" _ expr:Expr _ "}" { return c(new n.InlineExpression(expr)); }
 
 IdentifierStart
   = parts:[a-zA-Z_]+ { return c(new n.IdentifierName(parts.join(''))); }
@@ -360,28 +388,31 @@ IdentifierString
 IDENTIFIER
   = IdentifierString
 
+IdentifierEndOrPart
+  = IdentifierPart
+  / IdentifierEnd
 
 // ------------------------------------------------------------------
 //   Keywords
 // ------------------------------------------------------------------
-keyword_if = "if"
-keyword_elsif = "elsif"
-keyword_unless = "unless"
-keyword_end = "end"
-keyword_module = "module"
-keyword_do = "do"
-keyword_case = "case"
-keyword_macro = "macro"
-keyword_def = "def"
-keyword_when = "when"
-keyword_class = "class"
-keyword_else = "else"
-keyword_require = "require"
-keyword_true = "true"
-keyword_false = "false"
-keyword_nil = "nil"
+keyword_if = "if" !IdentifierEndOrPart
+keyword_elsif = "elsif" !IdentifierEndOrPart
+keyword_unless = "unless" !IdentifierEndOrPart
+keyword_end = "end" !IdentifierEndOrPart
+keyword_module = "module" !IdentifierEndOrPart
+keyword_do = "do" !IdentifierEndOrPart
+keyword_case = "case" !IdentifierEndOrPart
+keyword_macro = "macro" !IdentifierEndOrPart
+keyword_def = "def" !IdentifierEndOrPart
+keyword_when = "when" !IdentifierEndOrPart
+keyword_class = "class" !IdentifierEndOrPart
+keyword_else = "else" !IdentifierEndOrPart
+keyword_require = "require" !IdentifierEndOrPart
+keyword_true = "true" !IdentifierEndOrPart
+keyword_false = "false" !IdentifierEndOrPart
+keyword_nil = "nil" !IdentifierEndOrPart
 
-ReservedWord
+ReservedWordItem
   = "if"
   / "elsif"
   / "end"
@@ -398,6 +429,9 @@ ReservedWord
   / "true"
   / "false"
   / "nil"
+
+ReservedWord
+  = ReservedWordItem !IdentifierEndOrPart
 
 // ------------------------------------------------------------------
 //   Core content generation
@@ -417,6 +451,9 @@ Terms
 
 _ "whitespace"
   = ([ \t\r] / "\\\n")*
+
+_t
+  = (__ / EOL)*
 
 __ "whitespace"
   = ([ \t\r] / "\\\n")+

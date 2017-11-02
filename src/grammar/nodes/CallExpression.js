@@ -13,6 +13,11 @@ export default class CallExpression extends NestedExpressionNode {
     return this;
   }
 
+  addParameters(parameters) {
+    this.parameters.addChildren(parameters);
+    return this;
+  }
+
   getParameters() {
     return this.parameters.getChildren();
   }

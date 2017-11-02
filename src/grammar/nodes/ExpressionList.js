@@ -9,6 +9,12 @@ export default class ExpressionList extends ExpressionNode {
   }
 
   setChildren(children) {
+    this.children = new StatementList();
+    this.addChildren(children);
+    return this;
+  }
+
+  addChildren(children) {
     for (let child of children) {
       this.addChild(child);
     }

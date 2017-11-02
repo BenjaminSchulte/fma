@@ -28,4 +28,12 @@ export default class UndefinedObject extends AbstractObject {
       return new BooleanObject(result);
     })
   }
+
+  isNil() {
+    return true;
+  }
+
+  isUndefined() {
+    return true;
+  }
 }

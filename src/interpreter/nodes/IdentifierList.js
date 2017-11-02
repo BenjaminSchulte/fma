@@ -7,7 +7,7 @@ export default class IdentifierList extends AbstractInterpreter {
     var children = this.node.getChildren().slice();
 
     if (this.node.isRoot) {
-      context = context.getRootContext();
+      context = context.getRoot();
     }
 
     var numChildren = children.length;

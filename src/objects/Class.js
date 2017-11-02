@@ -8,7 +8,6 @@ export default class ClassObject extends NamedObject {
     super(name);
 
     this.instanceMembers = {};
-    this.instanceMethods = {};
     this.extended = [];
 
     this.initializeMembers();
@@ -27,19 +26,34 @@ export default class ClassObject extends NamedObject {
   }
 
   hasInstanceMember(name) {
-    return this.instanceMembers.hasOwnProperty(name) || this.instanceMethods.hasOwnProperty(name);
+    if (this.instanceMembers.hasOwnProperty(name)) {
+      return true;
+    }
+
+    for (let child of this.extended) {
+      if (child.hasInstanceMember(name)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   getInstanceMember(name) {
-    if (!this.instanceMembers.hasOwnProperty(name)) {
-      throw new InterpreterError(`Invalid instance member: ${name}`);
+    if (this.instanceMembers.hasOwnProperty(name)) {
+      return this.instanceMembers[name];
     }
 
-    return this.instanceMembers[name];
+    for (let child of this.extended) {
+      if (child.hasInstanceMember(name)) {
+        return child.getInstanceMember(name);
+      }
+    }
+
+    return null;
   }
 
   setInstanceMember(name, value) {
-    console.log("SET MEMBER", this.name + '.' + name)
     this.instanceMembers[name] = value;
   }
 
@@ -58,6 +72,11 @@ export default class ClassObject extends NamedObject {
   initializeMembers() {
     this.on('new', ['*args', '**kwargs', '&block'], async (context) => {
       const klass = new ClassInstance(this);
+
+      if (this.extended.length == 0) {
+        const obj = (await context.getRoot().resolveChild('Object')).getObject();
+        this.extendsClass(obj);
+      }
 
       if (klass.hasMember('initialize')) {
         const member = klass.getMember('initialize');

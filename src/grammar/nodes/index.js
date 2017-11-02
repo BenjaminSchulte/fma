@@ -10,10 +10,12 @@ import ConstantExpression from './ConstantExpression';
 import ElseStatement from './ElseStatement';
 import ExpressionStatement from './ExpressionStatement';
 import FunctionDeclaration from './FunctionDeclaration';
+import HashDeclaration from './HashDeclaration';
 import Identifier from './Identifier';
 import IdentifierList from './IdentifierList';
 import IdentifierName from './IdentifierName';
 import IfStatement from './IfStatement';
+import InlineExpression from './InlineExpression';
 import LabelDeclaration from './LabelDeclaration';
 import MacroDeclaration from './MacroDeclaration';
 import ModuleDeclaration from './ModuleDeclaration';
@@ -43,10 +45,12 @@ export {
   ElseStatement,
   ExpressionStatement,
   FunctionDeclaration,
+  HashDeclaration,
   Identifier,
   IdentifierList,
   IdentifierName,
   IfStatement,
+  InlineExpression,
   LabelDeclaration,
   MacroDeclaration,
   ModuleDeclaration,

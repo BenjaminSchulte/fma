@@ -6,6 +6,12 @@ export default class MacroDeclaration extends BlockDeclaration {
     super(name);
 
     this.arguments = new ArgumentList();
+    this.isRoot = false;
+  }
+
+  setIsRoot(root) {
+    this.isRoot = root;
+    return this;
   }
 
   setArguments(args) {

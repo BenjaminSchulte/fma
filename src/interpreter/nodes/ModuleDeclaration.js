@@ -5,7 +5,7 @@ export default class ModuleDeclaration extends AbstractInterpreter {
   async process() {
 
     // Finds the module
-    var node = await this.context.process(this.node.name);
+    var node = await this.context.withoutParents().process(this.node.name);
     if (node.isUndefined()) {
       node.define(new Module(node.getName()));
     } else if (node.getObjectType() !== 'Module') {

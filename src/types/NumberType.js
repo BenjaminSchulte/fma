@@ -4,8 +4,16 @@ import PluginUtils from '../plugin/PluginUtils';
 import BooleanObject from '../objects/Boolean';
 
 export default class NumberType extends InternalValueClass {
-  constructor(parent) {
-    super('Number', parent);
+  constructor() {
+    super('Number');
+  }
+
+  getConvertMethodName() {
+    return 'to_n';
+  }
+
+  getTargetType() {
+    return 'Number'
   }
 
   initializeMembers() {
@@ -18,6 +26,11 @@ export default class NumberType extends InternalValueClass {
 
     PluginUtils.onInstance(this, 'to_n', [], async (self, context) => {
       return self;
+    })
+
+    PluginUtils.onInstance(this, 'to_constant', [], async (self, context) => {
+      const type = await context.create('String', new InternalValue('constant'));
+      return await context.create('TypedNumber', self, type);
     })
 
     PluginUtils.onInstance(this, 'to_b', [], async (self, context) => {

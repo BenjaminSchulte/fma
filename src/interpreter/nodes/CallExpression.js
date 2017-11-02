@@ -20,7 +20,7 @@ export default class CallExpression extends AbstractInterpreter {
           console.log(target.object);
           throw new InterpreterError('Trying to call an undefined method: ' + target.getTargetType() + '.' + target.getName());
         } else {
-          throw new InterpreterError('Trying to call an object of type ' + target.getObjectType());
+          throw new InterpreterError('Trying to call an object of type ' + target.getObjectType() + ' given by ' + this.node.parent.type());
         }
       }
 

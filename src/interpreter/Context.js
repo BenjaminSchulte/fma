@@ -111,11 +111,17 @@ export default class Context {
     var result = await this.process(node);
     const object = result.getObject();
 
+    if (!object.canBeCalled) {
+      throw new Error('Invalid object result from ' + node.type());
+    }
+
     if (object.canBeCalled()) {
       result = await object.callWithParameters(this);
 
       if (!result) {
         result = new ValueAccessor(new UndefinedObject());
+      } else {
+        result = new ValueAccessor(result);
       }
     }
 

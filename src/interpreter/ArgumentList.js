@@ -2,6 +2,7 @@ import Context from './Context';
 import Block from '../objects/Block';
 import Parameter from '../objects/Parameter';
 import ArrayObject from '../objects/Array';
+import MacroPointer from '../objects/MacroPointer';
 import HashObject from '../objects/Hash';
 import UndefinedObject from '../objects/Undefined';
 import InterpreterError from './InterpreterError';
@@ -55,7 +56,10 @@ export default class ArgumentList {
             break;
 
           case Parameter.TYPE_BLOCK:
-            blockObject = param.value.getMacro();
+            if (param.value.type() !== 'MacroPointer') {
+              throw new InterpreterError('Parameter must be macro pointer, but is ' + param.type());
+            }
+            blockObject = param.value;
             break;
 
           case Parameter.TYPE_CONTEXT:
@@ -116,10 +120,12 @@ export default class ArgumentList {
 
     if (argumentsName) {
       block.setMember(argumentsName, new ArrayObject(args));
+      args = [];
     }
 
     if (kwArgumentsName) {
       block.setMember(kwArgumentsName, new HashObject(kwargs));
+      kwargs = {};
     }
 
     if (blockName) {
@@ -129,10 +135,18 @@ export default class ArgumentList {
 
       block.setMember(blockName, blockObject);
     } else if (blockObject) {
-      block.setMember('yield', blockObject);
+      block.setMember('yield', blockObject.getMacro());
     }
 
     block.setMember('callee', calleeContext.getObject());
+
+    if (args.length) {
+      throw new InterpreterError('Too many arguments for method');
+    }
+
+    if (Object.keys(kwargs).length) {
+      throw new InterpreterError('Too many arguments for method: ' + Object.keys(kwargs).join(', '));
+    }
 
     return context;
   }
@@ -144,11 +158,13 @@ export default class ArgumentList {
 
     var params = [...args];
     for (let key in kwargs) {
-      throw new InterpreterError('TODO: pass keywords');
+      const param = new Parameter(kwargs[key]);
+      param.setName(key);
+      params.push(param);
     }
 
     if (block.type() !== 'Undefined') {
-      params.push(block);
+      params.push(new Parameter(block, Parameter.TYPE_BLOCK));
     }
 
     const calleeContext = new Context(context.getInterpreter(), (await context.resolveChild('callee')).getObject());

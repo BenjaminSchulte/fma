@@ -5,6 +5,12 @@ export default class ChildExpression extends NestedExpressionNode {
     super(parent);
 
     this.child = null;
+    this.isResolved = false;
+  }
+
+  setIsResolved(resolved) {
+    this.isResolved = resolved;
+    return this;
   }
 
   setChild(child) {
@@ -15,7 +21,8 @@ export default class ChildExpression extends NestedExpressionNode {
   serialize(s) {
     return [
       super.serialize(s),
-      s.serialize(this.child)
+      s.serialize(this.child),
+      this.isResolved
     ];
   }
 }

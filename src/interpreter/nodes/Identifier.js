@@ -12,6 +12,12 @@ export default class Identifier extends AbstractInterpreter {
   }
 
   async process() {
-    return this.context.resolveChild(await this.asString());
+    var context = this.context;
+
+    if (this.node.isRoot) {
+      context = context.getRoot();
+    }
+
+    return await context.resolveChild(await this.asString());
   }
 }
