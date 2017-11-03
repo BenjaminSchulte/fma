@@ -6,10 +6,10 @@ export default class TypedNumber extends Class {
     super('TypedNumber');
   }
 
-  initializeMembers() {
-    super.initializeMembers();
+  initializeInstanceMembers(klass) {
+    super.initializeInstanceMembers(klass)
 
-    PluginUtils.onInstance(this, 'initialize', ['number', 'type'], async (self, number, type, context) => {
+    klass.on('initialize', ['number', 'type'], async (self, number, type, context) => {
       self.setMember('number', number);
       self.setMember('type', type);
     })

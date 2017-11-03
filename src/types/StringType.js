@@ -16,21 +16,21 @@ export default class StringType extends InternalValueClass {
     return 'String'
   }
 
-  initializeMembers() {
-    super.initializeMembers();
+  initializeInstanceMembers(klass) {
+    super.initializeInstanceMembers(klass);
 
-    PluginUtils.onInstance(this, 'to_s', [], async (self) => {
+    klass.on('to_s', [], async (self) => {
       return self;
     })
 
-    PluginUtils.onInstance(this, 'upcase', [], async (self, context) => {
+    klass.on('upcase', [], async (self, context) => {
       return await context.create('String', new InternalValue(self.getMember('__value').getValue().toUpperCase()));
     })
 
-    PluginUtils.onInstance(this, 'downcase', [], async (self, context) => {
+    klass.on('downcase', [], async (self, context) => {
       return await context.create('String', new InternalValue(self.getMember('__value').getValue().toLowerCase()));
     })
 
-    this.operatorBoolean('==', (a, b) => { return a == b; });
+    this.operatorBoolean(klass, '==', (a, b) => { return a == b; });
   }
 }

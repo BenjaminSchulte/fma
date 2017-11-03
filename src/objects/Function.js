@@ -10,8 +10,6 @@ export default class FunctionObject extends NamedObject {
     this.hasBeenCompiled = false;
     this.javascriptCallback = null;
     this.children = null;
-
-    this.initializeMembers();
   }
 
   setCallback(javascriptCallback) {
@@ -69,11 +67,11 @@ export default class FunctionObject extends NamedObject {
     return new FutureNumber(new SymbolLocation(this.getFullName()));
   }
 
-  initializeMembers() {
-    PluginUtils.initializeOnce('Function', this, () => {
-      PluginUtils.on(this, 'to_future_number', [], () => {
-        return new FutureNumber(new SymbolLocation(this.getFullName()));
-      })
+  initializeClassMembers(klass) {
+    super.initializeClassMembers(klass);
+
+    klass.on('to_future_number', [], (self) => {
+      return new FutureNumber(new SymbolLocation(self.getFullName()));
     })
   }
 }

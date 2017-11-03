@@ -11,7 +11,15 @@ export default class ClassInstanceObject extends ObjectClass {
   }
 
   type() {
-    return this.klass.name;
+    return 'ClassInstance';
+  }
+
+  getName() {
+    return this.klass.getName();
+  }
+
+  getClassName() {
+    return this.klass.getName();
   }
 
   hasMember(name) {
@@ -36,11 +44,7 @@ export default class ClassInstanceObject extends ObjectClass {
       return super.getMember(name);
     }
 
-    const member = this.klass.getInstanceMember(name);
-    if (member.type() === 'Macro') {
-      return this.getInstancedMember(member);
-    }
-
+    const member = this.klass.getInstanceMember(name, this);
     return member;
   }
 

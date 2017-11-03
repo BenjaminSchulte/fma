@@ -20,26 +20,26 @@ export default class FutureNumber extends ObjectClass {
     return this.calculation;
   }
 
-  initializeMembers() {
-    PluginUtils.initializeOnce('FutureNumber', this, () => {
-      PluginUtils.on(this, 'to_constant', [], async (context) => {
-        const type = await context.create('String', new InternalValue('constant'));
-        return await context.create('TypedNumber', this, type);
-      })
+  initializeClassMembers(klass) {
+    super.initializeClassMembers(klass);
 
-      this.initializeOperator('+');
-      this.initializeOperator('-');
-      this.initializeOperator('*');
-      this.initializeOperator('/');
-      this.initializeOperator('<<');
-      this.initializeOperator('>>');
-      this.initializeOperator('&');
-      this.initializeOperator('|');
+    klass.on('to_constant', [], async (self, context) => {
+      const type = await context.create('String', new InternalValue('constant'));
+      return await context.create('TypedNumber', self, type);
     })
+
+    this.initializeOperator(klass, '+');
+    this.initializeOperator(klass, '-');
+    this.initializeOperator(klass, '*');
+    this.initializeOperator(klass, '/');
+    this.initializeOperator(klass, '<<');
+    this.initializeOperator(klass, '>>');
+    this.initializeOperator(klass, '&');
+    this.initializeOperator(klass, '|');
   }
 
-  initializeOperator(operator) {
-    PluginUtils.on(this, operator, ['other'], async (other, context) => {
+  initializeOperator(klass, operator) {
+    klass.on(operator, ['other'], async (self, other, context) => {
       if (other.hasMember('to_n')) {
         other = await other.getMember('to_n').callWithParameters(context.getContext());
       } else if (other.hasMember('to_future_number')) {
@@ -48,7 +48,7 @@ export default class FutureNumber extends ObjectClass {
         throw new InterpreterError('Can not convert ' + other.type() + ' to Number');
       }
 
-      return new FutureNumber(new Calculation(this, operator, other));
+      return new FutureNumber(new Calculation(self, operator, other));
     })
   }
 }

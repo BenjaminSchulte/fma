@@ -45,7 +45,7 @@ export default class CalculateExpression extends AbstractInterpreter {
     if (operator !== '') {
       var calcLeft = left.getObject();
       if (calcLeft.canBeCalled()) {
-        console.log('TODO: RESOLVE LEFT');
+        calcLeft = (await calcLeft.callWithParameters(this.context));
       }
       if (!calcLeft.hasMember(operator)) {
         if (calcLeft.hasMember('to_n')) {

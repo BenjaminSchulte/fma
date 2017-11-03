@@ -26,6 +26,7 @@ import Parameter from './Parameter';
 import ParameterList from './ParameterList';
 import * as ParameterTypes from './ParameterTypes';
 import Program from './Program';
+import RaiseStatement from './RaiseStatement';
 import RangeExpression from './RangeExpression';
 import RequireStatement from './RequireStatement';
 import StringLiteral from './StringLiteral';
@@ -61,6 +62,7 @@ export {
   ParameterList,
   ParameterTypes,
   Program,
+  RaiseStatement,
   RangeExpression,
   RequireStatement,
   StringLiteral,

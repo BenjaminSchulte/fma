@@ -6,7 +6,6 @@ export default class BooleanObject extends AbstractObject {
     super();
 
     this.value = value;
-    this.initializeMembers();
   }
 
   isTrue() {
@@ -21,19 +20,13 @@ export default class BooleanObject extends AbstractObject {
     return 'Boolean';
   }
 
-  initializeMembers() {
-    PluginUtils.initializeOnce('boolean', this, (instance) => {
+  initializeClassMembers(klass) {
+    klass.on('to_b', [], async (self) => {
+      return self;
+    })
 
-      instance.on('to_b', [], async () => {
-        return this;
-      })
-
-      instance.on('&&', ['other'], async (context) => {
-        const other = await context.resolveChild('other');
-
-        return new BooleanObject(this.value && (await other.asBoolean(context)));
-      })
-
-    });
+    klass.on('&&', ['other'], async (self, other, context) => {
+      return new BooleanObject(self.value && (await context.asBoolean(other)));
+    })
   }
 }

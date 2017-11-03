@@ -16,42 +16,42 @@ export default class NumberType extends InternalValueClass {
     return 'Number'
   }
 
-  initializeMembers() {
-    super.initializeMembers();
+  initializeInstanceMembers(klass) {
+    super.initializeInstanceMembers(klass);
 
-    PluginUtils.onInstance(this, 'to_s', [], async (self, context) => {
+    klass.on('to_s', [], async (self, context) => {
       const value = new InternalValue(self.getMember('__value').value.toString());
       return await context.create('String', value);
     })
 
-    PluginUtils.onInstance(this, 'to_n', [], async (self, context) => {
+    klass.on('to_n', [], async (self, context) => {
       return self;
     })
 
-    PluginUtils.onInstance(this, 'to_constant', [], async (self, context) => {
+    klass.on('to_constant', [], async (self, context) => {
       const type = await context.create('String', new InternalValue('constant'));
       return await context.create('TypedNumber', self, type);
     })
 
-    PluginUtils.onInstance(this, 'to_b', [], async (self, context) => {
+    klass.on('to_b', [], async (self, context) => {
       const value = self.getMember('__value').value;
       return new BooleanObject(value != 0);
     })
 
-    this.operatorBoolean('==', (a, b) => { return a == b; });
+    this.operatorBoolean(klass, '==', (a, b) => { return a == b; });
 
-    this.operatorNumeric('+', (a, b) => { return a + b; });
-    this.operatorNumeric('-', (a, b) => { return a - b; });
-    this.operatorNumeric('*', (a, b) => { return a * b; });
-    this.operatorNumeric('/', (a, b) => { return a / b; });
-    this.operatorNumeric('&', (a, b) => { return a & b; });
-    this.operatorNumeric('|', (a, b) => { return a | b; });
-    this.operatorNumeric('<<', (a, b) => { return a << b; });
-    this.operatorNumeric('>>', (a, b) => { return a >> b; });
+    this.operatorNumeric(klass, '+', (a, b) => { return a + b; });
+    this.operatorNumeric(klass, '-', (a, b) => { return a - b; });
+    this.operatorNumeric(klass, '*', (a, b) => { return a * b; });
+    this.operatorNumeric(klass, '/', (a, b) => { return a / b; });
+    this.operatorNumeric(klass, '&', (a, b) => { return a & b; });
+    this.operatorNumeric(klass, '|', (a, b) => { return a | b; });
+    this.operatorNumeric(klass, '<<', (a, b) => { return a << b; });
+    this.operatorNumeric(klass, '>>', (a, b) => { return a >> b; });
   }
 
-  operatorNumeric(operator, callback) {
-    this.operator(operator, async(a, b, context) => {
+  operatorNumeric(klass, operator, callback) {
+    this.operator(klass, operator, async(a, b, context) => {
       const result = callback(a, b);
 
       return await this.getMember('new').callWithParameters(context.getContext(), new InternalValue(result));

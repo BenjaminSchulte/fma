@@ -9,18 +9,18 @@ export default class Compiler extends Class {
     this.interpreter = interpreter;
   }
 
-  initializeMembers() {
-    super.initializeMembers();
+  initializeInstanceMembers(klass) {
+    super.initializeInstanceMembers(klass);
 
-    PluginUtils.onInstance(this, 'register_static_code', ['memory'], async (self, memory) => {
+    klass.on('register_static_code', ['memory'], async (self, memory) => {
       console.log('TODO: REGISTER STATIC CODE', memory);
     })
 
-    PluginUtils.onInstance(this, 'print', ['*args'], async (self, args, context) => {
+    klass.on('print', ['*args'], async (self, args, context) => {
       await this.print(context, ...args.getItems());
     })
 
-    PluginUtils.onInstance(this, 'define', ['&block'], async (self, args, context) => {
+    klass.on('define', ['&block'], async (self, args, context) => {
       const func = new FunctionObject('<memorysection>');
 
       func.setCallback(async () => {
@@ -31,7 +31,7 @@ export default class Compiler extends Class {
       this.interpreter.compileFunction(func);
     })
 
-    PluginUtils.onInstance(this, 'each_function', ['&block'], async (self, block, context) => {
+    klass.on('each_function', ['&block'], async (self, block, context) => {
       await block.getMacro().callWithParameters(context.getContext());
     })
   }
@@ -50,7 +50,7 @@ export default class Compiler extends Class {
     if (object.hasMember('to_s')) {
       const str = await object.getMember('to_s').callWithParameters(context.getContext());
 
-      if (str.type() === 'String') {
+      if (str.getClassName() === 'String') {
         const member = str.getMember('__value').getValue();
         return member;
       }
@@ -58,7 +58,7 @@ export default class Compiler extends Class {
       object = str;
     }
 
-    switch (object.type()) {
+    switch (object.getClassName()) {
       case 'Array':
         var items = [];
         for (let child of object.getItems()) {
@@ -75,7 +75,7 @@ export default class Compiler extends Class {
         return '{' + items.join(', ') + '}'
 
       case 'Module':
-        return '<' + object.type() + ':' + object.name + '>';
+        return '<' + object.type() + ':' + object.getFullName() + '>';
 
       case 'Range':
         return `${object.getFirstValue()}..${object.getLastValue()}`
@@ -84,6 +84,6 @@ export default class Compiler extends Class {
         return object.getValue().toString();
     }
 
-    return "<" + object.type() + ">";
+    return "<" + object.getClassName() + ">";
   }
 }

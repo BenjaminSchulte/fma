@@ -22,7 +22,7 @@ export default class RangeExpression extends AbstractInterpreter {
 
     const leftNumber = await leftObject.getMember('to_n').callWithParameters(this.context)
     const rightNumber = await rightObject.getMember('to_n').callWithParameters(this.context)
-    if (leftNumber.type() !== 'Number' || rightNumber.type() !== 'Number') {
+    if (leftNumber.type() !== 'ClassInstance' || rightNumber.type() !== 'ClassInstance' || leftNumber.getClassName() !== 'Number' || rightNumber.getClassName() !== 'Number') {
       throw new InterpreterError('to_n must return Number');
     }
 

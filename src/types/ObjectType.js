@@ -7,10 +7,11 @@ export default class ObjectType extends Class {
     super('Object');
   }
 
-  initializeMembers() {
-    super.initializeMembers();
+  initializeInstanceMembers(klass) {
+    super.initializeInstanceMembers(klass);
 
-    PluginUtils.onInstance(this, 'is_a?', ['type'], async (self, type) => {
+    klass.on('is_a?', ['type'], async (self, type) => {
+      console.log('IS_A on ObjectType')
       return new BooleanObject(self.klass.getFullName() == type.getFullName());
     })
   }

@@ -7,18 +7,16 @@ export default class InternalValueClass extends Class {
     super(name);
   }
 
-  initializeMembers() {
-    super.initializeMembers();
+  initializeInstanceMembers(klass) {
+    super.initializeInstanceMembers(klass);
 
-    this.onInstance('initialize', ['value'], async (context) => {
-      const self = (await context.resolveChild('self')).getObject();
-
-      self.setMember('__value', (await context.resolveChild('value')).getObject());
+    klass.on('initialize', ['value'], async (self, value, context) => {
+      self.setMember('__value', value);
     })
   }
 
-  operatorBoolean(operator, callback) {
-    this.operator(operator, async(a, b) => { return new BooleanObject(callback(a, b)); })
+  operatorBoolean(klass, operator, callback) {
+    this.operator(klass, operator, async(a, b) => { return new BooleanObject(callback(a, b)); })
   }
 
   getConvertMethodName() {
@@ -29,14 +27,14 @@ export default class InternalValueClass extends Class {
     return ''
   }
 
-  operator(operator, callback) {
-    PluginUtils.onInstance(this, operator, ['other'], async (self, other, context) => {
+  operator(klass, operator, callback) {
+    klass.on(operator, ['other'], async (self, other, context) => {
       if (!other.hasMember(this.getConvertMethodName())) {
         throw new Error(`Can not convert ${other.type()} to ${this.getTargetType()}`)
       }
 
       const otherValue = await other.getMember(this.getConvertMethodName()).callWithParameters(context.getContext())
-      if (otherValue.type() !== this.getTargetType()) {
+      if (otherValue.type() !== 'ClassInstance' || otherValue.getClassName() !== this.getTargetType()) {
         throw new Error(`${other.type()}.${this.getConvertMethodName()} method must return a ${this.getTargetType()}`);
       }
 

@@ -6,7 +6,6 @@ export default class UndefinedObject extends AbstractObject {
   constructor() {
     super();
 
-    this.initializeMembers();
     this.canNotSetMember = true;
   }
 
@@ -22,8 +21,10 @@ export default class UndefinedObject extends AbstractObject {
     super.setMember(name, value);
   }
 
-  initializeMembers() {
-    this.on('==', ['other'], async (context) => {
+  initializeClassMembers(klass) {
+    super.initializeClassMembers(klass);
+
+    klass.on('==', ['other'], async (self, context) => {
       const result = (await context.resolveChild('other')).isUndefined();
       return new BooleanObject(result);
     })

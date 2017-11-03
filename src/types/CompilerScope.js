@@ -8,19 +8,21 @@ export default class CompilerScope extends Class {
     super('CompilerScope');
   }
 
-  initializeMembers() {
-    super.initializeMembers();
+  initializeInstanceMembers(klass) {
+    super.initializeInstanceMembers(klass);
 
-    this.onInstance('on_enter_function', ['function'], (context) => {})
-    this.onInstance('on_leave_function', ['function'], (context) => {})
+    klass.on('on_enter_function', ['function'], async () => {})
+    klass.on('on_leave_function', ['function'], async () => {})
 
-    PluginUtils.onInstance(this, 'initialize', [], async (self, context) => {
+    klass.on('initialize', [], async (self, context) => {
       self.writer = new Writer();
     })
-    PluginUtils.onInstance(this, 'dw', ['*args', '**kwargs'], async (self, args, kwargs, context) => {
+
+    klass.on('dw', ['*args', '**kwargs'], async (self, args, kwargs, context) => {
       await this.write(self, context, args.getItems(), kwargs.getItems(), 16);
     })
-    PluginUtils.onInstance(this, 'db', ['*args', '**kwargs'], async (self, args, kwargs, context) => {
+
+    klass.on('db', ['*args', '**kwargs'], async (self, args, kwargs, context) => {
       await this.write(self, context, args.getItems(), kwargs.getItems(), 8);
     })
   }
@@ -29,7 +31,7 @@ export default class CompilerScope extends Class {
     var numItems = 0;
 
     for (let item of items) {
-      if (item.type() === 'String') {
+      if (item.getClassName() === 'String') {
         const str = item.getMember('__value').getValue();
         for (let item of str.split('')) {
           self.writer.write(item.charCodeAt(0), bytesPerItem);
@@ -43,13 +45,13 @@ export default class CompilerScope extends Class {
   }
 
   async writeItem(self, context, item, bytesPerItem) {
-    if (item.type() === 'FutureNumber') {
+    if (item.getClassName() === 'FutureNumber') {
       self.writer.writeCalculation(item.getCalculation(), bytesPerItem);
       return;
     }
 
     if (!item.hasMember('to_n')) {
-      throw new InterpreterError(`Unable to convert type ${item.type()} to Number`);
+      throw new InterpreterError(`Unable to convert type ${item.getClassName()} to Number`);
     }
 
     const number = await item.getMember('to_n').callWithParameters(context.getContext());

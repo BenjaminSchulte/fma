@@ -11,6 +11,8 @@ export default class IfStatement extends AbstractInterpreter {
       return await this.context.processMany(this.node.getChildren());
     } else if (this.node.otherwise && this.node.otherwise.type() === 'ElseStatement') {
       return await this.context.processMany(this.node.otherwise.getChildren());
+    } else if (this.node.otherwise && this.node.otherwise.type() === 'IfStatement') {
+      return await this.context.process(this.node.otherwise);
     } else {
       return new ValueAccessor(new UndefinedObject());
     }

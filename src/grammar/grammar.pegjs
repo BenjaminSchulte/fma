@@ -20,7 +20,7 @@ StmtsList
 
 Stmt
   = LabelDeclaration    // OK
-  / stmt:ExprOrCommand post:PostStmt? {
+  / stmt:PostStmts post:PostStmt? {
     if (post) {
       if (post.type() === 'Parameter') {
         if (stmt.type() !== 'CallExpression') {
@@ -46,6 +46,13 @@ Stmt
   / IfStmt              // OK
   / CaseStmt            // OK
 
+PostStmts
+  = ExprOrCommand
+  / RaiseStatement      // ok
+
+RaiseStatement
+  = keyword_raise __ expr:Expr { return c(new n.RaiseStatement(expr)); }
+
 LabelDeclaration
   = ident:IDENTIFIER ":" { return c(new n.LabelDeclaration(ident)); }
 
@@ -68,6 +75,7 @@ IfStmt
     }
 
     var cur = c(new n.IfStatement()).setChildren(block).setCondition(condition);
+    var main = cur;
 
     for (let elseif of elseifs) {
       cur.setElse(elseif);
@@ -78,7 +86,7 @@ IfStmt
       cur.setElse(otherwise);
     }
 
-    return cur;
+    return main;
   }
 
 ElseIfStmt
@@ -407,6 +415,7 @@ keyword_def = "def" !IdentifierEndOrPart
 keyword_when = "when" !IdentifierEndOrPart
 keyword_class = "class" !IdentifierEndOrPart
 keyword_else = "else" !IdentifierEndOrPart
+keyword_raise = "raise" !IdentifierEndOrPart
 keyword_require = "require" !IdentifierEndOrPart
 keyword_true = "true" !IdentifierEndOrPart
 keyword_false = "false" !IdentifierEndOrPart
@@ -426,6 +435,7 @@ ReservedWordItem
   / "when"
   / "else"
   / "require"
+  / "raise"
   / "true"
   / "false"
   / "nil"

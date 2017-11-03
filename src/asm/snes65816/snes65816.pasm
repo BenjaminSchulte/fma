@@ -66,7 +66,7 @@ module Snes65816
     call_arguments = []
 
     if left.nil?
-      raise "Unexpected parameter type"
+      call_type = :impl
     elsif right.nil?
       call_arguments = [left]
 
@@ -75,10 +75,10 @@ module Snes65816
         when :constant
           call_type = :im
         else
-          raise "Unexpected parameter type: ", left.type
+          raise "Unexpected parameter type: #{left.type}"
         end
       else
-        raise "Unexpected parameter type"
+        call_type = :addr
       end
     else
       raise "Unexpected parameter type"
@@ -391,6 +391,9 @@ Snes65816.operator $a5, :lda, :DP
 Snes65816.operator $a6, :ldx, :DP
 Snes65816.operator $a7, :lda, :ILDP
 Snes65816.operator $a8, :tay, :IMPL
+Snes65816.operator $a8, :LDA, :im do |value|
+  Compiler.print "TODO: ", value
+end
 Snes65816.operator $aa, :tax, :IMPL
 Snes65816.operator $ab, :plb, :IMPL
 Snes65816.operator $ac, :ldy, :ADDR

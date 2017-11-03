@@ -22,6 +22,7 @@ import NotExpression from './NotExpression';
 import NumericLiteral from './NumericLiteral';
 import Parameter from './Parameter';
 import Program from './Program';
+import RaiseStatement from './RaiseStatement';
 import RangeExpression from './RangeExpression';
 import RequireStatement from './RequireStatement';
 import StringLiteral from './StringLiteral';
@@ -52,6 +53,7 @@ export {
   NumericLiteral,
   Parameter,
   Program,
+  RaiseStatement,
   RangeExpression,
   RequireStatement,
   StringLiteral,

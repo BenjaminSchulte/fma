@@ -113,19 +113,19 @@ module SNES
 
     ;; Interrupt vector for CPU
     module Interrupt
-      COP = nil
       IRQBRK = nil
       NMI = nil
       IRQ = nil
     end
+    Interrupt.COP = nil
 
     ;; Interrupt vector for emulated version of CPU
     module EmulatorInterrupt
-      COP = nil
       NMI = nil
       RESET = nil
       IRQBRK = nil
     end
+    EmulatorInterrupt.COP = nil
 
     ;; Allows to set interrupts easily
     macro on(name, callback)

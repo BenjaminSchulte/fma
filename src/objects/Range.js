@@ -10,8 +10,6 @@ export default class RangeObject extends AbstractObject {
 
     this.left = left;
     this.right = right;
-
-    this.initializeMembers();
   }
 
   getFirstValue() {
@@ -26,26 +24,25 @@ export default class RangeObject extends AbstractObject {
     return 'Range';
   }
 
-  initializeMembers() {
-    PluginUtils.initializeOnce('range', this, (instance) => {
+  initializeClassMembers(klass) {
+    super.initializeClassMembers(klass);
 
-      PluginUtils.on(instance, 'first', [], async (context) => {
-        return await context.create('Number', new InternalValue(this.left));
-      })
+    klass.on('first', [], async (self, context) => {
+      return await context.create('Number', new InternalValue(self.left));
+    })
 
-      PluginUtils.on(instance, 'last', [], async (context) => {
-        return await context.create('Number', new InternalValue(this.right));
-      })
+    klass.on('last', [], async (self, context) => {
+      return await context.create('Number', new InternalValue(self.right));
+    })
 
-      PluginUtils.on(instance, 'each', ['&callback'], async (block, context) => {
-        var result = [];
+    klass.on('each', ['&callback'], async (self, block, context) => {
+      var result = [];
 
-        for (var i=this.left; i<=this.right; i++) {
-          result.push(await block.getMacro().callWithParameters(context.getContext(), await context.create('Number', new InternalValue(i))));
-        }
+      for (var i=self.left; i<=self.right; i++) {
+        result.push(await block.getMacro().callWithParameters(context.getContext(), await context.create('Number', new InternalValue(i))));
+      }
 
-        return new ArrayObject(result);
-      })
-    });
+      return new ArrayObject(result);
+    })
   }
 }

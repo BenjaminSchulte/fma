@@ -8,7 +8,6 @@ export default class HashObject extends ObjectClass {
     super();
 
     this.items = items;
-    this.initializeMembers();
     this.membersCanBeSet = true;
   }
 
@@ -45,17 +44,17 @@ export default class HashObject extends ObjectClass {
     super.setMember(member, value);
   }
 
-  initializeMembers() {
-    PluginUtils.initializeOnce('hash', this, () => {
-      PluginUtils.on(this, 'key?', ['key'], async (key, context) => {
-        if (!key.hasMember('to_s')) {
-          throw new InterpreterError(`${key.type()} has no member to_s`);
-        }
+  initializeClassMembers(klass) {
+    super.initializeClassMembers(klass);
 
-        const stringObject = await key.getMember('to_s').callWithParameters(context.getContext());
-        const str = stringObject.getMember('__value').getValue();
-        return new BooleanObject(this.items.hasOwnProperty(str));
-      })
-    })
+    klass.on('key?', ['key'], async (self, key, context) => {
+      if (!key.hasMember('to_s')) {
+        throw new InterpreterError(`${key.type()} has no member to_s`);
+      }
+
+      const stringObject = await key.getMember('to_s').callWithParameters(context.getContext());
+      const str = stringObject.getMember('__value').getValue();
+      return new BooleanObject(self.items.hasOwnProperty(str));
+    });
   }
 }

@@ -9,25 +9,25 @@ export default class CompilerMemoryManager extends Class {
     super('CompilerMemoryManager');
 
     this.interpreter = interpreter;
-
-    PluginUtils.onInstance(this, 'allocate', [], async (self, context) => {
-      const instance = await context.create('CompilerMemoryManager');
-
-      return instance;
-    })
-
-    PluginUtils.onInstance(this, 'allocate_shadow', [], async (self, context) => {
-      const instance = await context.create('CompilerMemoryManager');
-
-      return instance;
-    })
-
-    PluginUtils.onInstance(this, 'to_future_number', [], async (self, context) => {
-      return new FutureNumber(new SymbolLocation(self.getFullName()));
-    })
   }
 
-  initializeMembers() {
-    super.initializeMembers();
+  initializeInstanceMembers(klass) {
+    super.initializeInstanceMembers(klass);
+
+    klass.on('allocate', [], async (self, context) => {
+      const instance = await context.create('CompilerMemoryManager');
+
+      return instance;
+    })
+
+    klass.on('allocate_shadow', [], async (self, context) => {
+      const instance = await context.create('CompilerMemoryManager');
+
+      return instance;
+    })
+
+    klass.on('to_future_number', [], async (self, context) => {
+      return new FutureNumber(new SymbolLocation(self.getFullName()));
+    })
   }
 }

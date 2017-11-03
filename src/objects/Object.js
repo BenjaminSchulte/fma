@@ -1,4 +1,5 @@
 import PluginUtils from '../plugin/PluginUtils';
+import ClassMembers from './ClassMembers';
 
 export default class AbstractObject {
   constructor() {
@@ -7,7 +8,17 @@ export default class AbstractObject {
     this.parent = null;
     this.fullName = null;
 
-    this.initializeCoreMethods();
+    this.klassMembers = null;
+  }
+
+  initializeMembers() {
+    if (!this.klassMembers) {
+      this.klassMembers = ClassMembers.forClass(this.getKlassName(), this.initializeClassMembers.bind(this));
+    }
+  }
+
+  getKlassName() {
+    return this.type();
   }
 
   getFullName() {
@@ -41,11 +52,6 @@ export default class AbstractObject {
     return this.members;
   }
 
-  initializeCoreMethods() {
-    this.coreMethods = {};
-    this.coreMethods['nil?'] = () => {return PluginUtils.asBoolean(this.isNil())};
-  }
-
   isNil() {
     return false;
   }
@@ -55,11 +61,12 @@ export default class AbstractObject {
   }
 
   hasMember(name) {
-    if (this.coreMethods.hasOwnProperty(name)) {
+    if (this.members.hasOwnProperty(name)) {
       return true;
     }
 
-    return this.members.hasOwnProperty(name);
+    this.initializeMembers();
+    return this.klassMembers.has(name);
   }
 
   getMember(name) {
@@ -67,9 +74,8 @@ export default class AbstractObject {
       return this.members[name];
     }
 
-    if (this.coreMethods[name]) {
-      return this.coreMethods[name]();
-    }
+    this.initializeMembers();
+    return this.klassMembers.get(name, this);
   }
 
   setMember(name, object) {
@@ -80,11 +86,17 @@ export default class AbstractObject {
     return false;
   }
 
+  getClassName() {
+    return this.type();
+  }
+
   type() {
     return this.constructor.name.replace(/Object$/, '');
   }
-
+/*
   on(name, args, callback) {
+    console.log(`DECLARE ${this.type()}.${name}`)
+
     const ArgumentList = require('../interpreter/ArgumentList').default;
     const list = new ArgumentList();
     list.buildFromStringList(args);
@@ -94,6 +106,16 @@ export default class AbstractObject {
     macro.setCallback(callback);
     macro.setArguments(list);
     this.setMember(name, macro);
+  }*/
+
+  initializeClassMembers(klass) {
+    klass.on('nil?', [], async (self, context) => {
+      return await (new PluginUtils(context)).asBoolean(self.isNil());
+    })
+
+    klass.on('is_a?', ['type'], async (self, type, context) => {
+      return await (new PluginUtils(context)).asBoolean(self.getClassName() == type.getName());
+    })
   }
 }
 
