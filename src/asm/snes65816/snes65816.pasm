@@ -148,7 +148,7 @@ module Snes65816
 end
 
 ;; Allocates a new RAM scope
-macro scope(name, bank=nil, at=nil, length=nil, in=nil, shadows_bank=nil)
+macro scope(name, bank=nil, at=nil, length=nil, in=nil, shadows_bank=nil, shared=false, align=0)
   address_range = nil
 
   if in.nil?
@@ -157,12 +157,15 @@ macro scope(name, bank=nil, at=nil, length=nil, in=nil, shadows_bank=nil)
     ram = in.allocate
   end
 
+  ram.align = align
+  ram.shared = shared
+
   unless bank.nil? && at.nil?
     ram.allow bank: bank, at: at
   end
 
   unless length.nil?
-    ram.size = length
+    ram.item_size = length
   end
 
   unless shadows_bank.nil?
@@ -171,6 +174,22 @@ macro scope(name, bank=nil, at=nil, length=nil, in=nil, shadows_bank=nil)
   end
 
   ram.dump
+
+  callee[name] = ram
+  ram
+end
+
+;; Declares a variable
+macro declare(name, as, in, bank=nil, at=nil, length=nil, align=0)
+  ram = in.allocate
+  ram.align = 0
+
+  unless bank.nil? && at.nil?
+    ram.allow bank: bank, at: at
+  end
+
+  ram.type = as
+  ram.num_items = length
 
   callee[name] = ram
   ram
@@ -322,6 +341,12 @@ Snes65816.operator $58, :cli, :IMPL
 Snes65816.operator $59, :eor, :ADDRY
 Snes65816.operator $5a, :phy, :IMPL
 Snes65816.operator $5b, :tcd, :IMPL
+Snes65816.operator $5c, :JML, :addr do |address|
+  Compiler.print "TODO ", address
+end
+Snes65816.operator $5c, :JML, :long do |address|
+  Compiler.print "TODO ", address
+end
 Snes65816.operator $5d, :eor, :ADDRX
 Snes65816.operator $5e, :lsr, :ADDRX
 Snes65816.operator $5f, :eor, :LONGX

@@ -4,6 +4,7 @@
 
 
 
+require "engine/cpu"
 require "engine/debug"
 
 require "engine/header/snes"
