@@ -1,4 +1,5 @@
 import NamedObject from './NamedObject';
+import MacroInstance from './MacroInstance';
 
 export default class MacroObject extends NamedObject {
   constructor(name) {
@@ -7,6 +8,12 @@ export default class MacroObject extends NamedObject {
     this.javascriptCallback = null;
     this.parentContext = null;
     this.arguments = null;
+  }
+
+  withSelf(self) {
+    const instance = new MacroInstance(this);
+    instance.self = self;
+    return instance;
   }
 
   setArguments(arg) {
@@ -37,13 +44,13 @@ export default class MacroObject extends NamedObject {
     return true;
   }
 
-  async call(context) {
+  async call(context, self=null) {
     if (this.javascriptCallback) {
-      return await this.javascriptCallback(context);
+      return await this.javascriptCallback(context, self);
     }
 
     context.injectParent(this.parentContext);
-    context.getObject().setMember('self', this.parentContext.getObject());
+    context.getObject().setMember('self', self === null ? this.parentContext.getObject() : self);
 
     return (await context.processMany(this.children)).getObject();
   }

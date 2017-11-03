@@ -47,9 +47,13 @@ export default class ClassMembers {
     if (!self.__members) { self.__members = {} }
     if (!self.__members[this.name]) { self.__members[this.name] = {} }
 
+    if (!member.macro) {
+      member.macro = PluginUtils.createMacro(name, member.args, member.callback);
+    }
+
     const initializedMembers = self.__members[this.name];
     if (!initializedMembers[name]) {
-      initializedMembers[name] = PluginUtils.createMacro(self, name, member.args, member.callback);
+      initializedMembers[name] = member.macro.withSelf(self);
     }
 
     return initializedMembers[name];

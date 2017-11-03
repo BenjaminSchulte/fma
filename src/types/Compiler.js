@@ -82,6 +82,9 @@ export default class Compiler extends Class {
 
       case 'Boolean':
         return object.getValue().toString();
+
+      case 'Class':
+        return '<' + object.getClassName() + ':' + object.getName() + '>';
     }
 
     return "<" + object.getClassName() + ">";

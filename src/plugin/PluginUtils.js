@@ -94,14 +94,14 @@ export default class PluginUtils {
     return new BooleanObject(value);
   }*/
 
-  static createMacro(self, name, args, callback) {
+  static createMacro(name, args, callback) {
     const ArgumentList = this.require('../interpreter/ArgumentList');
     const list = new ArgumentList();
     list.buildFromStringList(args);
 
     const Macro = this.require('../objects/Macro');
     const macro = new Macro(name);
-    macro.setCallback(async (context) => {
+    macro.setCallback(async (context, self) => {
       var params = [];
 
       for (let arg of args) {

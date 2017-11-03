@@ -47,20 +47,4 @@ export default class ClassInstanceObject extends ObjectClass {
     const member = this.klass.getInstanceMember(name, this);
     return member;
   }
-
-  getInstancedMember(member) {
-    const list = new ArgumentList();
-    list.buildFromStringList(['*args', '**kwargs', '&block'])
-
-    const Macro = require('./Macro').default;
-    const macro = new Macro(member.name);
-    macro.setArguments(list);
-    macro.setCallback(async (context) => {
-      const callContext = await member.getArguments().buildContextByProxy(context);
-      callContext.getObject().setMember('self', this);
-
-      return await member.call(callContext);
-    });
-    return macro;
-  }
 }

@@ -57,7 +57,7 @@ export default class ClassObject extends NamedObject {
 
   getInstanceMember(name, self) {
     if (this.instanceMembers.hasOwnProperty(name)) {
-      return this.instanceMembers[name];
+      return this.getInstancedMember(this.instanceMembers[name], self);
     }
 
     this.initializeMembers();
@@ -76,6 +76,14 @@ export default class ClassObject extends NamedObject {
 
   setInstanceMember(name, value) {
     this.instanceMembers[name] = value;
+  }
+
+  getInstancedMember(member, self) {
+    if (member.type() !== 'Macro') {
+      return member;
+    }
+
+    return member.withSelf(self);
   }
 /*
   onInstance(name, args, callback) {
