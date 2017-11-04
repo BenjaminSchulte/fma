@@ -3,6 +3,6 @@ export default class Plugin {
     return 'Untitled plugin';
   }
 
-  async register(root) {
+  register(root) {
   }
 }

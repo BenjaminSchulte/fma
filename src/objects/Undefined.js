@@ -24,8 +24,8 @@ export default class UndefinedObject extends AbstractObject {
   initializeClassMembers(klass) {
     super.initializeClassMembers(klass);
 
-    klass.on('==', ['other'], async (self, context) => {
-      const result = (await context.resolveChild('other')).isUndefined();
+    klass.on('==', ['other'], (self, context) => {
+      const result = (context.resolveChild('other')).isUndefined();
       return new BooleanObject(result);
     })
   }

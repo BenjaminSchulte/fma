@@ -30,12 +30,12 @@ export default class ClassInstanceObject extends ObjectClass {
     return this.klass.hasInstanceMember(name);
   }
 
-  async asString(context) {
+  asString(context) {
     if (!this.hasMember('to_s')) {
       throw new InterpreterError('Could not convert object to string');
     }
 
-    const str = await this.getMember('to_s').callWithParameters(context);
+    const str = this.getMember('to_s').callWithParameters(context);
     return str.getMember('__value').getValue();
   }
 

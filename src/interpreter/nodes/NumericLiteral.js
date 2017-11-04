@@ -3,14 +3,14 @@ import InternalValue from '../../objects/InternalValue';
 import ValueAccessor from '../ValueAccessor';
 
 export default class NumericLiteral extends AbstractInterpreter {
-  async asNumber() {
+  asNumber() {
     return this.node.number;
   }
 
-  async process() {
-    const str = (await this.context.getRoot().resolveChild("Number")).getObject();
-    const value = new InternalValue(await this.asNumber());
+  process() {
+    const str = (this.context.getRoot().resolveChild("Number")).getObject();
+    const value = new InternalValue(this.asNumber());
 
-    return new ValueAccessor(await str.getMember('new').callWithParameters(this.context, value));
+    return new ValueAccessor(str.getMember('new').callWithParameters(this.context, value));
   }
 }

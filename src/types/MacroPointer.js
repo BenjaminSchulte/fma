@@ -9,7 +9,7 @@ export default class MacroPointer extends Class {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
-    klass.on('initialize', ['&block'], async (self, block, context) => {
+    klass.on('initialize', ['&block'], (self, block, context) => {
       self.setMember('call', block.getMacro());
     })
   }

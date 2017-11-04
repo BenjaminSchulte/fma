@@ -11,24 +11,24 @@ export default class CompilerScope extends Class {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
-    klass.on('on_enter_function', ['function'], async () => {})
-    klass.on('on_call_function', ['function'], async () => {})
-    klass.on('on_leave_function', ['function'], async () => {})
+    klass.on('on_enter_function', ['function'], () => {})
+    klass.on('on_call_function', ['function'], () => {})
+    klass.on('on_leave_function', ['function'], () => {})
 
-    klass.on('initialize', [], async (self, context) => {
+    klass.on('initialize', [], (self, context) => {
       self.writer = new Writer();
     })
 
-    klass.on('dw', ['*args', '**kwargs'], async (self, args, kwargs, context) => {
-      await this.write(self, context, args.getItems(), kwargs.getItems(), 16);
+    klass.on('dw', ['*args', '**kwargs'], (self, args, kwargs, context) => {
+      this.write(self, context, args.getItems(), kwargs.getItems(), 16);
     })
 
-    klass.on('db', ['*args', '**kwargs'], async (self, args, kwargs, context) => {
-      await this.write(self, context, args.getItems(), kwargs.getItems(), 8);
+    klass.on('db', ['*args', '**kwargs'], (self, args, kwargs, context) => {
+      this.write(self, context, args.getItems(), kwargs.getItems(), 8);
     })
   }
 
-  async write(self, context, items, options, bytesPerItem) {
+  write(self, context, items, options, bytesPerItem) {
     var numItems = 0;
 
     for (let item of items) {
@@ -39,23 +39,23 @@ export default class CompilerScope extends Class {
           numItems++;
         }
       } else {
-        await this.writeItem(self, context, item, bytesPerItem);
+        this.writeItem(self, context, item, bytesPerItem);
         numItems++;
       }
     }
   }
 
-  async writeItem(self, context, item, bytesPerItem) {
+  writeItem(self, context, item, bytesPerItem) {
     if (item.getClassName() === 'FutureNumber') {
       self.writer.writeCalculation(item.getCalculation(), bytesPerItem);
       return;
     }
 
     if (item.hasMember('to_n')) {
-      const number = await item.getMember('to_n').callWithParameters(context.getContext());
+      const number = item.getMember('to_n').callWithParameters(context.getContext());
       self.writer.write(number.getMember('__value').getValue(), bytesPerItem);
     } else if (item.hasMember('to_future_number')) {
-      const number = await item.getMember('to_future_number').callWithParameters(context.getContext());
+      const number = item.getMember('to_future_number').callWithParameters(context.getContext());
       self.writer.write(number.getCalculation(), bytesPerItem);
     } else {
       throw new InterpreterError(`Unable to convert type ${item.getClassName()} to Number`);

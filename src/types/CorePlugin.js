@@ -12,7 +12,7 @@ import CompilerMemoryManager from './CompilerMemoryManager';
 import ClassInstance from '../objects/ClassInstance';
 
 export default class CorePlugin extends Plugin {
-  async register(root, interpreter) {
+  register(root, interpreter) {
     root.setMember('Object', new ObjectType());
 
     root.setMember('Number', new NumberType());

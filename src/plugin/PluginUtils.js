@@ -7,30 +7,30 @@ export default class PluginUtils {
     return this.context;
   }
 
-  async create(type, ...args) {
-    const construct = (await this.context.getRoot().resolveChild(type)).getObject().getMember('new');
-    const instance = await construct.callWithParameters(this.context, ...args);
+  create(type, ...args) {
+    const construct = (this.context.getRoot().resolveChild(type)).getObject().getMember('new');
+    const instance = construct.callWithParameters(this.context, ...args);
     return instance;
   }
 
-  async asString(self, log=null) {
-    return await this.asType(self, log, 'to_s', 'ClassInstance', "String", "", (object) => {
+  asString(self, log=null) {
+    return this.asType(self, log, 'to_s', 'ClassInstance', "String", "", (object) => {
       return object.getMember('__value').getValue();
     });
   }
 
-  async asBoolean(self, log=null) {
+  asBoolean(self, log=null) {
     if (typeof(self) !== 'object') {
       const BooleanObject = PluginUtils.require('../objects/Boolean');
       return new BooleanObject(!!self);
     }
 
-    return await this.asType(self, log, 'to_b', 'Boolean', "", "", (object) => {
+    return this.asType(self, log, 'to_b', 'Boolean', "", "", (object) => {
       return object.getValue()
     });
   }
 
-  async asType(object, log, methodName, resultType, resultClassType, result, callback) {
+  asType(object, log, methodName, resultType, resultClassType, result, callback) {
     if (!log) {
       const interpreter = this.context.getInterpreter();
       log = interpreter.log.bind(interpreter);
@@ -42,7 +42,7 @@ export default class PluginUtils {
       if (!object.hasMember(methodName)) {
         log("warn", `Can not convert object of type ${object.type()} to ${resultType}`);
       } else {
-        const targetObject = await object.getMember(methodName).callWithParameters(this.context);
+        const targetObject = object.getMember(methodName).callWithParameters(this.context);
         var isValid = true;
 
         if (targetObject.type() !== resultType) {
@@ -101,15 +101,15 @@ export default class PluginUtils {
 
     const Macro = this.require('../objects/Macro');
     const macro = new Macro(name);
-    macro.setCallback(async (context, self) => {
+    macro.setCallback((context, self) => {
       var params = [];
 
       for (let arg of args) {
         const name = arg.match(/^(&|\*{1,2})?(.*)$/)[2];
-        params.push((await context.resolveChild(name)).getObject());
+        params.push((context.resolveChild(name)).getObject());
       }
 
-      return await callback(self, ...params, new PluginUtils(context));
+      return callback(self, ...params, new PluginUtils(context));
     });
     macro.setArguments(list);
 
@@ -118,29 +118,29 @@ export default class PluginUtils {
 
 /*
   static onInstance(klass, name, args, callback) {
-    klass.onInstance(name, args, async (context) => {
-      const self = (await context.resolveChild('self')).getObject();
+    klass.onInstance(name, args, (context) => {
+      const self = (context.resolveChild('self')).getObject();
       var params = [];
 
       for (let arg of args) {
         const name = arg.match(/^(&|\*{1,2})?(.*)$/)[2];
-        params.push((await context.resolveChild(name)).getObject());
+        params.push((context.resolveChild(name)).getObject());
       }
 
-      return await callback(self, ...params, new PluginUtils(context));
+      return callback(self, ...params, new PluginUtils(context));
     })
   }
 
   static on(klass, name, args, callback) {
-    klass.on(name, args, async (context) => {
+    klass.on(name, args, (context) => {
       var params = [];
 
       for (let arg of args) {
         const name = arg.match(/^(&|\*{1,2})?(.*)$/)[2];
-        params.push((await context.resolveChild(name)).getObject());
+        params.push((context.resolveChild(name)).getObject());
       }
 
-      return await callback(...params, new PluginUtils(context));
+      return callback(...params, new PluginUtils(context));
     })
   }
   */

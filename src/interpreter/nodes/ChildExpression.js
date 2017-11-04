@@ -4,15 +4,15 @@ import UndefinedObject from '../../objects/Undefined';
 import InterpreterError from '../InterpreterError';
 
 export default class ChildExpression extends AbstractInterpreter {
-  async process() {
+  process() {
 
-    const target = await this.context.resolve(this.node.parent);
+    const target = this.context.resolve(this.node.parent);
     var child;
 
     if (this.node.isResolved) {
-      child = await (await this.context.resolve(this.node.child)).asString(this.context, this.log.bind(this));
+      child = (this.context.resolve(this.node.child)).asString(this.context, this.log.bind(this));
     } else {
-      child = await this.context.getProcessor(this.node.child).asString();
+      child = this.context.getProcessor(this.node.child).asString();
     }
 
     if (target.isUndefined()) {

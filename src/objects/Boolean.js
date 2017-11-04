@@ -21,16 +21,16 @@ export default class BooleanObject extends AbstractObject {
   }
 
   initializeClassMembers(klass) {
-    klass.on('to_b', [], async (self) => {
+    klass.on('to_b', [], (self) => {
       return self;
     })
 
-    klass.on('&&', ['other'], async (self, other, context) => {
-      return new BooleanObject(self.value && (await context.asBoolean(other)));
+    klass.on('&&', ['other'], (self, other, context) => {
+      return new BooleanObject(self.value && (context.asBoolean(other)));
     })
 
-    klass.on('||', ['other'], async (self, other, context) => {
-      return new BooleanObject(self.value || (await context.asBoolean(other)));
+    klass.on('||', ['other'], (self, other, context) => {
+      return new BooleanObject(self.value || (context.asBoolean(other)));
     })
   }
 }

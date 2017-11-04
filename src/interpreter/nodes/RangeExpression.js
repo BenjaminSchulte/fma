@@ -4,10 +4,10 @@ import ValueAccessor from '../ValueAccessor';
 import RangeObject from '../../objects/Range';
 
 export default class RangeExpression extends AbstractInterpreter {
-  async process() {
+  process() {
 
-    const left = await this.context.process(this.node.parent);
-    const right = await this.context.process(this.node.right);
+    const left = this.context.process(this.node.parent);
+    const right = this.context.process(this.node.right);
 
     if (left.isUndefined() || right.isUndefined()) {
       throw new InterpreterError('Can not create range with Undefined part');
@@ -20,8 +20,8 @@ export default class RangeExpression extends AbstractInterpreter {
       throw new InterpreterError('Operators for range must have to_n method');
     }
 
-    const leftNumber = await leftObject.getMember('to_n').callWithParameters(this.context)
-    const rightNumber = await rightObject.getMember('to_n').callWithParameters(this.context)
+    const leftNumber = leftObject.getMember('to_n').callWithParameters(this.context)
+    const rightNumber = rightObject.getMember('to_n').callWithParameters(this.context)
     if (leftNumber.type() !== 'ClassInstance' || rightNumber.type() !== 'ClassInstance' || leftNumber.getClassName() !== 'Number' || rightNumber.getClassName() !== 'Number') {
       throw new InterpreterError('to_n must return Number');
     }

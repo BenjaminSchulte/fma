@@ -154,10 +154,10 @@ export default class ArgumentList {
     return context;
   }
 
-  async buildContextByProxy(context) {
-    const args = (await context.resolveChild('args')).getObject().getItems();
-    const kwargs = (await context.resolveChild('kwargs')).getObject().getItems();
-    const block = (await context.resolveChild('block')).getObject();
+  buildContextByProxy(context) {
+    const args = (context.resolveChild('args')).getObject().getItems();
+    const kwargs = (context.resolveChild('kwargs')).getObject().getItems();
+    const block = (context.resolveChild('block')).getObject();
 
     var params = [...args];
     for (let key in kwargs) {
@@ -170,7 +170,7 @@ export default class ArgumentList {
       params.push(new Parameter(block, Parameter.TYPE_BLOCK));
     }
 
-    const calleeContext = new Context(context.getInterpreter(), (await context.resolveChild('callee')).getObject());
+    const calleeContext = new Context(context.getInterpreter(), (context.resolveChild('callee')).getObject());
     const callContext = this.buildContext(calleeContext, params);
 
     return callContext;

@@ -19,21 +19,21 @@ export default class NumberType extends InternalValueClass {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
-    klass.on('to_s', [], async (self, context) => {
+    klass.on('to_s', [], (self, context) => {
       const value = new InternalValue(self.getMember('__value').value.toString());
-      return await context.create('String', value);
+      return context.create('String', value);
     })
 
-    klass.on('to_n', [], async (self, context) => {
+    klass.on('to_n', [], (self, context) => {
       return self;
     })
 
-    klass.on('to_constant', [], async (self, context) => {
-      const type = await context.create('String', new InternalValue('constant'));
-      return await context.create('TypedNumber', self, type);
+    klass.on('to_constant', [], (self, context) => {
+      const type = context.create('String', new InternalValue('constant'));
+      return context.create('TypedNumber', self, type);
     })
 
-    klass.on('to_b', [], async (self, context) => {
+    klass.on('to_b', [], (self, context) => {
       const value = self.getMember('__value').value;
       return new BooleanObject(value != 0);
     })
@@ -51,10 +51,10 @@ export default class NumberType extends InternalValueClass {
   }
 
   operatorNumeric(klass, operator, callback) {
-    this.operator(klass, operator, async(a, b, context) => {
+    this.operator(klass, operator, (a, b, context) => {
       const result = callback(a, b);
 
-      return await this.getMember('new').callWithParameters(context.getContext(), new InternalValue(result));
+      return this.getMember('new').callWithParameters(context.getContext(), new InternalValue(result));
     })
   }
 }

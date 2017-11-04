@@ -10,13 +10,13 @@ export default class InternalValueClass extends Class {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
-    klass.on('initialize', ['value'], async (self, value, context) => {
+    klass.on('initialize', ['value'], (self, value, context) => {
       self.setMember('__value', value);
     })
   }
 
   operatorBoolean(klass, operator, callback) {
-    this.operator(klass, operator, async(a, b) => { return new BooleanObject(callback(a, b)); })
+    this.operator(klass, operator, (a, b) => { return new BooleanObject(callback(a, b)); })
   }
 
   getConvertMethodName() {
@@ -28,12 +28,12 @@ export default class InternalValueClass extends Class {
   }
 
   operator(klass, operator, callback) {
-    klass.on(operator, ['other'], async (self, other, context) => {
+    klass.on(operator, ['other'], (self, other, context) => {
       if (!other.hasMember(this.getConvertMethodName())) {
         throw new Error(`Can not convert ${other.type()} to ${this.getTargetType()}`)
       }
 
-      const otherValue = await other.getMember(this.getConvertMethodName()).callWithParameters(context.getContext())
+      const otherValue = other.getMember(this.getConvertMethodName()).callWithParameters(context.getContext())
       if (otherValue.type() !== 'ClassInstance' || otherValue.getClassName() !== this.getTargetType()) {
         throw new Error(`${other.type()}.${this.getConvertMethodName()} method must return a ${this.getTargetType()}`);
       }
@@ -41,7 +41,7 @@ export default class InternalValueClass extends Class {
       const left = self.getMember('__value').value;
       const right = otherValue.getMember('__value').value;
 
-      return await callback(left, right, context);
+      return callback(left, right, context);
     })
   }
 }

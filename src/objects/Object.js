@@ -109,27 +109,27 @@ export default class AbstractObject {
   }*/
 
   initializeClassMembers(klass) {
-    klass.on('nil?', [], async (self, context) => {
-      return await (new PluginUtils(context)).asBoolean(self.isNil());
+    klass.on('nil?', [], (self, context) => {
+      return (new PluginUtils(context)).asBoolean(self.isNil());
     })
 
-    klass.on('is_function?', [], async (self, context) => {
+    klass.on('is_function?', [], (self, context) => {
       const BooleanObject = require('./Boolean').default;
       return new BooleanObject(self.type() === 'Function');
     });
 
-    klass.on('is_a?', ['type'], async (self, type, context) => {
-      return await (new PluginUtils(context)).asBoolean(self.getClassName() == type.getName());
+    klass.on('is_a?', ['type'], (self, type, context) => {
+      return (new PluginUtils(context)).asBoolean(self.getClassName() == type.getName());
     })
 
-    klass.on('key?', ['key'], async (self, key, context) => {
+    klass.on('key?', ['key'], (self, key, context) => {
       if (!key.hasMember('to_s')) {
         throw new InterpreterError(`${key.type()} has no member to_s`);
       }
 
       const BooleanObject = require('./Boolean').default;
 
-      const stringObject = await key.getMember('to_s').callWithParameters(context.getContext());
+      const stringObject = key.getMember('to_s').callWithParameters(context.getContext());
       const str = stringObject.getMember('__value').getValue();
       return new BooleanObject(self.hasMember(str));
     });

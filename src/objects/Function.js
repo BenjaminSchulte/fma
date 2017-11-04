@@ -32,7 +32,7 @@ export default class FunctionObject extends NamedObject {
     return true;
   }
 
-  async compile(context) {
+  compile(context) {
     if (this.hasBeenCompiled) {
       return;
     }
@@ -40,28 +40,28 @@ export default class FunctionObject extends NamedObject {
     this.hasBeenCompiled = true;
 
     const root = context.getRoot();
-    const CompilerScope = (await root.resolveChild('CompilerScope')).getObject();
-    const Compiler = (await root.resolveChild('Compiler')).getObject();
-    const scope = await CompilerScope.getMember('new').callWithParameters(root);
+    const CompilerScope = (root.resolveChild('CompilerScope')).getObject();
+    const Compiler = (root.resolveChild('Compiler')).getObject();
+    const scope = CompilerScope.getMember('new').callWithParameters(root);
 
     Compiler.setMember('current_scope', scope);
 
     context.getInterpreter().log('info', `Compiling function ${this.name}`);
-    await scope.getMember('on_enter_function').callWithParameters(context, this);
+    scope.getMember('on_enter_function').callWithParameters(context, this);
 
     if (this.javascriptCallback) {
-      await this.javascriptCallback(this);
+      this.javascriptCallback(this);
     } else {
-      await this.parentContext.processMany(this.children);
+      this.parentContext.processMany(this.children);
     }
 
-    await scope.getMember('on_leave_function').callWithParameters(context, this);
+    scope.getMember('on_leave_function').callWithParameters(context, this);
     context.getInterpreter().log('info', `Finished compiling function ${this.name}`);
 
     //context.processMany(this.children);
   }
 
-  async callWithParameters(context) {
+  callWithParameters(context) {
     context.getInterpreter().compileFunction(this);
 
     return this;

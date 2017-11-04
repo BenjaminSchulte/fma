@@ -9,7 +9,7 @@ export default class Parser {
     this.project = project;
   }
 
-  async parseString(content, fileName="<unknown>") {
+  parseString(content, fileName="<unknown>") {
     var result;
 
     Location.setCurrentFile(fileName);
@@ -30,16 +30,16 @@ export default class Parser {
     return result;
   }
 
-  async parseFile(file) {
+  parseFile(file) {
     const content = fs.readFileSync(file, {encoding: 'utf-8'});
     if (content === undefined || content === null) {
       throw new Error(`Could not read from file: ${file}`);
     }
 
-    return await this.parseString(content, file);
+    return this.parseString(content, file);
   }
 
-  async parseRelativeFile(file, dir) {
-    return await this.parseFile(path.join(dir, file));
+  parseRelativeFile(file, dir) {
+    return this.parseFile(path.join(dir, file));
   }
 }

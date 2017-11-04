@@ -3,16 +3,16 @@ import ValueAccessor from '../ValueAccessor';
 import NilObject from '../../objects/Nil';
 
 export default class IfStatement extends AbstractInterpreter {
-  async process() {
+  process() {
 
-    const condition = await this.context.resolve(this.node.condition);
+    const condition = this.context.resolve(this.node.condition);
 
-    if (await condition.asBoolean(this.context, this.log.bind(this))) {
-      return await this.context.processMany(this.node.getChildren());
+    if (condition.asBoolean(this.context, this.log.bind(this))) {
+      return this.context.processMany(this.node.getChildren());
     } else if (this.node.otherwise && this.node.otherwise.type() === 'ElseStatement') {
-      return await this.context.processMany(this.node.otherwise.getChildren());
+      return this.context.processMany(this.node.otherwise.getChildren());
     } else if (this.node.otherwise && this.node.otherwise.type() === 'IfStatement') {
-      return await this.context.process(this.node.otherwise);
+      return this.context.process(this.node.otherwise);
     } else {
       return new ValueAccessor(new NilObject());
     }

@@ -14,19 +14,19 @@ export default class CompilerMemoryManager extends Class {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
-    klass.on('allocate', [], async (self, context) => {
-      const instance = await context.create('CompilerMemoryManager');
+    klass.on('allocate', [], (self, context) => {
+      const instance = context.create('CompilerMemoryManager');
 
       return instance;
     })
 
-    klass.on('allocate_shadow', [], async (self, context) => {
-      const instance = await context.create('CompilerMemoryManager');
+    klass.on('allocate_shadow', [], (self, context) => {
+      const instance = context.create('CompilerMemoryManager');
 
       return instance;
     })
 
-    klass.on('to_future_number', [], async (self, context) => {
+    klass.on('to_future_number', [], (self, context) => {
       return new FutureNumber(new SymbolLocation(self.getFullName()));
     })
   }

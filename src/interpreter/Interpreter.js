@@ -21,18 +21,18 @@ export default class Interpreter {
     this.project.log(...args);
   }
 
-  async loadPlugin(plugin) {
-    await plugin.register(this.root, this);
+  loadPlugin(plugin) {
+    plugin.register(this.root, this);
   }
 
-  async process(program) {
+  process(program) {
     const context = new Context(this, this.root);
 
-    await context.process(program);
+    context.process(program);
 
     while (this.functionQueue.length) {
       const func = this.functionQueue.shift();
-      await func.compile(context);
+      func.compile(context);
     }
   }
 }

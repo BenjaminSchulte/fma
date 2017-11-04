@@ -47,12 +47,12 @@ export default class HashObject extends ObjectClass {
   initializeClassMembers(klass) {
     super.initializeClassMembers(klass);
 
-    klass.on('key?', ['key'], async (self, key, context) => {
+    klass.on('key?', ['key'], (self, key, context) => {
       if (!key.hasMember('to_s')) {
         throw new InterpreterError(`${key.type()} has no member to_s`);
       }
 
-      const stringObject = await key.getMember('to_s').callWithParameters(context.getContext());
+      const stringObject = key.getMember('to_s').callWithParameters(context.getContext());
       const str = stringObject.getMember('__value').getValue();
       return new BooleanObject(self.items.hasOwnProperty(str));
     });

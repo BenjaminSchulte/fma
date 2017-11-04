@@ -4,10 +4,10 @@ import UndefinedObject from '../../objects/Undefined';
 import ValueAccessor from '../ValueAccessor';
 
 export default class CalculateExpression extends AbstractInterpreter {
-  async process() {
+  process() {
 
-    var left = await this.context.process(this.node.parent);
-    var right = (await this.context.resolve(this.node.right)).getObject();
+    var left = this.context.process(this.node.parent);
+    var right = (this.context.resolve(this.node.right)).getObject();
     var operator = this.node.operator;
 
     var assign = true;
@@ -27,13 +27,13 @@ export default class CalculateExpression extends AbstractInterpreter {
     if (operator !== '') {
       var calcLeft = left.getObject();
       if (calcLeft.canBeCalled()) {
-        calcLeft = (await calcLeft.callWithParameters(this.context));
+        calcLeft = (calcLeft.callWithParameters(this.context));
       }
       if (!calcLeft.hasMember(operator)) {
         if (calcLeft.hasMember('to_n')) {
-          calcLeft = await calcLeft.getMember('to_n').callWithParameters(this.context);
+          calcLeft = calcLeft.getMember('to_n').callWithParameters(this.context);
         } else if (calcLeft.hasMember('to_future_number')) {
-          calcLeft = await calcLeft.getMember('to_future_number').callWithParameters(this.context);
+          calcLeft = calcLeft.getMember('to_future_number').callWithParameters(this.context);
         }
 
         if (!calcLeft.hasMember(operator)) {
@@ -41,7 +41,7 @@ export default class CalculateExpression extends AbstractInterpreter {
         }
       }
 
-      result = await calcLeft.getMember(operator).callWithParameters(this.context, right);
+      result = calcLeft.getMember(operator).callWithParameters(this.context, right);
       if (!result) {
         result = new UndefinedObject();
       }

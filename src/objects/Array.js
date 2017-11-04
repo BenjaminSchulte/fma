@@ -18,11 +18,11 @@ export default class ArrayObject extends ObjectClass {
   initializeClassMembers(klass) {
     super.initializeClassMembers(klass);
 
-    klass.on('each', ['&callback'], async (self, block, context) => {
+    klass.on('each', ['&callback'], (self, block, context) => {
       var result = [];
 
       for (let item of self.items) {
-        result.push(await block.getMacro().callWithParameters(context.getContext(), item));
+        result.push(block.getMacro().callWithParameters(context.getContext(), item));
       }
 
       return new ArrayObject(result);

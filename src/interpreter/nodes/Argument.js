@@ -3,13 +3,13 @@ import ArgumentList from '../ArgumentList';
 import {ParameterTypes} from '../../grammar/nodes';
 
 export default class Argument extends AbstractInterpreter {
-  async process() {
+  process() {
 
-    const name = await this.context.getProcessor(this.node.name).asString();
+    const name = this.context.getProcessor(this.node.name).asString();
 
     var defaultValue = null;
     if (this.node.defaultValue) {
-      defaultValue = await this.context.resolve(this.node.defaultValue);
+      defaultValue = this.context.resolve(this.node.defaultValue);
       if (defaultValue.isUndefined()) {
         this.log("warn", "Default value is undefined");
         defaultValue = null;

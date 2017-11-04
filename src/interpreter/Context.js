@@ -23,13 +23,13 @@ export default class Context {
     return new Context(this.getInterpreter(), this.object);
   }
 
-  async resolveChild(name) {
+  resolveChild(name) {
     if (this.object.hasMember(name)) {
       return new ChildValueAccessor(this.object, this.object.getMember(name), name);
     }
 
     if (this.parent) {
-      var parentNode = await this.parent.resolveChild(name);
+      var parentNode = this.parent.resolveChild(name);
 
       if (!parentNode.isUndefined()) {
         return parentNode;
@@ -75,14 +75,14 @@ export default class Context {
     return instance;
   }
 
-  async process(node) {
+  process(node) {
     const instance = this.getProcessor(node);
     if (instance.setComments(this.comments)) {
       this.comments.reset();
     }
 
     try {
-      return await instance.process();
+      return instance.process();
     } catch(err) {
       if (!err.doNotShowError) {
         this.getInterpreter().log('error', node.getLocation().toString() + ': ' + err.toString());
@@ -94,11 +94,11 @@ export default class Context {
     }
   }
 
-  async processMany(nodes) {
+  processMany(nodes) {
     var result;
 
     for (let node of nodes) {
-      result = await this.process(node);
+      result = this.process(node);
     }
 
     if (!result) {
@@ -108,8 +108,8 @@ export default class Context {
     return result;
   }
 
-  async resolve(node) {
-    var result = await this.process(node);
+  resolve(node) {
+    var result = this.process(node);
     const object = result.getObject();
 
     if (!object.canBeCalled) {
@@ -117,7 +117,7 @@ export default class Context {
     }
 
     if (object.canBeCalled()) {
-      result = await object.callWithParameters(this);
+      result = object.callWithParameters(this);
 
       if (!result) {
         result = new ValueAccessor(new NilObject());

@@ -15,10 +15,10 @@ export default class MacroInstance extends ClonedObject {
     return true;
   }
 
-  async callWithParameters(calleeContext, ...args) {
+  callWithParameters(calleeContext, ...args) {
     const context = this.getArguments().buildContext(calleeContext, args, null);
 
-    return await this.call(context);
+    return this.call(context);
   }
 
   call(context) {

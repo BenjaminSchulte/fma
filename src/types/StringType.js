@@ -19,16 +19,16 @@ export default class StringType extends InternalValueClass {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
-    klass.on('to_s', [], async (self) => {
+    klass.on('to_s', [], (self) => {
       return self;
     })
 
-    klass.on('upcase', [], async (self, context) => {
-      return await context.create('String', new InternalValue(self.getMember('__value').getValue().toUpperCase()));
+    klass.on('upcase', [], (self, context) => {
+      return context.create('String', new InternalValue(self.getMember('__value').getValue().toUpperCase()));
     })
 
-    klass.on('downcase', [], async (self, context) => {
-      return await context.create('String', new InternalValue(self.getMember('__value').getValue().toLowerCase()));
+    klass.on('downcase', [], (self, context) => {
+      return context.create('String', new InternalValue(self.getMember('__value').getValue().toLowerCase()));
     })
 
     this.operatorBoolean(klass, '==', (a, b) => { return a == b; });

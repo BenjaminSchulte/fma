@@ -9,7 +9,7 @@ export default class TypedNumber extends Class {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass)
 
-    klass.on('initialize', ['number', 'type'], async (self, number, type, context) => {
+    klass.on('initialize', ['number', 'type'], (self, number, type, context) => {
       self.setMember('number', number);
       self.setMember('type', type);
     })

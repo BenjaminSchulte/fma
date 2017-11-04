@@ -27,19 +27,19 @@ export default class RangeObject extends AbstractObject {
   initializeClassMembers(klass) {
     super.initializeClassMembers(klass);
 
-    klass.on('first', [], async (self, context) => {
-      return await context.create('Number', new InternalValue(self.left));
+    klass.on('first', [], (self, context) => {
+      return context.create('Number', new InternalValue(self.left));
     })
 
-    klass.on('last', [], async (self, context) => {
-      return await context.create('Number', new InternalValue(self.right));
+    klass.on('last', [], (self, context) => {
+      return context.create('Number', new InternalValue(self.right));
     })
 
-    klass.on('each', ['&callback'], async (self, block, context) => {
+    klass.on('each', ['&callback'], (self, block, context) => {
       var result = [];
 
       for (var i=self.left; i<=self.right; i++) {
-        result.push(await block.getMacro().callWithParameters(context.getContext(), await context.create('Number', new InternalValue(i))));
+        result.push(block.getMacro().callWithParameters(context.getContext(), context.create('Number', new InternalValue(i))));
       }
 
       return new ArrayObject(result);

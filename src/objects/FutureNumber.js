@@ -23,13 +23,13 @@ export default class FutureNumber extends ObjectClass {
   initializeClassMembers(klass) {
     super.initializeClassMembers(klass);
 
-    klass.on('to_future_number', [], async (self, context) => {
+    klass.on('to_future_number', [], (self, context) => {
       return self;
     });
 
-    klass.on('to_constant', [], async (self, context) => {
-      const type = await context.create('String', new InternalValue('constant'));
-      return await context.create('TypedNumber', self, type);
+    klass.on('to_constant', [], (self, context) => {
+      const type = context.create('String', new InternalValue('constant'));
+      return context.create('TypedNumber', self, type);
     })
 
     this.initializeOperator(klass, '+');
@@ -43,11 +43,11 @@ export default class FutureNumber extends ObjectClass {
   }
 
   initializeOperator(klass, operator) {
-    klass.on(operator, ['other'], async (self, other, context) => {
+    klass.on(operator, ['other'], (self, other, context) => {
       if (other.hasMember('to_n')) {
-        other = await other.getMember('to_n').callWithParameters(context.getContext());
+        other = other.getMember('to_n').callWithParameters(context.getContext());
       } else if (other.hasMember('to_future_number')) {
-        other = await other.getMember('to_future_number').callWithParameters(context.getContext());
+        other = other.getMember('to_future_number').callWithParameters(context.getContext());
       } else {
         throw new InterpreterError('Can not convert ' + other.type() + ' to Number');
       }

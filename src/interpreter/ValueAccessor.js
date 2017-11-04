@@ -25,13 +25,13 @@ export default class ValueAccessor {
     return this.child.type();
   }
 
-  async asBoolean(context, log) {
+  asBoolean(context, log) {
     const utils = new PluginUtils(context);
-    return await utils.asBoolean(this.getObject(), log);
+    return utils.asBoolean(this.getObject(), log);
   }
 
-  async asString(context, log) {
+  asString(context, log) {
     const utils = new PluginUtils(context);
-    return await utils.asString(this.getObject(), log);
+    return utils.asString(this.getObject(), log);
   }
 }

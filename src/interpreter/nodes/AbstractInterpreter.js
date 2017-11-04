@@ -26,11 +26,11 @@ export default class AbstractInterpreter {
     return true;
   }
 
-  async asString() {
+  asString() {
     throw new InterpreterError('asString not implemented');
   }
 
-  async process() {
+  process() {
     throw new InterpreterError(`process not implemented for ${this.node.type()}`)
   }
 }

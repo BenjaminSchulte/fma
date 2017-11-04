@@ -2,10 +2,10 @@ import AbstractInterpreter from './AbstractInterpreter';
 import Module from '../../objects/Module';
 
 export default class ModuleDeclaration extends AbstractInterpreter {
-  async process() {
+  process() {
 
     // Finds the module
-    var node = await this.context.withoutParents().process(this.node.name);
+    var node = this.context.withoutParents().process(this.node.name);
     if (node.isUndefined()) {
       node.define(new Module(node.getName()));
     } else if (node.getObjectType() !== 'Module') {
@@ -15,7 +15,7 @@ export default class ModuleDeclaration extends AbstractInterpreter {
 
     // Processes all children
     const context = this.context.enter(node.getObject());
-    return await context.processMany(this.node.getChildren());
+    return context.processMany(this.node.getChildren());
 
   }
 }

@@ -5,7 +5,7 @@ export default class Comment extends AbstractInterpreter {
     return false;
   }
 
-  async process() {
+  process() {
     if (!this.node.isDocComment()) {
       return;
     }

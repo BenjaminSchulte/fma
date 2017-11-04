@@ -2,9 +2,9 @@ import AbstractInterpreter from './AbstractInterpreter';
 import InterpreterError from '../InterpreterError';
 
 export default class SwitchStatement extends AbstractInterpreter {
-  async process() {
+  process() {
 
-    const value = await this.context.resolve(this.node.condition);
+    const value = this.context.resolve(this.node.condition);
     if (value.isUndefined()) {
       throw new InterpreterError('Case argument is undefined');
     }
@@ -20,8 +20,8 @@ export default class SwitchStatement extends AbstractInterpreter {
     for (let child of this.node.getChildren()) {
       switch (child.type()) {
       case 'SwitchCase':
-        const right = await this.context.resolve(child.value);
-        const result = await left.callWithParameters(this.context, right.getObject());
+        const right = this.context.resolve(child.value);
+        const result = left.callWithParameters(this.context, right.getObject());
         if (result.type() !== 'Boolean') {
           throw new InterpreterError(`Operator ${object.type()}.== must return boolean`);
         }
@@ -42,7 +42,7 @@ export default class SwitchStatement extends AbstractInterpreter {
     }
 
     if (otherwise) {
-      return await this.context.processMany(otherwise.getChildren());
+      return this.context.processMany(otherwise.getChildren());
     }
 
   }

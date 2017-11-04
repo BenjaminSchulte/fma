@@ -10,7 +10,7 @@ export default class ObjectType extends Class {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
-    klass.on('is_a?', ['type'], async (self, type) => {
+    klass.on('is_a?', ['type'], (self, type) => {
       console.log('IS_A on ObjectType')
       return new BooleanObject(self.klass.getFullName() == type.getFullName());
     })

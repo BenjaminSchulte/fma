@@ -4,16 +4,16 @@ import Parser from '../../grammar/Parser';
 import path from 'path';
 
 export default class RequireStatement extends AbstractInterpreter {
-  async process() {
+  process() {
 
-    const result = await this.context.process(this.node.parent);
-    const file = await result.getObject().asString(this.context);
+    const result = this.context.process(this.node.parent);
+    const file = result.getObject().asString(this.context);
     const project = this.context.getInterpreter().getProject();
     const parser = new Parser(project);
 
-    const program = await parser.parseRelativeFile(file + '.pasm', path.dirname(this.node.getLocation().getFile()));
+    const program = parser.parseRelativeFile(file + '.pasm', path.dirname(this.node.getLocation().getFile()));
 
-    await this.context.process(program);
+    this.context.process(program);
 
   }
 }

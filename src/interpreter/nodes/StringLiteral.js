@@ -3,14 +3,14 @@ import InternalValue from '../../objects/InternalValue';
 import ValueAccessor from '../ValueAccessor';
 
 export default class StringLiteral extends AbstractInterpreter {
-  async asString() {
-    return await this.context.getProcessor(this.node.identifier).asString();
+  asString() {
+    return this.context.getProcessor(this.node.identifier).asString();
   }
 
-  async process() {
-    const str = (await this.context.getRoot().resolveChild("String")).getObject();
-    const value = new InternalValue(await this.asString());
+  process() {
+    const str = (this.context.getRoot().resolveChild("String")).getObject();
+    const value = new InternalValue(this.asString());
 
-    return new ValueAccessor(await str.getMember('new').callWithParameters(this.context, value));
+    return new ValueAccessor(str.getMember('new').callWithParameters(this.context, value));
   }
 }

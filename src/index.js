@@ -10,30 +10,26 @@ const project = new Project(asm);
 const parser = new Parser(project);
 const interpreter = new Interpreter(project);
 
-const parse = async (name) => {
+const parse = (name) => {
   project.log('info', `Parsing file ${name}`);
 
-  const program = await parser.parseFile(name);
-  await interpreter.process(program);
+  const program = parser.parseFile(name);
+  interpreter.process(program);
 
   project.log('info', `Done`);
 }
 
-const run = async () => {
-  await interpreter.loadPlugin(new CorePlugin());
+const run = () => {
+  interpreter.loadPlugin(new CorePlugin());
 
-  await parse('./src/core.pasm');
-  await parse('./src/asm/snes65816/snes65816.pasm');
-  await parse('./engine.pasm');
-  await parse('./test.pasm');
+  parse('./src/core.pasm');
+  parse('./src/asm/snes65816/snes65816.pasm');
+  parse('./engine.pasm');
+  parse('./test.pasm');
 }
 
 process.on('unhandledRejection', (reason) => {
     console.error(reason);
 });
 
-run().then((result) => {
-  console.log(result);
-}).catch((err) => {
-  console.error(err);
-})
+console.log(run());

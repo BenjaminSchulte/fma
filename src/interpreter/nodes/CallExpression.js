@@ -4,13 +4,13 @@ import NilObject from '../../objects/Nil';
 import InterpreterError from '../InterpreterError';
 
 export default class CallExpression extends AbstractInterpreter {
-  async process() {
+  process() {
 
-    const target = await this.context.process(this.node.parent);
+    const target = this.context.process(this.node.parent);
     var parameters = [];
 
     for (let parameter of this.node.getParameters()) {
-      parameters.push(await this.context.resolve(parameter));
+      parameters.push(this.context.resolve(parameter));
     }
 
     var result;
@@ -26,7 +26,7 @@ export default class CallExpression extends AbstractInterpreter {
 
       result = target.getObject();
     } else {
-      result = await target.getObject().callWithParameters(this.context, ...parameters.map(parameter => parameter.getObject()));
+      result = target.getObject().callWithParameters(this.context, ...parameters.map(parameter => parameter.getObject()));
     }
 
     if (!result) {

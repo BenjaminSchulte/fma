@@ -5,18 +5,18 @@ import ValueAccessor from '../ValueAccessor';
 import MacroPointer from '../../objects/MacroPointer';
 
 export default class MacroDeclaration extends AbstractInterpreter {
-  async process() {
+  process() {
 
     // Finds the macro
     var name = null;
     var node = null;
     if (this.node.name) {
-      name = await this.context.getProcessor(this.node.name).asString();
+      name = this.context.getProcessor(this.node.name).asString();
 
       if (this.node.isRoot) {
-        node = await this.context.getRoot().resolveChild(name);
+        node = this.context.getRoot().resolveChild(name);
       } else {
-        node = await this.context.withoutParents().resolveChild(name);
+        node = this.context.withoutParents().resolveChild(name);
       }
       if (!node.isUndefined() && node.getObjectType() !== 'Macro') {
         this.log('warn', `The object ${node.getName()} has already been defined, but is redefined as Macro.`);
@@ -27,7 +27,7 @@ export default class MacroDeclaration extends AbstractInterpreter {
 
     const macro = new MacroObject(name);
     macro.setParentContext(this.context);
-    macro.setArguments(await this.parseArguments(this.node.getArguments()));
+    macro.setArguments(this.parseArguments(this.node.getArguments()));
     macro.setChildren(this.node.getChildren());
 
     if (node) {
@@ -41,11 +41,11 @@ export default class MacroDeclaration extends AbstractInterpreter {
     return new ValueAccessor(new MacroPointer(macro));
   }
 
-  async parseArguments(args) {
+  parseArguments(args) {
     const list = new ArgumentList();
 
     for (let arg of args) {
-      list.mergeArguments(await this.context.process(arg));
+      list.mergeArguments(this.context.process(arg));
     }
 
     return list;

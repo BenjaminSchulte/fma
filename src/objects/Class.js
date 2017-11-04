@@ -102,18 +102,18 @@ export default class ClassObject extends NamedObject {
   initializeClassMembers(klass) {
     super.initializeClassMembers(klass);
 
-    klass.on('new', ['*args', '**kwargs', '&block'], async (self, args, kwargs, block, context) => {
+    klass.on('new', ['*args', '**kwargs', '&block'], (self, args, kwargs, block, context) => {
       const instance = new ClassInstance(self);
 
       if (self.extended.length == 0) {
-        const obj = (await context.getContext().getRoot().resolveChild('Object')).getObject();
+        const obj = (context.getContext().getRoot().resolveChild('Object')).getObject();
         self.extendsClass(obj);
       }
 
       if (instance.hasMember('initialize')) {
         const member = instance.getMember('initialize');
-        const callContext = await member.getArguments().buildContextByProxy(context.getContext());
-        await member.call(callContext);
+        const callContext = member.getArguments().buildContextByProxy(context.getContext());
+        member.call(callContext);
       }
 
       return instance;

@@ -44,16 +44,16 @@ export default class MacroObject extends NamedObject {
     return true;
   }
 
-  async call(context, self=null) {
+  call(context, self=null) {
     try {
       if (this.javascriptCallback) {
-        return await this.javascriptCallback(context, self);
+        return this.javascriptCallback(context, self);
       }
 
       context.injectParent(this.parentContext);
       context.getObject().setMember('self', self === null ? this.parentContext.getObject() : self);
 
-      return (await context.processMany(this.children)).getObject();
+      return (context.processMany(this.children)).getObject();
     } catch(err) {
       if (err.isReturn) {
         return err.returnValue;
@@ -63,9 +63,9 @@ export default class MacroObject extends NamedObject {
     }
   }
 
-  async callWithParameters(calleeContext, ...args) {
+  callWithParameters(calleeContext, ...args) {
     const context = this.arguments.buildContext(calleeContext, args, null);
 
-    return await this.call(context);
+    return this.call(context);
   }
 }
