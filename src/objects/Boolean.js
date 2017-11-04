@@ -28,5 +28,9 @@ export default class BooleanObject extends AbstractObject {
     klass.on('&&', ['other'], async (self, other, context) => {
       return new BooleanObject(self.value && (await context.asBoolean(other)));
     })
+
+    klass.on('||', ['other'], async (self, other, context) => {
+      return new BooleanObject(self.value || (await context.asBoolean(other)));
+    })
   }
 }

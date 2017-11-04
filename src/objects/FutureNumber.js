@@ -23,6 +23,10 @@ export default class FutureNumber extends ObjectClass {
   initializeClassMembers(klass) {
     super.initializeClassMembers(klass);
 
+    klass.on('to_future_number', [], async (self, context) => {
+      return self;
+    });
+
     klass.on('to_constant', [], async (self, context) => {
       const type = await context.create('String', new InternalValue('constant'));
       return await context.create('TypedNumber', self, type);

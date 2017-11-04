@@ -45,14 +45,22 @@ export default class MacroObject extends NamedObject {
   }
 
   async call(context, self=null) {
-    if (this.javascriptCallback) {
-      return await this.javascriptCallback(context, self);
+    try {
+      if (this.javascriptCallback) {
+        return await this.javascriptCallback(context, self);
+      }
+
+      context.injectParent(this.parentContext);
+      context.getObject().setMember('self', self === null ? this.parentContext.getObject() : self);
+
+      return (await context.processMany(this.children)).getObject();
+    } catch(err) {
+      if (err.isReturn) {
+        return err.returnValue;
+      } else {
+        throw err;
+      }
     }
-
-    context.injectParent(this.parentContext);
-    context.getObject().setMember('self', self === null ? this.parentContext.getObject() : self);
-
-    return (await context.processMany(this.children)).getObject();
   }
 
   async callWithParameters(calleeContext, ...args) {

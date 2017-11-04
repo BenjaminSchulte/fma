@@ -49,9 +49,16 @@ Stmt
 PostStmts
   = ExprOrCommand
   / RaiseStatement      // ok
+  / ReturnStatement
 
 RaiseStatement
   = keyword_raise __ expr:Expr { return c(new n.RaiseStatement(expr)); }
+
+OptionalExpression
+  = __ expr:Expr { return expr; }
+
+ReturnStatement
+  = keyword_return expr:OptionalExpression? { return c(new n.ReturnStatement(expr ? expr : null)); }
 
 LabelDeclaration
   = ident:IDENTIFIER ":" { return c(new n.LabelDeclaration(ident)); }
@@ -138,6 +145,7 @@ InlineCondition
 
 CalcExpr
   = item:ExprItem list:ExprList* {
+    /*
     if (!list.length) {
       return item;
     }
@@ -145,8 +153,8 @@ CalcExpr
     const expr = c(new n.CalculateExpression(item));
     for (let calc of list) {
       expr.addCalculation(calc[0], calc[1]);
-    }
-    return expr;
+    }*/
+    return n.CalculateExpression.build(c, item, list);
   }
 
 ExprItem
@@ -416,6 +424,7 @@ keyword_when = "when" !IdentifierEndOrPart
 keyword_class = "class" !IdentifierEndOrPart
 keyword_else = "else" !IdentifierEndOrPart
 keyword_raise = "raise" !IdentifierEndOrPart
+keyword_return = "return" !IdentifierEndOrPart
 keyword_require = "require" !IdentifierEndOrPart
 keyword_true = "true" !IdentifierEndOrPart
 keyword_false = "false" !IdentifierEndOrPart
@@ -434,8 +443,9 @@ ReservedWordItem
   / "def"
   / "when"
   / "else"
-  / "require"
   / "raise"
+  / "return"
+  / "require"
   / "true"
   / "false"
   / "nil"

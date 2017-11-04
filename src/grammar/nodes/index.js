@@ -28,6 +28,7 @@ import * as ParameterTypes from './ParameterTypes';
 import Program from './Program';
 import RaiseStatement from './RaiseStatement';
 import RangeExpression from './RangeExpression';
+import ReturnStatement from './ReturnStatement';
 import RequireStatement from './RequireStatement';
 import StringLiteral from './StringLiteral';
 import SwitchCase from './SwitchCase';
@@ -64,6 +65,7 @@ export {
   Program,
   RaiseStatement,
   RangeExpression,
+  ReturnStatement,
   RequireStatement,
   StringLiteral,
   SwitchCase,

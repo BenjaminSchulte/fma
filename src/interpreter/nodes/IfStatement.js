@@ -1,6 +1,6 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import ValueAccessor from '../ValueAccessor';
-import UndefinedObject from '../../objects/Undefined';
+import NilObject from '../../objects/Nil';
 
 export default class IfStatement extends AbstractInterpreter {
   async process() {
@@ -14,7 +14,7 @@ export default class IfStatement extends AbstractInterpreter {
     } else if (this.node.otherwise && this.node.otherwise.type() === 'IfStatement') {
       return await this.context.process(this.node.otherwise);
     } else {
-      return new ValueAccessor(new UndefinedObject());
+      return new ValueAccessor(new NilObject());
     }
 
   }

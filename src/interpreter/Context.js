@@ -1,6 +1,7 @@
 import * as Nodes from './nodes';
 import CommentCollector from './CommentCollector';
 import UndefinedObject from '../objects/Undefined';
+import NilObject from '../objects/Nil';
 import ChildValueAccessor from './ChildValueAccessor';
 import ValueAccessor from './ValueAccessor';
 import InterpreterError from './InterpreterError';
@@ -15,7 +16,7 @@ export default class Context {
     this.comments = new CommentCollector();
     this.object = object;
     this.parent = parent;
-    this.returnValue = new UndefinedObject();
+    this.returnValue = new NilObject();
   }
 
   withoutParents() {
@@ -101,7 +102,7 @@ export default class Context {
     }
 
     if (!result) {
-      result = new ValueAccessor(new UndefinedObject());
+      result = new ValueAccessor(new NilObject());
     }
 
     return result;
@@ -119,7 +120,7 @@ export default class Context {
       result = await object.callWithParameters(this);
 
       if (!result) {
-        result = new ValueAccessor(new UndefinedObject());
+        result = new ValueAccessor(new NilObject());
       } else {
         result = new ValueAccessor(result);
       }

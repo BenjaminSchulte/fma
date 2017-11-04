@@ -12,6 +12,7 @@ export default class CompilerScope extends Class {
     super.initializeInstanceMembers(klass);
 
     klass.on('on_enter_function', ['function'], async () => {})
+    klass.on('on_call_function', ['function'], async () => {})
     klass.on('on_leave_function', ['function'], async () => {})
 
     klass.on('initialize', [], async (self, context) => {
@@ -50,11 +51,15 @@ export default class CompilerScope extends Class {
       return;
     }
 
-    if (!item.hasMember('to_n')) {
+    if (item.hasMember('to_n')) {
+      const number = await item.getMember('to_n').callWithParameters(context.getContext());
+      self.writer.write(number.getMember('__value').getValue(), bytesPerItem);
+    } else if (item.hasMember('to_future_number')) {
+      const number = await item.getMember('to_future_number').callWithParameters(context.getContext());
+      self.writer.write(number.getCalculation(), bytesPerItem);
+    } else {
       throw new InterpreterError(`Unable to convert type ${item.getClassName()} to Number`);
     }
 
-    const number = await item.getMember('to_n').callWithParameters(context.getContext());
-    self.writer.write(number.getMember('__value').getValue(), bytesPerItem);
   }
 }

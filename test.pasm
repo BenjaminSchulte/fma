@@ -4,6 +4,8 @@ require "engine/header/snes"
 def main
 
   Compiler.print "Compiling main"
+
+  SNES.initialize
   NOP
   NOP
   NOP

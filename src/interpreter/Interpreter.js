@@ -6,11 +6,11 @@ export default class Interpreter {
     this.project = project;
     this.root = new RootObject;
 
-    this.functions = [];
+    this.functionQueue = [];
   }
 
   compileFunction(func) {
-    this.functions.push(func);
+    this.functionQueue.push(func);
   }
 
   getProject() {
@@ -30,8 +30,8 @@ export default class Interpreter {
 
     await context.process(program);
 
-    while (this.functions.length) {
-      const func = this.functions.shift();
+    while (this.functionQueue.length) {
+      const func = this.functionQueue.shift();
       await func.compile(context);
     }
   }

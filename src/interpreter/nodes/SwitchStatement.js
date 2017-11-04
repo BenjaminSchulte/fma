@@ -15,6 +15,7 @@ export default class SwitchStatement extends AbstractInterpreter {
     }
 
     const left = object.getMember('==');
+    var otherwise = null;
 
     for (let child of this.node.getChildren()) {
       switch (child.type()) {
@@ -31,9 +32,17 @@ export default class SwitchStatement extends AbstractInterpreter {
         }
         break;
 
+      case 'ElseStatement':
+        otherwise = child;
+        break;
+
       default:
         throw new InterpreterError('Invalid member in SWITCH/CASE');
       }
+    }
+
+    if (otherwise) {
+      return await this.context.processMany(otherwise.getChildren());
     }
 
   }

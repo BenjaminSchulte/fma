@@ -10,6 +10,13 @@ export default class ExpressionStatement extends AbstractInterpreter {
 
     if (object.canBeCalled()) {
       expressionResult = await object.callWithParameters(this.context);
+    } else if (object.isUndefined()) {
+      this.log("error", "Expression is undefined");
+    }
+
+    if (expressionResult.type() === 'Function') {
+      const scope = (await this.context.getRoot().resolveChild('Compiler')).getObject();
+      await scope.getMember('current_scope').getMember('on_call_function').callWithParameters(this.context, expressionResult);
     }
 
     return new ValueAccessor(expressionResult);

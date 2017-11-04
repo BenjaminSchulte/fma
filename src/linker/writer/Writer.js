@@ -3,10 +3,10 @@ export default class Writer {
   }
 
   write(item, bytesPerItem=8) {
-    console.log('WRITE', item, bytesPerItem);
+    //console.log('WRITE', item, bytesPerItem);
   }
 
   writeCalculation(calculation, bytesPerItem) {
-    console.log('WRITECALC', calculation.toString(), bytesPerItem);
+    //console.log('WRITECALC', calculation.toString(), bytesPerItem);
   }
 }

@@ -1,6 +1,6 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import ValueAccessor from '../ValueAccessor';
-import UndefinedObject from '../../objects/Undefined';
+import NilObject from '../../objects/Nil';
 import InterpreterError from '../InterpreterError';
 
 export default class CallExpression extends AbstractInterpreter {
@@ -30,7 +30,7 @@ export default class CallExpression extends AbstractInterpreter {
     }
 
     if (!result) {
-      result = new UndefinedObject();
+      result = new NilObject();
     }
 
     return new ValueAccessor(result);

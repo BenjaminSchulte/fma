@@ -6,11 +6,11 @@ export default class MacroPointer extends Class {
     super('MacroPointer');
   }
 
-  initializeMembers() {
-    super.initializeMembers();
+  initializeInstanceMembers(klass) {
+    super.initializeInstanceMembers(klass);
 
-    PluginUtils.onInstance(this, 'initialize', ['&block'], async (self, block, context) => {
-      console.log('MacroPointer block', block);
+    klass.on('initialize', ['&block'], async (self, block, context) => {
+      self.setMember('call', block.getMacro());
     })
   }
 }

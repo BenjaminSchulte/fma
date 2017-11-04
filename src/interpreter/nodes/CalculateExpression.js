@@ -6,20 +6,11 @@ import ValueAccessor from '../ValueAccessor';
 export default class CalculateExpression extends AbstractInterpreter {
   async process() {
 
-    var value = await this.context.process(this.node.parent);
+    var left = await this.context.process(this.node.parent);
+    var right = (await this.context.resolve(this.node.right)).getObject();
+    var operator = this.node.operator;
 
-    for (let child of this.node.calculations) {
-      const right = await this.context.resolve(child.other);
-
-      value = await this.processCalculation(value, child.operator, right.getObject());
-    }
-
-    return value;
-  }
-
-  async processCalculation(left, operator, right) {
     var assign = true;
-
     switch (operator) {
       case '+=': operator='+'; break;
       case '-=': operator='-'; break;
@@ -32,16 +23,7 @@ export default class CalculateExpression extends AbstractInterpreter {
         break;
     }
 
-/*
-    if (operator === '=') {
-
-      left.define(right);
-      return left;
-    }
-    */
-
     var result = right;
-
     if (operator !== '') {
       var calcLeft = left.getObject();
       if (calcLeft.canBeCalled()) {
@@ -55,7 +37,7 @@ export default class CalculateExpression extends AbstractInterpreter {
         }
 
         if (!calcLeft.hasMember(operator)) {
-          throw new InterpreterError('Operator ' + operator + ' not implemented for type: ' + left.getObject().type());
+          throw new InterpreterError('Operator ' + operator + ' not implemented for type: ' + calcLeft.type());
         }
       }
 

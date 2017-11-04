@@ -15,9 +15,7 @@ export default class ModuleDeclaration extends AbstractInterpreter {
 
     // Processes all children
     const context = this.context.enter(node.getObject());
-    for (let child of this.node.getChildren()) {
-      await context.process(child)
-    }
+    return await context.processMany(this.node.getChildren());
 
   }
 }

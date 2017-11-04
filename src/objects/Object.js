@@ -113,9 +113,26 @@ export default class AbstractObject {
       return await (new PluginUtils(context)).asBoolean(self.isNil());
     })
 
+    klass.on('is_function?', [], async (self, context) => {
+      const BooleanObject = require('./Boolean').default;
+      return new BooleanObject(self.type() === 'Function');
+    });
+
     klass.on('is_a?', ['type'], async (self, type, context) => {
       return await (new PluginUtils(context)).asBoolean(self.getClassName() == type.getName());
     })
+
+    klass.on('key?', ['key'], async (self, key, context) => {
+      if (!key.hasMember('to_s')) {
+        throw new InterpreterError(`${key.type()} has no member to_s`);
+      }
+
+      const BooleanObject = require('./Boolean').default;
+
+      const stringObject = await key.getMember('to_s').callWithParameters(context.getContext());
+      const str = stringObject.getMember('__value').getValue();
+      return new BooleanObject(self.hasMember(str));
+    });
   }
 }
 

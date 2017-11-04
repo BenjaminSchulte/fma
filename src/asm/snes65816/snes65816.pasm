@@ -9,12 +9,129 @@ end
 class CompilerScope
   macro on_enter_function(function)
     Compiler.print "Entering function"
+
+    if function.key? "register_size_A"
+      self.set_size :A, function.register_size_A
+    end
+
+    if function.key? "register_size_XY"
+      self.set_size :XY, function.register_size_XY
+    end
+  end
+
+  macro size_hint_function(function)
+    function.register_size_A = self.get_size(:A)
+    function.register_size_XY = self.get_size(:XY)
+  end
+
+  macro on_call_function(function)
+    self.size_hint_function function
+
+    JSR function
+  end
+
+  macro set_size(name, size)
+    name = "XY" if name == "X" || name == "Y"
+
+    Compiler.print "set_size register_size_#{name} = ", size
+    self["register_size_#{name}"] = size
+  end
+
+  macro get_size(name)
+    name = "XY" if name == "X" || name == "Y"
+
+    if self.key? "register_size_#{name}"
+      self["register_size_#{name}"]
+    else
+      nil
+    end
   end
 end
 
 module Snes65816
 
   opcodes = {}
+
+  module OpcodeWriter
+
+    macro im(opcode, value)
+      Compiler.current_scope.db opcode
+      Compiler.current_scope.db value
+    end
+
+    macro addr(opcode, value)
+      Compiler.current_scope.db opcode
+      Compiler.current_scope.dw value
+    end
+
+    macro addr_pc(opcode, value)
+      Compiler.print "TODO: addr_pc is invalid"
+      Compiler.current_scope.db opcode
+      Compiler.current_scope.dw value
+    end
+
+    macro idpx
+    end
+
+    macro sr
+    end
+
+    macro dp
+    end
+
+    macro ildp
+    end
+
+    macro long
+    end
+
+    macro relb
+    end
+
+    macro idpy
+    end
+
+    macro idp
+    end
+
+    macro isry
+    end
+
+    macro dpx
+    end
+
+    macro ildpy
+    end
+
+    macro addry
+    end
+
+    macro addrx
+    end
+
+    macro longx
+    end
+
+    macro mv
+    end
+
+    macro relw
+    end
+
+    macro relb
+    end
+
+    macro dpy
+    end
+
+    macro iaddrx
+    end
+
+    macro impl(opcode)
+      Compiler.current_scope.db opcode
+    end
+
+  end
 
   RAM = CompilerMemoryManager.new
   ROM = CompilerMemoryManager.new
@@ -24,23 +141,14 @@ module Snes65816
   class Register
     macro initialize(name)
       self.name = name
-      self.register_size = 8
     end
 
     macro set_size(size)
-      if self.Y?
-        X.register_size = size
-      else
-        self.register_size = size
-      end
+      Compiler.current_scope.set_size self.name, size
     end
 
     macro size
-      if self.Y?
-        X.register_size
-      else
-        self.register_size
-      end
+      Compiler.current_scope.get_size self.name
     end
 
     macro A?
@@ -60,35 +168,65 @@ module Snes65816
     end
   end
 
+  macro normalize_opcode_number(number)
+    return {type: :none, number: nil} if number.nil?
+    return {type: :addr, number: number} if number.is_a? Number
+
+    if number.is_a? TypedNumber
+      type = number.type
+      number = number.number
+
+      case type
+      when :constant
+        return {type: :constant, number: number}
+
+      else
+        raise "Unknown number type for opcode"
+      end
+    elsif number.is_function?
+      return {type: :addr, number: number}
+    else
+      return {type: :addr, number: number.to_future_number}
+    end
+  end
+
   ;; Invokes an opcode
   macro call_opcode(name, left=nil, right=nil)
+    left = normalize_opcode_number left
+    right = normalize_opcode_number right
+
     call_type = nil
-    call_arguments = []
 
-    if left.nil?
-      call_type = :impl
-    elsif right.nil?
-      call_arguments = [left]
+    call_arguments = [left.number, right.number]
+    call_arguments = [left.number] if right.number.nil?
+    call_arguments = [] if left.number.nil?
 
-      if left.is_a? TypedNumber
-        case left.type
-        when :constant
-          call_type = :im
-        else
-          raise "Unexpected parameter type: #{left.type}"
-        end
-      else
-        call_type = :addr
-      end
+    type = "#{left.type}_#{right.type}"
+
+    case type
+    when :none_none
+      call_type = [:impl]
+    when :constant_none
+      call_type = [:im]
+    when :addr_none
+      call_type = [:addr, :addr_pc]
     else
-      raise "Unexpected parameter type"
+      raise "Unexpected parameter type: #{type}"
     end
 
-    raise "Opcode #{name} does not support parameter type #{call_type}" unless Snes65816.opcodes[name].key? call_type
+    has_valid_call = false
+    call_type.each do |type|
+      if Snes65816.opcodes[name].key? type
+        config = Snes65816.opcodes[name][type]
+        config.block.call config.opcode, *call_arguments
+        has_valid_call = true
+      end
+    end
 
-    config = Snes65816.opcodes[name][call_type]
-
-    Compiler.print "!!!TODO!!! CALL ", config
+    unless has_valid_call
+      Compiler.print call_type
+      raise "Opcode #{name} does not support parameter type"
+    end
   end
 
   ;; Registers a new operator
@@ -99,6 +237,8 @@ module Snes65816
     macro ::\{name} *args
       call_opcode name, *args
     end
+
+    block = MacroPointer.new(&OpcodeWriter[type]) if block.nil?
 
     Snes65816.opcodes[name] = {} unless Snes65816.opcodes.key? name
     Snes65816.opcodes[name][type] = {
@@ -172,8 +312,6 @@ macro scope(name, bank=nil, at=nil, length=nil, in=nil, shadows_bank=nil, shared
     ram.address_and = $FFFF
     ram.address_or  = shadows_bank << 16
   end
-
-  ram.dump
 
   callee[name] = ram
   ram
@@ -294,6 +432,8 @@ Snes65816.operator $24, :bit, :DP
 Snes65816.operator $25, :and, :DP
 Snes65816.operator $26, :rol, :DP
 Snes65816.operator $27, :and, :ILDP
+
+
 Snes65816.operator $2a, :rol, :IMPL
 Snes65816.operator $2b, :pld, :IMPL
 Snes65816.operator $2c, :bit, :ADDR
@@ -316,6 +456,9 @@ Snes65816.operator $3c, :bit, :ADDRX
 Snes65816.operator $3d, :and, :ADDRX
 Snes65816.operator $3e, :rol, :ADDRX
 Snes65816.operator $3f, :and, :LONGX
+Snes65816.operator $40, :rti, :impl do |opcode|
+  Compiler.print "TODO"
+end
 Snes65816.operator $41, :eor, :IDPX
 Snes65816.operator $42, :wdm, :IM
 Snes65816.operator $43, :eor, :SR
@@ -324,8 +467,10 @@ Snes65816.operator $45, :eor, :DP
 Snes65816.operator $46, :lsr, :DP
 Snes65816.operator $47, :eor, :ILDP
 Snes65816.operator $48, :pha, :IMPL
+
 Snes65816.operator $4a, :lsr, :IMPL
 Snes65816.operator $4b, :phk, :IMPL
+
 Snes65816.operator $4d, :eor, :ADDR
 Snes65816.operator $4e, :lsr, :ADDR
 Snes65816.operator $4f, :eor, :LONG
@@ -341,15 +486,20 @@ Snes65816.operator $58, :cli, :IMPL
 Snes65816.operator $59, :eor, :ADDRY
 Snes65816.operator $5a, :phy, :IMPL
 Snes65816.operator $5b, :tcd, :IMPL
-Snes65816.operator $5c, :JML, :addr do |address|
+Snes65816.operator $5c, :JML, :addr do |opcode, address|
+  Compiler.current_scope.size_hint_function address
+
   Compiler.print "TODO ", address
 end
-Snes65816.operator $5c, :JML, :long do |address|
+Snes65816.operator $5c, :JML, :long do |opcode, address|
+  Compiler.current_scope.size_hint_function address
+
   Compiler.print "TODO ", address
 end
 Snes65816.operator $5d, :eor, :ADDRX
 Snes65816.operator $5e, :lsr, :ADDRX
 Snes65816.operator $5f, :eor, :LONGX
+
 Snes65816.operator $61, :adc, :IDPX
 Snes65816.operator $62, :per, :RELW
 Snes65816.operator $63, :adc, :SR
@@ -358,8 +508,10 @@ Snes65816.operator $65, :adc, :DP
 Snes65816.operator $66, :ror, :DP
 Snes65816.operator $67, :adc, :ILDP
 Snes65816.operator $68, :pla, :IMPL
+
 Snes65816.operator $6a, :ror, :IMPL
 Snes65816.operator $6d, :adc, :ADDR
+
 Snes65816.operator $6e, :ror, :ADDR
 Snes65816.operator $6f, :adc, :LONG
 Snes65816.operator $70, :bvs, :RELB
@@ -374,16 +526,20 @@ Snes65816.operator $78, :sei, :IMPL
 Snes65816.operator $79, :adc, :ADDRY
 Snes65816.operator $7a, :ply, :IMPL
 Snes65816.operator $7b, :tdc, :IMPL
+
 Snes65816.operator $7d, :adc, :ADDRX
 Snes65816.operator $7e, :ror, :ADDRX
 Snes65816.operator $7f, :adc, :LONGX
+
 Snes65816.operator $81, :sta, :IDPX
+
 Snes65816.operator $83, :sta, :SR
 Snes65816.operator $84, :sty, :DP
 Snes65816.operator $85, :sta, :DP
 Snes65816.operator $86, :stx, :DP
 Snes65816.operator $87, :sta, :ILDP
 Snes65816.operator $88, :dey, :IMPL
+
 Snes65816.operator $8a, :txa, :IMPL
 Snes65816.operator $8b, :phb, :IMPL
 Snes65816.operator $8c, :sty, :ADDR
@@ -406,9 +562,17 @@ Snes65816.operator $9c, :stz, :ADDR
 Snes65816.operator $9d, :sta, :ADDRX
 Snes65816.operator $9e, :stz, :ADDRX
 Snes65816.operator $9f, :sta, :LONGX
+
 Snes65816.operator $a1, :lda, :IDPX
-Snes65816.operator $a2, :LDX, :im do |value|
-  Compiler.print "TODO: ", value
+Snes65816.operator $a2, :LDX, :im do |opcode, value|
+  case X.size
+  when 8
+    Compiler.print "TODO LDX 8: ", value
+  when 16
+    Compiler.print "TODO LDX 16: ", value
+  else
+    raise "Unknown register size for X"
+  end
 end
 Snes65816.operator $a3, :lda, :SR
 Snes65816.operator $a4, :ldy, :DP
@@ -416,8 +580,15 @@ Snes65816.operator $a5, :lda, :DP
 Snes65816.operator $a6, :ldx, :DP
 Snes65816.operator $a7, :lda, :ILDP
 Snes65816.operator $a8, :tay, :IMPL
-Snes65816.operator $a8, :LDA, :im do |value|
-  Compiler.print "TODO: ", value
+Snes65816.operator $a9, :LDA, :im do |opcode, value|
+  case A.size
+  when 8
+    Compiler.print "TODO LDA 8: ", value
+  when 16
+    Compiler.print "TODO LDA 16: ", value
+  else
+    raise "Unknown register size for A"
+  end
 end
 Snes65816.operator $aa, :tax, :IMPL
 Snes65816.operator $ab, :plb, :IMPL
@@ -441,9 +612,14 @@ Snes65816.operator $bc, :ldy, :ADDRX
 Snes65816.operator $bd, :lda, :ADDRX
 Snes65816.operator $be, :ldx, :ADDRY
 Snes65816.operator $bf, :lda, :LONGX
+
 Snes65816.operator $c1, :cmp, :IDPX
-Snes65816.operator $c2, :REP, :im do |value|
-  Compiler.print "TODO: ", value
+Snes65816.operator $c2, :REP, :im do |opcode, value|
+  Compiler.current_scope.set_size :XY, 16 if value & $10
+  Compiler.current_scope.set_size :A, 16 if value & $20
+
+  Compiler.current_scope.db opcode
+  Compiler.current_scope.db value
 end
 Snes65816.operator $c3, :cmp, :SR
 Snes65816.operator $c4, :cpy, :DP
@@ -451,6 +627,7 @@ Snes65816.operator $c5, :cmp, :DP
 Snes65816.operator $c6, :dec, :DP
 Snes65816.operator $c7, :cmp, :ILDP
 Snes65816.operator $c8, :iny, :IMPL
+
 Snes65816.operator $ca, :dex, :IMPL
 Snes65816.operator $cb, :wai, :IMPL
 Snes65816.operator $cc, :cpy, :ADDR
@@ -472,7 +649,16 @@ Snes65816.operator $db, :stp, :IMPL
 Snes65816.operator $dd, :cmp, :ADDRX
 Snes65816.operator $de, :dec, :ADDRX
 Snes65816.operator $df, :cmp, :LONGX
+
 Snes65816.operator $e1, :sbc, :IDPX
+Snes65816.operator $e2, :sep, :im do |opcode, value|
+  Compiler.current_scope.set_size :XY, 8 if value & $10
+  Compiler.current_scope.set_size :A, 8 if value & $20
+
+  Compiler.current_scope.db opcode
+  Compiler.current_scope.db value
+end
+
 Snes65816.operator $e3, :sbc, :SR
 Snes65816.operator $e4, :cpx, :DP
 Snes65816.operator $e5, :sbc, :DP

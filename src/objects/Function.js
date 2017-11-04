@@ -64,7 +64,7 @@ export default class FunctionObject extends NamedObject {
   async callWithParameters(context) {
     context.getInterpreter().compileFunction(this);
 
-    return new FutureNumber(new SymbolLocation(this.getFullName()));
+    return this;
   }
 
   initializeClassMembers(klass) {

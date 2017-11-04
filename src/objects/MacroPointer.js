@@ -5,6 +5,8 @@ export default class MacroPointer extends AbstractObject {
     super();
 
     this.macro = macro;
+
+    this.setMember('call', macro);
   }
 
   type() {

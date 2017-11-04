@@ -5,6 +5,7 @@ import ArrayObject from '../objects/Array';
 import MacroPointer from '../objects/MacroPointer';
 import HashObject from '../objects/Hash';
 import UndefinedObject from '../objects/Undefined';
+import NilObject from '../objects/Nil';
 import InterpreterError from './InterpreterError';
 
 export default class ArgumentList {
@@ -56,10 +57,12 @@ export default class ArgumentList {
             break;
 
           case Parameter.TYPE_BLOCK:
-            if (param.value.type() !== 'MacroPointer') {
-              throw new InterpreterError('Parameter must be macro pointer, but is ' + param.type());
+            if (!param.value.isNil()) {
+              if (param.value.type() !== 'MacroPointer') {
+                throw new InterpreterError('Parameter must be macro pointer, but is ' + param.value.type());
+              }
+              blockObject = param.value;
             }
-            blockObject = param.value;
             break;
 
           case Parameter.TYPE_CONTEXT:
@@ -130,7 +133,7 @@ export default class ArgumentList {
 
     if (blockName) {
       if (!blockObject) {
-        blockObject = new UndefinedObject();
+        blockObject = new NilObject();
       }
 
       block.setMember(blockName, blockObject);

@@ -24,6 +24,7 @@ import Parameter from './Parameter';
 import Program from './Program';
 import RaiseStatement from './RaiseStatement';
 import RangeExpression from './RangeExpression';
+import ReturnStatement from './ReturnStatement';
 import RequireStatement from './RequireStatement';
 import StringLiteral from './StringLiteral';
 import SwitchStatement from './SwitchStatement';
@@ -55,6 +56,7 @@ export {
   Program,
   RaiseStatement,
   RangeExpression,
+  ReturnStatement,
   RequireStatement,
   StringLiteral,
   SwitchStatement
