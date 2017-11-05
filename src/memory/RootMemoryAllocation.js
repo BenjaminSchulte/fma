@@ -1,9 +1,10 @@
 import MemoryAllocation from './MemoryAllocation';
+import MemoryArranger from './old/arrange/MemoryArranger';
 import Memory from './old/Memory';
 
 export default class RootMemoryAllocation extends MemoryAllocation {
   constructor() {
-    super(null, new Memory());
+    super(null);
   }
 
   buildAllowed(allowed) {
@@ -18,7 +19,22 @@ export default class RootMemoryAllocation extends MemoryAllocation {
     this.memory.registerBank(allowed.bank, allowed.rangeTo + 1);
   }
 
+  hasMemoryAddress() {
+    return false;
+  }
+
   merge(other) {
     throw new Error('merging memory allocations is not supported, yet');
+  }
+
+  buildMemory() {
+    this.memory =  new Memory();
+  }
+
+  build() {
+    super.build();
+
+    const arranger = new MemoryArranger(this.memory);
+    arranger.arrange();
   }
 }

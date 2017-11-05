@@ -4,4 +4,8 @@ export default class WriterCalculation {
     this.calculation = calculation;
     this.size = size;
   }
+
+  calculate(symbols) {
+    return this.calculation.calculate(symbols);
+  }
 }

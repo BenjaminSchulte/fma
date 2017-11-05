@@ -1,6 +1,6 @@
 ; Extends the memory manager for some core functions
 class CompilerMemoryManager
-  macro allow(bank=nil, at=nil, range=nil, align=nil)
+  macro allow(bank=nil, at=nil, range=nil, align=nil, located_at=nil)
     address_and = nil
     address_or  = nil
 
@@ -13,7 +13,7 @@ class CompilerMemoryManager
       range = at..at
     end
 
-    self.allow_range range, address_and, address_or, align
+    self.allow_range range, address_and, address_or, align, located_at
   end
 
   macro shadow(bank, range, shadow_bank, shadow_address)
@@ -156,6 +156,10 @@ module Snes65816
   RAM = CompilerMemoryManager.new
   Compiler.register_dynamic_memory RAM
 
+  (0..255).each do |bank|
+    RAM.allow bank: bank, range: 0..$FFFF
+  end
+
   ROM = CompilerMemoryManager.new
   Compiler.register_static_memory ROM
 
@@ -274,7 +278,7 @@ module Snes65816
     if shadows_banks_from.nil? && shadows_addresses_from.nil?
 
       banks.each do |bank|
-        ROM.allow bank: bank, range: address
+        ROM.allow bank: bank, range: address, located_at: located_at
       end
 
     else
@@ -321,7 +325,7 @@ macro scope(name, bank=nil, at=nil, length=nil, in=nil, shared=false, align=nil,
   end
 
   unless length.nil?
-    ram.item_size = length
+    ram.set_item_size length
   end
 
   unless shadows_bank.nil? && shadows_address.nil?
@@ -344,8 +348,8 @@ macro declare(name, as, in, bank=nil, at=nil, length=nil, align=0)
     ram.allow bank: bank, at: at
   end
 
-  ram.type = as
-  ram.num_items = length
+  ram.set_item_type as
+  ram.set_num_items length
 
   callee[name] = ram
   ram

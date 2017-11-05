@@ -251,3 +251,5 @@ module SNES
     end
   end
 end
+
+locate_at bank: $C0

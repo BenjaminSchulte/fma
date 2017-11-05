@@ -28,7 +28,41 @@ export default class CompilerMemoryManager extends Class {
       }
 
       self.memory = memory;
+      this.interpreter.afterwards(() => {
+        self.memory.setSymbolName(self.getSymbolName());
+      });
     })
+
+    klass.on('set_item_size', ['size'], (self, size, context) => {
+      if (size.isNil()) {
+        return;
+      }
+
+      self.memory.setItemSize(context.asNumber(size));
+    });
+
+    klass.on('set_item_type', ['type'], (self, type, context) => {
+      if (type.isNil()) {
+        return;
+      }
+
+      switch (context.asString(type)) {
+        case 'uint8': self.memory.setItemSize(1); break;
+        case 'uint16': self.memory.setItemSize(2); break;
+        case 'uint24': self.memory.setItemSize(3); break;
+        case 'uint32': self.memory.setItemSize(4); break;
+        default:
+          throw new Error(`Unknown item type: ` + type);
+      }
+    });
+
+    klass.on('set_num_items', ['size'], (self, size, context) => {
+      if (size.isNil()) {
+        return;
+      }
+
+      self.memory.setNumItems(context.asNumber(size));
+    });
 
     klass.on('allocate', [], (self, context) => {
       const instance = context.create('CompilerMemoryManager', self);
@@ -42,15 +76,16 @@ export default class CompilerMemoryManager extends Class {
       return instance;
     })
 
-    klass.on('allow_range', ['range', 'address_and', 'address_or', 'align'], (self, range, addressAnd, addressOr, align, context) => {
+    klass.on('allow_range', ['range', 'address_and', 'address_or', 'align', 'located_at'], (self, range, addressAnd, addressOr, align, locatedAt, context) => {
       var rangeFrom = range.isNil() ? null : range.left;
       var rangeTo = range.isNil() ? null : range.right;
 
       addressAnd = addressAnd.isNil() ? null : context.asNumber(addressAnd);
       addressOr = addressOr.isNil() ? null : context.asNumber(addressOr);
+      locatedAt = locatedAt.isNil() ? null : context.asNumber(locatedAt);
       align = align.isNil() ? null : context.asNumber(align);
 
-      self.memory.allowRange(rangeFrom, rangeTo, addressAnd, addressOr, align);
+      self.memory.allowRange(rangeFrom, rangeTo, addressAnd, addressOr, align, locatedAt);
     })
 
     klass.on('shadow_range', ['range', 'address_and', 'address_or', 'modify_add', 'modify_and', 'modify_or'], (self, range, addressAnd, addressOr, modifyAdd, modifyAnd, modifyOr, context) => {

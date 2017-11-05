@@ -1,11 +1,18 @@
 import OldMemoryAllocation from './old/MemoryAllocation';
 import OldMemoryLocation from './old/MemoryLocation';
+import MemoryAddress from './MemoryAddress';
 
 export default class MemoryAllocation {
   constructor(parent, memory) {
     this.parent = parent;
-    this.memory = memory;
     this.children = [];
+
+    this.memory = null;
+
+    this.size = null;
+    this.numItems = 1;
+    this.name = null;
+    this.symbolName = null;
 
     this.allowed = [];
     this.shadows = [];
@@ -13,21 +20,59 @@ export default class MemoryAllocation {
     this.appliedShadows = [];
   }
 
+  collectSymbols(symbols) {
+    if (this.hasMemoryAddress() && this.symbolName) {
+      symbols.add(this.symbolName, this.getMemoryAddress().getApplicationAddress());
+    }
+
+    for (let child of this.children) {
+      child.collectSymbols(symbols);
+    }
+  }
+
+  hasMemoryAddress() {
+    return this.memory.hasStaticAddress();
+  }
+
+  getMemoryAddress() {
+    if (!this.memory.hasStaticAddress()) {
+      throw new Error('No address for memory found');
+    }
+
+    return new MemoryAddress(this.getAppliedShadows(), this.memory.staticAddress)
+  }
+
   createChild() {
-    var node = new MemoryAllocation(this, this.memory.allocate());
+    var node = new MemoryAllocation(this);
     this.children.push(node);
     return node;
   }
 
+  setSymbolName(name) {
+    this.symbolName = name;
+    this.setName(name);
+  }
+
   setName(name) {
-    this.memory.withDebugName(name);
+    this.name = name;
   }
 
-  setSize(size) {
-    this.memory.size(size);
+  setItemSize(size) {
+    this.size = size;
   }
 
-  allowRange(rangeFrom, rangeTo, addressAnd, addressOr, align) {
+  setNumItems(num) {
+    this.numItems = num;
+  }
+
+  getFullSize() {
+    if (this.size === null) {
+      return this.size;
+    }
+    return this.size * this.numItems;
+  }
+
+  allowRange(rangeFrom, rangeTo, addressAnd, addressOr, align, locatedAt) {
     var bank = null;
 
     if (rangeFrom > 0xFFFF || rangeTo > 0xFFFF) {
@@ -79,7 +124,14 @@ export default class MemoryAllocation {
     this.allowed.push({bank, rangeFrom, rangeTo, align});
   }
 
+  buildMemory() {
+    const memory = this.parent.memory.allocate();
+    memory.size(this.getFullSize()).withDebugName(this.name);
+    this.memory = memory;
+  }
+
   build() {
+    this.buildMemory();
     this.buildItem();
 
     for (let child of this.children) {
@@ -96,6 +148,11 @@ export default class MemoryAllocation {
   getShadows() {
     var list = this.parent ? this.parent.getShadows() : [];
     return list.concat(this.shadows);
+  }
+
+  getAppliedShadows() {
+    var list = this.parent ? this.parent.getAppliedShadows() : [];
+    return list.concat(this.appliedShadows);
   }
 
   modifyByShadow(address) {

@@ -7,10 +7,16 @@ export default class AbstractObject {
     this.id = AbstractObject.nextId++;
     this.parent = null;
     this.fullName = null;
+    this.nameHint = null;
+    this.symbolName = null;
 
     this.functionHooks = [];
 
     this.klassMembers = null;
+  }
+
+  setNameHint(name) {
+    this.nameHint = name;
   }
 
   addFunctionHook(hook) {
@@ -53,7 +59,11 @@ export default class AbstractObject {
   }
 
   getSymbolName() {
-    return this.getFullName();
+    if (this.symbolName === null) {
+      this.symbolName = this.getFullName();
+    }
+
+    return this.symbolName;
   }
 
   getName() {

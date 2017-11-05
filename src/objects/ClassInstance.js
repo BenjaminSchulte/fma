@@ -15,6 +15,10 @@ export default class ClassInstanceObject extends ObjectClass {
   }
 
   getName() {
+    if (this.nameHint) {
+      return this.nameHint;
+    }
+
     return this.klass.getName();
   }
 

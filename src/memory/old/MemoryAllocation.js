@@ -118,7 +118,7 @@ export default class MemoryAllocation extends MemoryAllocationContainer {
     return this;
   }
 
-  dump() {
+  dump(spaces="") {
     const attr = (key, value=true) => {
       var color = "33";
 
@@ -174,6 +174,10 @@ export default class MemoryAllocation extends MemoryAllocationContainer {
       var prefix = `\x1b[42;37;1m Y \x1b[m`;
     }
 
-    console.log(`${prefix} ${this.sections.id} \x1b[34;1mALLOCATION\x1b[m<${flags.join(' ')}> @ ${allow.join(' || ')}`);
+    console.log(`${spaces}${prefix} ${this.sections.id} \x1b[34;1mALLOCATION\x1b[m<${flags.join(' ')}> @ ${allow.join(' || ')}`);
+
+    for (let child of this.children) {
+      child.dump(spaces + '  ')
+    }
   }
 }

@@ -10,6 +10,25 @@ export default class Writer {
     this.calculations = [];
   }
 
+  fillCalculations(symbols) {
+    for (let calculation of this.calculations) {
+      var value = calculation.calculate(symbols);
+
+      console.log(calculation.calculation.toString(), '=', value.toString(16));
+
+      for (let i=0; i<calculation.size; i++) {
+        this.code[calculation.offset + i] = value & 0xFF;
+        value >>= 8;
+      }
+    }
+
+    this.calculations = [];
+  }
+
+  getSymbols() {
+    return this.symbols;
+  }
+
   getFirstSymbol() {
     for (let symbol of this.symbols) {
       if (symbol.offset === 0) {

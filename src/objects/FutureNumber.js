@@ -2,6 +2,7 @@ import ObjectClass from './Object';
 import InternalValue from './InternalValue';
 import PluginUtils from '../plugin/PluginUtils';
 import Calculation from '../linker/calculate/Calculation';
+import StaticNumber from '../linker/calculate/StaticNumber';
 import InterpreterError from '../interpreter/InterpreterError';
 
 export default class FutureNumber extends ObjectClass {
@@ -45,14 +46,14 @@ export default class FutureNumber extends ObjectClass {
   initializeOperator(klass, operator) {
     klass.on(operator, ['other'], (self, other, context) => {
       if (other.hasMember('to_n')) {
-        other = other.getMember('to_n').callWithParameters(context.getContext());
+        other = new StaticNumber(other.getMember('to_n').callWithParameters(context.getContext()).getMember('__value').getValue());
       } else if (other.hasMember('to_future_number')) {
-        other = other.getMember('to_future_number').callWithParameters(context.getContext());
+        other = other.getMember('to_future_number').callWithParameters(context.getContext()).getCalculation();
       } else {
         throw new InterpreterError('Can not convert ' + other.type() + ' to Number');
       }
 
-      return new FutureNumber(new Calculation(self, operator, other));
+      return new FutureNumber(new Calculation(self.getCalculation(), operator, other));
     })
   }
 }
