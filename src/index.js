@@ -41,5 +41,4 @@ process.on('unhandledRejection', (reason) => {
 });
 
 const result = run();
-console.log(result.symbols.all());
 fs.writeFileSync('test.sfc', result.getBinary())

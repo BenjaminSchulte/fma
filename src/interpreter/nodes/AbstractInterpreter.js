@@ -30,6 +30,9 @@ export default class AbstractInterpreter {
     throw new InterpreterError('asString not implemented');
   }
 
+  preprocess() {
+  }
+
   process() {
     throw new InterpreterError(`process not implemented for ${this.node.type()}`)
   }

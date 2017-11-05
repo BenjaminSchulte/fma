@@ -1,6 +1,8 @@
 import Class from '../objects/Class';
 import PluginUtils from '../plugin/PluginUtils';
 import StaticCodeBlock from '../linker/StaticCodeBlock';
+import FutureNumber from '../objects/FutureNumber';
+import SymbolLocation from '../linker/calculate/SymbolLocation';
 import InterpreterError from '../interpreter/InterpreterError';
 
 export default class CompilerScope extends Class {
@@ -19,6 +21,12 @@ export default class CompilerScope extends Class {
       self.block = new StaticCodeBlock();
       self.block.code.writeSymbol(func.getSymbolName());
       context.getInterpreter().registerStaticCodeBlock(self.block);
+    })
+
+    klass.on('PC', [], (self, context) => {
+      const symbolName = `.pc${CompilerScope.nextSymbolId++}`;
+      self.block.code.writeSymbol(symbolName);
+      return new FutureNumber(new SymbolLocation(symbolName));
     })
 
     klass.on('dw', ['*args', '**kwargs'], (self, args, kwargs, context) => {
@@ -85,3 +93,5 @@ export default class CompilerScope extends Class {
 
   }
 }
+
+CompilerScope.nextSymbolId = 1;

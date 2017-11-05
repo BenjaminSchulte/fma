@@ -17,6 +17,8 @@ export default class FunctionDeclaration extends AbstractInterpreter {
 
     node.define(func);
 
+    this.context.enter(func).preprocessMany(this.node.getChildren());
+
     return new ValueAccessor(func);
 
   }

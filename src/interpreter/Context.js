@@ -102,6 +102,12 @@ export default class Context {
     }
   }
 
+  preprocessMany(nodes) {
+    for (let node of nodes) {
+      this.getProcessor(node).preprocess(node);
+    }
+  }
+
   processMany(nodes) {
     var result;
 

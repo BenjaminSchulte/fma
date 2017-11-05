@@ -70,7 +70,7 @@ export default class FunctionObject extends NamedObject {
       if (this.javascriptCallback) {
         this.javascriptCallback(this);
       } else {
-        this.parentContext.processMany(this.children);
+        this.parentContext.enter(this).processMany(this.children);
       }
     });
 

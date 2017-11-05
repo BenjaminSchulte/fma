@@ -40,6 +40,12 @@ class CompilerScope
     end
   end
 
+  macro on_leave_function(function)
+    return if Compiler.current_scope.is_return_opcode
+
+    RTS
+  end
+
   macro size_hint_function(function)
     function.register_size_A = self.get_size(:A)
     function.register_size_XY = self.get_size(:XY)
@@ -85,7 +91,6 @@ module Snes65816
     end
 
     macro addr_pc(opcode, value)
-      Compiler.print "TODO: addr_pc is invalid"
       Compiler.current_scope.db opcode
       Compiler.current_scope.dw value
     end
@@ -235,7 +240,7 @@ module Snes65816
     when :constant_none
       call_type = [:im]
     when :addr_none
-      call_type = [:addr, :addr_pc]
+      call_type = [:addr, :addr_pc, :relb]
     else
       raise "Unexpected parameter type: #{type}"
     end
@@ -243,6 +248,8 @@ module Snes65816
     has_valid_call = false
     call_type.each do |type|
       if Snes65816.opcodes[name].key? type
+        Compiler.current_scope.is_return_opcode = false
+
         config = Snes65816.opcodes[name][type]
         config.block.call config.opcode, *call_arguments
         has_valid_call = true
@@ -412,6 +419,8 @@ macro memory_block(name=nil, **kwargs)
     Snes65816.locate_at **kwargs
 
     yield Compiler.current_scope
+
+    Compiler.current_scope.is_return_opcode = true
   end
 end
 
@@ -479,6 +488,7 @@ Snes65816.operator $3e, :rol, :ADDRX
 Snes65816.operator $3f, :and, :LONGX
 Snes65816.operator $40, :rti, :impl do |opcode|
   Compiler.current_scope.db opcode
+  Compiler.current_scope.is_return_opcode = true
 end
 Snes65816.operator $41, :eor, :IDPX
 Snes65816.operator $42, :wdm, :IM
@@ -513,6 +523,8 @@ Snes65816.operator $5c, :JML, :addr do |opcode, address|
   Compiler.current_scope.db opcode
   Compiler.current_scope.dw address & $FFFF
   Compiler.current_scope.db address >> 16
+
+  Compiler.current_scope.is_return_opcode = true
 end
 Snes65816.operator $5c, :JML, :long do |opcode, address|
   Compiler.current_scope.size_hint_function address
@@ -520,11 +532,16 @@ Snes65816.operator $5c, :JML, :long do |opcode, address|
   Compiler.current_scope.db opcode
   Compiler.current_scope.dw address & $FFFF
   Compiler.current_scope.db address >> 16
+
+  Compiler.current_scope.is_return_opcode = true
 end
 Snes65816.operator $5d, :eor, :ADDRX
 Snes65816.operator $5e, :lsr, :ADDRX
 Snes65816.operator $5f, :eor, :LONGX
-
+Snes65816.operator $60, :RTS, :impl do |opcode|
+  Compiler.current_scope.db opcode
+  Compiler.current_scope.is_return_opcode = true
+end
 Snes65816.operator $61, :adc, :IDPX
 Snes65816.operator $62, :per, :RELW
 Snes65816.operator $63, :adc, :SR
@@ -555,7 +572,10 @@ Snes65816.operator $7b, :tdc, :IMPL
 Snes65816.operator $7d, :adc, :ADDRX
 Snes65816.operator $7e, :ror, :ADDRX
 Snes65816.operator $7f, :adc, :LONGX
-
+Snes65816.operator $80, :bra, :relb do |opcode, address|
+  Compiler.current_scope.db opcode
+  Compiler.current_scope.db address - Compiler.current_scope.PC - 1
+end
 Snes65816.operator $81, :sta, :IDPX
 
 Snes65816.operator $83, :sta, :SR
