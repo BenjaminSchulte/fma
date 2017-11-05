@@ -22,6 +22,8 @@ export default class Linker {
 
   link() {
     this.addStaticCodeToRom();
+    this.object.getRomBlock().build();
+    this.object.getRamBlock().build();
 
     console.log('');
     console.log('<<ROM>>');

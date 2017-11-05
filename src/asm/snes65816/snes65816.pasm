@@ -15,6 +15,17 @@ class CompilerMemoryManager
 
     self.allow_range range, address_and, address_or, align
   end
+
+  macro shadow(bank, range, shadow_bank, shadow_address)
+    address_and = $FFFF
+    address_or  = bank << 16
+
+    modify_add = shadow_address - range.first
+    modify_and = $FFFF
+    modify_or  = shadow_bank << 16
+
+    self.shadow_range range, address_and, address_or, modify_add, modify_and, modify_or
+  end
 end
 
 ; Extends the compiler scope
@@ -260,20 +271,19 @@ module Snes65816
 
   ;; Configures the ROM
   macro configure_banks(banks, address, shadows_banks_from=nil, shadows_addresses_from=nil, located_at=nil)
-    banks.each do |bank|
-      ROM.allow bank: bank, range: address
-      ;child.location = located_at
+    if shadows_banks_from.nil? && shadows_addresses_from.nil?
 
-      ;unless shadows_addresses_from.nil?
-      ;  child.address_add = shadows_addresses_from - address.first
-      ;end
+      banks.each do |bank|
+        ROM.allow bank: bank, range: address
+      end
 
-      ;unless shadows_banks_from.nil?
-      ;  child.address_and = $FFFF
-      ;  child.address_or  = shadows_banks_from << 16
+    else
 
-      ;  shadows_banks_from += 1
-      ;end
+      banks.each do |bank|
+        ROM.shadow bank: bank, range: address, shadow_bank: shadows_banks_from, shadow_address: shadows_addresses_from
+        shadows_banks_from += 1
+      end
+
     end
   end
 
@@ -296,19 +306,14 @@ module Snes65816
 end
 
 ;; Allocates a new RAM scope
-macro scope(name, bank=nil, at=nil, length=nil, in=nil, shared=false, align=nil, shadows_bank=nil)
+macro scope(name, bank=nil, at=nil, length=nil, in=nil, shared=false, align=nil, shadows_bank=nil, shadows_address=nil)
   address_range = nil
 
   if in.nil?
     in = Snes65816::RAM
   end
 
-  if shadows_bank.nil?
-    ram = in.allocate_shadow
-  else
-    ram = in.allocate
-  end
-
+  ram = in.allocate
   ram.shared = shared
 
   unless bank.nil? && at.nil? && align.nil?
@@ -317,6 +322,13 @@ macro scope(name, bank=nil, at=nil, length=nil, in=nil, shared=false, align=nil,
 
   unless length.nil?
     ram.item_size = length
+  end
+
+  unless shadows_bank.nil? && shadows_address.nil?
+    range_from = at
+    range_to = at + length - 1
+    shadows_address = range_from if shadows_address.nil?
+    ram.shadow bank: bank, range: range_from..range_to, shadow_bank: shadows_bank, shadow_address: shadows_address
   end
 
   callee[name] = ram

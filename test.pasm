@@ -23,7 +23,7 @@ SNES.configure do
   memory_map do
 
     banks $C0..$FF, address: $0000..$FFFF, located_at: $0
-    banks $00..$07, address: $0000..$7FFF, shadows_banks_from: $C0, shadows_addresses_from: $8000
+    banks $00..$07, address: $8000..$FFFF, shadows_banks_from: $C0, shadows_addresses_from: $0000
 
   end
 

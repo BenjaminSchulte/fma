@@ -7,6 +7,7 @@ export default class MemoryLocation {
     this.addressRanges = [];
     this.alignedToAddresses = [];
     this.sections = [];
+    this.data = {}
   }
 
   clone() {
@@ -17,6 +18,7 @@ export default class MemoryLocation {
     location.addressRanges = this.addressRanges.slice();
     location.alignedToAddresses = this.alignedToAddresses.slice();
     location.sections = this.sections.slice();
+    location.data = this.data;
 
     return location;
   }
@@ -27,6 +29,7 @@ export default class MemoryLocation {
     location.addresses = other.addresses.slice();
     location.alignedToAddresses = other.alignedToAddresses.slice();
     location.sections = Utils.arrayUnique(this.sections.concat(other.sections));
+    location.data = Object.assign({}, this.data, other.data);
 
     location.banks = [];
     if (this.banks.length && !other.banks.length) {

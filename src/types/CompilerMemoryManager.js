@@ -53,6 +53,19 @@ export default class CompilerMemoryManager extends Class {
       self.memory.allowRange(rangeFrom, rangeTo, addressAnd, addressOr, align);
     })
 
+    klass.on('shadow_range', ['range', 'address_and', 'address_or', 'modify_add', 'modify_and', 'modify_or'], (self, range, addressAnd, addressOr, modifyAdd, modifyAnd, modifyOr, context) => {
+      var rangeFrom = range.isNil() ? null : range.left;
+      var rangeTo = range.isNil() ? null : range.right;
+
+      addressAnd = addressAnd.isNil() ? null : context.asNumber(addressAnd);
+      addressOr = addressOr.isNil() ? null : context.asNumber(addressOr);
+      modifyAdd = modifyAdd.isNil() ? null : context.asNumber(modifyAdd);
+      modifyAnd = modifyAnd.isNil() ? null : context.asNumber(modifyAnd);
+      modifyOr = modifyOr.isNil() ? null : context.asNumber(modifyOr);
+
+      self.memory.shadowRange(rangeFrom, rangeTo, addressAnd, addressOr, modifyAdd, modifyAnd, modifyOr);
+    })
+
     klass.on('to_future_number', [], (self, context) => {
       return new FutureNumber(new SymbolLocation(self.getSymbolName()));
     })

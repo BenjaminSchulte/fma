@@ -3,19 +3,19 @@ import Memory from './old/Memory';
 
 export default class RootMemoryAllocation extends MemoryAllocation {
   constructor() {
-    super(new Memory());
+    super(null, new Memory());
   }
 
-  allowOld(bank, rangeFrom, rangeTo, align) {
-    if (align !== null) {
+  buildAllowed(allowed) {
+    if (allowed.align !== null) {
       throw new Error('Align is not supported for root memory, yet');
     }
 
-    if (rangeFrom !== 0) {
+    if (allowed.rangeFrom !== 0) {
       throw new Error('Root memory range must start at address 0');
     }
 
-    this.memory.registerBank(bank, rangeTo + 1);
+    this.memory.registerBank(allowed.bank, allowed.rangeTo + 1);
   }
 
   merge(other) {
