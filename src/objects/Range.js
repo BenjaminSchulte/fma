@@ -35,6 +35,10 @@ export default class RangeObject extends AbstractObject {
       return context.create('Number', new InternalValue(self.right));
     })
 
+    klass.on('size', [], (self, context) => {
+      return context.create('Number', new InternalValue(self.right - self.left + 1));
+    })
+
     klass.on('each', ['&callback'], (self, block, context) => {
       var result = [];
 

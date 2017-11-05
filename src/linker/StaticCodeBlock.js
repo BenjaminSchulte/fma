@@ -5,6 +5,7 @@ export default class StaticCodeBlock {
   constructor() {
     this.code = new Writer();
     this.locationHint = new LocationHint();
+    this.location = null;
   }
 
   getSize() {
@@ -35,5 +36,13 @@ export default class StaticCodeBlock {
 
   fillCalculations(symbols) {
     this.code.fillCalculations(symbols);
+  }
+
+  getRomOffset() {
+    return this.location.getMemoryAddress().getRomOffset();
+  }
+
+  getBuffer() {
+    return this.code.getCode();
   }
 }

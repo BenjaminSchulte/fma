@@ -279,6 +279,7 @@ module Snes65816
 
       banks.each do |bank|
         ROM.allow bank: bank, range: address, located_at: located_at
+        located_at += address.size
       end
 
     else
@@ -406,8 +407,8 @@ macro @locate_at(**kwargs)
 end
 
 ;; Memory block declaration
-macro memory_block(**kwargs)
-  Compiler.define do
+macro memory_block(name=nil, **kwargs)
+  Compiler.define name do
     Snes65816.locate_at **kwargs
 
     yield Compiler.current_scope
@@ -509,12 +510,16 @@ Snes65816.operator $5b, :tcd, :IMPL
 Snes65816.operator $5c, :JML, :addr do |opcode, address|
   Compiler.current_scope.size_hint_function address
 
-  Compiler.print "TODO ", address
+  Compiler.current_scope.db opcode
+  Compiler.current_scope.dw address & $FFFF
+  Compiler.current_scope.db address >> 16
 end
 Snes65816.operator $5c, :JML, :long do |opcode, address|
   Compiler.current_scope.size_hint_function address
 
-  Compiler.print "TODO ", address
+  Compiler.current_scope.db opcode
+  Compiler.current_scope.dw address & $FFFF
+  Compiler.current_scope.db address >> 16
 end
 Snes65816.operator $5d, :eor, :ADDRX
 Snes65816.operator $5e, :lsr, :ADDRX

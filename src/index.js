@@ -3,6 +3,7 @@ import Project from './project/Project';
 import Interpreter from './interpreter/Interpreter';
 import Linker from './linker/Linker';
 import CorePlugin from './types/CorePlugin';
+import fs from 'fs';
 
 import {Assembler} from './asm/snes65816';
 
@@ -17,8 +18,6 @@ const parse = (name) => {
 
   const program = parser.parseFile(name);
   interpreter.process(program);
-
-  project.log('info', `Done`);
 }
 
 const run = () => {
@@ -31,11 +30,16 @@ const run = () => {
 
   linker.addObject(interpreter.buildObject());
 
-  linker.link();
+  var result = linker.link();
+  result = asm.postProcess(result);
+
+  return result;
 }
 
 process.on('unhandledRejection', (reason) => {
     console.error(reason);
 });
 
-console.log(run());
+const result = run();
+console.log(result.symbols.all());
+fs.writeFileSync('test.sfc', result.getBinary())

@@ -10,14 +10,17 @@ export default class Writer {
     this.calculations = [];
   }
 
+  getCode() {
+    return this.code;
+  }
+
   fillCalculations(symbols) {
     for (let calculation of this.calculations) {
       var value = calculation.calculate(symbols);
 
-      console.log(calculation.calculation.toString(), '=', value.toString(16));
-
+      const buffer = this.code.buffer;
       for (let i=0; i<calculation.size; i++) {
-        this.code[calculation.offset + i] = value & 0xFF;
+        buffer[calculation.offset + i] = value & 0xFF;
         value >>= 8;
       }
     }
@@ -50,7 +53,7 @@ export default class Writer {
   write(item, bytesPerItem) {
     while (bytesPerItem--) {
       this.code.writeUInt8(item & 0xFF);
-      item <<= 8;
+      item >>= 8;
     }
   }
 

@@ -1,10 +1,20 @@
 import MemoryAllocation from './MemoryAllocation';
 import MemoryArranger from './old/arrange/MemoryArranger';
 import Memory from './old/Memory';
+import MemoryRecalculator from './MemoryRecalculator';
+
 
 export default class RootMemoryAllocation extends MemoryAllocation {
   constructor() {
     super(null);
+  }
+
+  getMemoryRecalculator() {
+    return new MemoryRecalculator(this.allowed, this.shadows);
+  }
+
+  getRoot() {
+    return this;
   }
 
   buildAllowed(allowed) {
@@ -36,5 +46,9 @@ export default class RootMemoryAllocation extends MemoryAllocation {
 
     const arranger = new MemoryArranger(this.memory);
     arranger.arrange();
+  }
+
+  getRomOffset(fullAddress) {
+    return this.getMemoryRecalculator().getRomOffset(fullAddress);
   }
 }

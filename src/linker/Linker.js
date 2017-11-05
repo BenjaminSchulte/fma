@@ -1,5 +1,7 @@
 import LinkerObject from './LinkerObject';
 import SymbolList from './SymbolList';
+import RomWriter from './writer/RomWriter';
+import LinkerResult from './LinkerResult';
 
 export default class Linker {
   constructor(project) {
@@ -37,17 +39,28 @@ export default class Linker {
     }
   }
 
+  build() {
+    const builder = new RomWriter();
+    for (let block of this.object.getStaticCodeBlocks()) {
+      builder.add(block);
+    }
+    return builder.get();
+  }
+
   link() {
     this.addStaticCodeToRom();
+
+    this.log('info', 'Arranging memory blocks.');
     this.object.getRomBlock().build();
     this.object.getRamBlock().build();
 
+    this.log('info', 'Resolving missing symbols.');
     const symbols = this.collectSymbols();
-
-        this.object.getRomBlock().memory.dump();
-        this.object.getRamBlock().memory.dump();
-
     this.fillCalculations(symbols);
 
+    this.log('info', 'Building ROM file.');
+    const rom = this.build();
+
+    return new LinkerResult(rom.getBuffer(), symbols, this.object.getRomBlock().getMemoryRecalculator());
   }
 }

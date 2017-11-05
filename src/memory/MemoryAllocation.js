@@ -20,6 +20,14 @@ export default class MemoryAllocation {
     this.appliedShadows = [];
   }
 
+  getRoot() {
+    return this.parent.getRoot();
+  }
+
+  getRomOffset(address) {
+    return this.getRoot().getRomOffset(address);
+  }
+
   collectSymbols(symbols) {
     if (this.hasMemoryAddress() && this.symbolName) {
       symbols.add(this.symbolName, this.getMemoryAddress().getApplicationAddress());
@@ -39,7 +47,7 @@ export default class MemoryAllocation {
       throw new Error('No address for memory found');
     }
 
-    return new MemoryAddress(this.getAppliedShadows(), this.memory.staticAddress)
+    return new MemoryAddress(this, this.getAppliedShadows(), this.memory.staticAddress)
   }
 
   createChild() {
@@ -91,7 +99,7 @@ export default class MemoryAllocation {
       bank = addressOr >> 16;
     }
 
-    this.allowOld(bank, rangeFrom, rangeTo, align);
+    this.allowOld(bank, rangeFrom, rangeTo, align, locatedAt);
   }
 
   shadowRange(rangeFrom, rangeTo, addressAnd, addressOr, modifyAdd, modifyAnd, modifyOr) {
@@ -120,8 +128,8 @@ export default class MemoryAllocation {
     this.shadows.push({fromBank, rangeFrom, rangeTo, toBank, modifyAdd});
   }
 
-  allowOld(bank, rangeFrom, rangeTo, align) {
-    this.allowed.push({bank, rangeFrom, rangeTo, align});
+  allowOld(bank, rangeFrom, rangeTo, align, locatedAt) {
+    this.allowed.push({bank, rangeFrom, rangeTo, align, locatedAt});
   }
 
   buildMemory() {

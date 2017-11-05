@@ -63,7 +63,7 @@ export default class FunctionObject extends NamedObject {
 
     Compiler.setMember('current_scope', scope);
 
-    context.getInterpreter().log('info', `Compiling function ${this.name}`);
+    context.getInterpreter().log('info', `Compiling function ${this.getFullName()}`);
     scope.getMember('on_enter_function').callWithParameters(context, this);
 
     this.processFunctionHooks(() => {
@@ -75,9 +75,6 @@ export default class FunctionObject extends NamedObject {
     });
 
     scope.getMember('on_leave_function').callWithParameters(context, this);
-    context.getInterpreter().log('info', `Finished compiling function ${this.name}`);
-
-    //context.processMany(this.children);
   }
 
   callWithParameters(context) {

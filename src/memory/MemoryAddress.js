@@ -1,5 +1,6 @@
 export default class MemoryAddress {
-  constructor(shadows, staticAddress) {
+  constructor(node, shadows, staticAddress) {
+    this.node = node;
     this.shadows = shadows;
     this.staticAddress = staticAddress;
   }
@@ -28,5 +29,11 @@ export default class MemoryAddress {
 
   getActualAddress() {
     return this.staticAddress.asReadAddress();
+  }
+
+  getRomOffset() {
+    const address = this.getActualAddress();
+
+    return this.node.getRomOffset(address);
   }
 }

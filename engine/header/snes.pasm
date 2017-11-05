@@ -69,6 +69,22 @@ module SNES
       self.MAKER_CODE = code
     end
 
+    ;; Sets the map mode
+    macro map_mode(code)
+      self.MAP_MODE = code
+    end
+
+    ;; Sets the map mode
+    macro rom_type(ram=false, battery=false)
+      value = $00
+      if battery && ram
+        value |= $02
+      elsif ram
+        value |= $01
+      end
+      self.ROM_TYPE = value
+    end
+
     ;; Sets the destination code
     macro destination(code)
       case code
@@ -152,6 +168,12 @@ module SNES
     ;; The address of the heade
     HEADER_ADDRESS = $FFB0
 
+    ;; Configures the header location
+    macro header_location(bank, address)
+      HEADER_BANK = bank
+      HEADER_ADDRESS = address
+    end
+
     ;; Configures the ROM banks
     macro banks(*args, **kwargs)
       Snes65816.configure_banks *args, **kwargs
@@ -178,7 +200,7 @@ module SNES
     yield @Header
 
     module ::Header
-      locate_at bank: MemoryConfiguration.HEADER_BANK
+      locate_at bank: 0
 
       ;; The core initialize routine which initializes the application
       def main
@@ -204,7 +226,7 @@ module SNES
         RTI
       end
 
-      memory_block bank: MemoryConfiguration.HEADER_BANK, address: MemoryConfiguration.HEADER_ADDRESS do |block|
+      memory_block name: ".rom_header_location", bank: MemoryConfiguration.HEADER_BANK, address: MemoryConfiguration.HEADER_ADDRESS do |block|
         ; ROM registration data
         block.dw Header.MAKER_CODE
         block.db Header.GAME_CODE, length: 4, fill: $20

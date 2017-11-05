@@ -57,6 +57,14 @@ export default class CompilerScope extends Class {
         numItems++;
       }
     }
+
+    if (options.length) {
+      const maxItems = context.asNumber(options.length);
+      const fill = options.fill ? context.asNumber(options.fill) : 0;
+      while (numItems++ < maxItems) {
+        self.block.code.write(fill, 1)
+      }
+    }
   }
 
   writeItem(self, context, item, bytesPerItem) {
@@ -70,7 +78,7 @@ export default class CompilerScope extends Class {
       self.block.code.write(number.getMember('__value').getValue(), bytesPerItem);
     } else if (item.hasMember('to_future_number')) {
       const number = item.getMember('to_future_number').callWithParameters(context.getContext());
-      self.block.code.write(number.getCalculation(), bytesPerItem);
+      self.block.code.writeCalculation(number.getCalculation(), bytesPerItem);
     } else {
       throw new InterpreterError(`Unable to convert type ${item.getClassName()} to Number`);
     }

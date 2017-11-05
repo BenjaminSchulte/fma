@@ -24,8 +24,15 @@ export default class Compiler extends Class {
       this.print(context, ...args.getItems());
     })
 
-    klass.on('define', ['&block'], (self, args, context) => {
-      const func = new FunctionObject('.codesection' + Compiler.nextCodeSectionId++);
+    klass.on('define', ['?name', '&block'], (self, name, args, context) => {
+      var functionName = '';
+      if (name.isNil()) {
+        functionName = '.codesection' + Compiler.nextCodeSectionId++;
+      } else {
+        functionName = context.asString(name);
+      }
+
+      const func = new FunctionObject(functionName);
 
       func.setCallback(() => {
         const block = (context.getContext().resolveChild('block')).getObject();
@@ -82,6 +89,9 @@ export default class Compiler extends Class {
 
       case 'Boolean':
         return object.getValue().toString();
+
+      case 'Function':
+        return '<' + object.getClassName() + ':' + object.getName() + '>';
 
       case 'Class':
         return '<' + object.getClassName() + ':' + object.getName() + '>';
