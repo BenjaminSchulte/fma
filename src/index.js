@@ -5,7 +5,7 @@ import Linker from './linker/Linker';
 import CorePlugin from './types/CorePlugin';
 import fs from 'fs';
 
-import {Assembler} from './asm/snes65816';
+import {Assembler, SymbolListWriter} from './asm/snes65816';
 
 const asm = new Assembler();
 const project = new Project(asm);
@@ -42,3 +42,6 @@ process.on('unhandledRejection', (reason) => {
 
 const result = run();
 fs.writeFileSync('test.sfc', result.getBinary())
+
+const symbols = new SymbolListWriter(result.getSymbols());
+fs.writeFileSync('test.sym', symbols.write());
