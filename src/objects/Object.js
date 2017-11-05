@@ -8,7 +8,19 @@ export default class AbstractObject {
     this.parent = null;
     this.fullName = null;
 
+    this.functionHooks = [];
+
     this.klassMembers = null;
+  }
+
+  addFunctionHook(hook) {
+    this.functionHooks.push(hook);
+  }
+
+  collectFunctionHooks() {
+    var list = this.parent ? this.parent.collectFunctionHooks() : [];
+
+    return list.concat(this.functionHooks);
   }
 
   initializeMembers() {
@@ -38,6 +50,10 @@ export default class AbstractObject {
 
     this.fullName = prefix + this.getName();
     return this.fullName;
+  }
+
+  getSymbolName() {
+    return this.getFullName();
   }
 
   getName() {

@@ -1,6 +1,7 @@
 import Parser from './grammar/Parser';
 import Project from './project/Project';
 import Interpreter from './interpreter/Interpreter';
+import Linker from './linker/Linker';
 import CorePlugin from './types/CorePlugin';
 
 import {Assembler} from './asm/snes65816';
@@ -9,6 +10,7 @@ const asm = new Assembler();
 const project = new Project(asm);
 const parser = new Parser(project);
 const interpreter = new Interpreter(project);
+const linker = new Linker(project);
 
 const parse = (name) => {
   project.log('info', `Parsing file ${name}`);
@@ -26,6 +28,10 @@ const run = () => {
   parse('./src/asm/snes65816/snes65816.pasm');
   parse('./engine.pasm');
   parse('./test.pasm');
+
+  linker.addObject(interpreter.buildObject());
+
+  linker.link();
 }
 
 process.on('unhandledRejection', (reason) => {

@@ -334,8 +334,8 @@ function peg$parse(input, options) {
       peg$c105 = function(dec, name, block) {
           return c(new n.FunctionDeclaration(name)).setChildren(block).setDecorators(dec ? dec : []);
         },
-      peg$c106 = function(root, name, args, block) {
-          return c(new n.MacroDeclaration(name)).setIsRoot(!!root).setChildren(block).setArguments(args ? args : []);
+      peg$c106 = function(root, is_decorator, name, args, block) {
+          return c(new n.MacroDeclaration(name)).setIsRoot(!!root).setIsDecorator(!!is_decorator).setChildren(block).setArguments(args ? args : []);
         },
       peg$c107 = "(",
       peg$c108 = peg$literalExpectation("(", false),
@@ -2477,7 +2477,7 @@ function peg$parse(input, options) {
   }
 
   function peg$parseMacroDeclaration() {
-    var s0, s1, s2, s3, s4, s5, s6, s7;
+    var s0, s1, s2, s3, s4, s5, s6, s7, s8;
 
     s0 = peg$currPos;
     s1 = peg$parsekeyword_macro();
@@ -2495,20 +2495,35 @@ function peg$parse(input, options) {
           s3 = null;
         }
         if (s3 !== peg$FAILED) {
-          s4 = peg$parseIdentifierString();
+          if (input.charCodeAt(peg$currPos) === 64) {
+            s4 = peg$c102;
+            peg$currPos++;
+          } else {
+            s4 = peg$FAILED;
+            if (peg$silentFails === 0) { peg$fail(peg$c103); }
+          }
+          if (s4 === peg$FAILED) {
+            s4 = null;
+          }
           if (s4 !== peg$FAILED) {
-            s5 = peg$parseAnyMacroArgs();
-            if (s5 === peg$FAILED) {
-              s5 = null;
-            }
+            s5 = peg$parseIdentifierString();
             if (s5 !== peg$FAILED) {
-              s6 = peg$parseBlock();
+              s6 = peg$parseAnyMacroArgs();
+              if (s6 === peg$FAILED) {
+                s6 = null;
+              }
               if (s6 !== peg$FAILED) {
-                s7 = peg$parsekeyword_end();
+                s7 = peg$parseBlock();
                 if (s7 !== peg$FAILED) {
-                  peg$savedPos = s0;
-                  s1 = peg$c106(s3, s4, s5, s6);
-                  s0 = s1;
+                  s8 = peg$parsekeyword_end();
+                  if (s8 !== peg$FAILED) {
+                    peg$savedPos = s0;
+                    s1 = peg$c106(s3, s4, s5, s6, s7);
+                    s0 = s1;
+                  } else {
+                    peg$currPos = s0;
+                    s0 = peg$FAILED;
+                  }
                 } else {
                   peg$currPos = s0;
                   s0 = peg$FAILED;

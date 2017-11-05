@@ -3,6 +3,10 @@ export default class PluginUtils {
     this.context = context;
   }
 
+  getInterpreter() {
+    return this.context.getInterpreter();
+  }
+
   getContext() {
     return this.context;
   }
@@ -15,6 +19,12 @@ export default class PluginUtils {
 
   asString(self, log=null) {
     return this.asType(self, log, 'to_s', 'ClassInstance', "String", "", (object) => {
+      return object.getMember('__value').getValue();
+    });
+  }
+
+  asNumber(self, log=null) {
+    return this.asType(self, log, 'to_n', 'ClassInstance', "Number", "", (object) => {
       return object.getMember('__value').getValue();
     });
   }
@@ -105,7 +115,7 @@ export default class PluginUtils {
       var params = [];
 
       for (let arg of args) {
-        const name = arg.match(/^(&|\*{1,2})?(.*)$/)[2];
+        const name = arg.match(/^\??(&|\*{1,2})?(.*)$/)[2];
         params.push((context.resolveChild(name)).getObject());
       }
 

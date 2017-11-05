@@ -32,6 +32,23 @@ export default class FunctionObject extends NamedObject {
     return true;
   }
 
+  processFunctionHooks(callback) {
+    var hooks = this.collectFunctionHooks();
+    if (!hooks.length) {
+      return callback();
+    }
+
+    const next = () => {
+      if (!hooks.length) {
+        return callback();
+      }
+
+      hooks.shift().call(this, next);
+    }
+
+    next();
+  }
+
   compile(context) {
     if (this.hasBeenCompiled) {
       return;
@@ -42,18 +59,20 @@ export default class FunctionObject extends NamedObject {
     const root = context.getRoot();
     const CompilerScope = (root.resolveChild('CompilerScope')).getObject();
     const Compiler = (root.resolveChild('Compiler')).getObject();
-    const scope = CompilerScope.getMember('new').callWithParameters(root);
+    const scope = CompilerScope.getMember('new').callWithParameters(root, this);
 
     Compiler.setMember('current_scope', scope);
 
     context.getInterpreter().log('info', `Compiling function ${this.name}`);
     scope.getMember('on_enter_function').callWithParameters(context, this);
 
-    if (this.javascriptCallback) {
-      this.javascriptCallback(this);
-    } else {
-      this.parentContext.processMany(this.children);
-    }
+    this.processFunctionHooks(() => {
+      if (this.javascriptCallback) {
+        this.javascriptCallback(this);
+      } else {
+        this.parentContext.processMany(this.children);
+      }
+    });
 
     scope.getMember('on_leave_function').callWithParameters(context, this);
     context.getInterpreter().log('info', `Finished compiling function ${this.name}`);
@@ -71,7 +90,7 @@ export default class FunctionObject extends NamedObject {
     super.initializeClassMembers(klass);
 
     klass.on('to_future_number', [], (self) => {
-      return new FutureNumber(new SymbolLocation(self.getFullName()));
+      return new FutureNumber(new SymbolLocation(self.getSymbolName()));
     })
   }
 }

@@ -12,8 +12,12 @@ export default class Compiler extends Class {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
-    klass.on('register_static_code', ['memory'], (self, memory) => {
-      console.log('TODO: REGISTER STATIC CODE', memory);
+    klass.on('register_static_memory', ['memory'], (self, memory) => {
+      this.interpreter.addRomBlock(memory.memory);
+    })
+
+    klass.on('register_dynamic_memory', ['memory'], (self, memory) => {
+      this.interpreter.addRamBlock(memory.memory);
     })
 
     klass.on('print', ['*args'], (self, args, context) => {
@@ -21,7 +25,7 @@ export default class Compiler extends Class {
     })
 
     klass.on('define', ['&block'], (self, args, context) => {
-      const func = new FunctionObject('<memorysection>');
+      const func = new FunctionObject('.codesection' + Compiler.nextCodeSectionId++);
 
       func.setCallback(() => {
         const block = (context.getContext().resolveChild('block')).getObject();
@@ -29,10 +33,6 @@ export default class Compiler extends Class {
       })
 
       this.interpreter.compileFunction(func);
-    })
-
-    klass.on('each_function', ['&block'], (self, block, context) => {
-      block.getMacro().callWithParameters(context.getContext());
     })
   }
 
@@ -90,3 +90,5 @@ export default class Compiler extends Class {
     return "<" + object.getClassName() + ">";
   }
 }
+
+Compiler.nextCodeSectionId = 1;

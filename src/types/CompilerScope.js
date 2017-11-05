@@ -1,6 +1,6 @@
 import Class from '../objects/Class';
 import PluginUtils from '../plugin/PluginUtils';
-import Writer from '../linker/writer/Writer';
+import StaticCodeBlock from '../linker/StaticCodeBlock';
 import InterpreterError from '../interpreter/InterpreterError';
 
 export default class CompilerScope extends Class {
@@ -15,16 +15,30 @@ export default class CompilerScope extends Class {
     klass.on('on_call_function', ['function'], () => {})
     klass.on('on_leave_function', ['function'], () => {})
 
-    klass.on('initialize', [], (self, context) => {
-      self.writer = new Writer();
+    klass.on('initialize', ['function'], (self, func, context) => {
+      self.block = new StaticCodeBlock();
+      self.block.code.writeSymbol(func.getSymbolName());
+      context.getInterpreter().registerStaticCodeBlock(self.block);
     })
 
     klass.on('dw', ['*args', '**kwargs'], (self, args, kwargs, context) => {
-      this.write(self, context, args.getItems(), kwargs.getItems(), 16);
+      this.write(self, context, args.getItems(), kwargs.getItems(), 2);
     })
 
     klass.on('db', ['*args', '**kwargs'], (self, args, kwargs, context) => {
-      this.write(self, context, args.getItems(), kwargs.getItems(), 8);
+      this.write(self, context, args.getItems(), kwargs.getItems(), 1);
+    })
+
+    klass.on('locate_at', ['range', 'address_and', 'address_or', 'align'], (self, range, addressAnd, addressOr, align, context) => {
+      const location = self.block.getLocationHint();
+      var rangeFrom = range.isNil() ? null : range.left;
+      var rangeTo = range.isNil() ? null : range.right;
+
+      addressAnd = addressAnd.isNil() ? null : context.asNumber(addressAnd);
+      addressOr = addressOr.isNil() ? null : context.asNumber(addressOr);
+      align = align.isNil() ? null : context.asNumber(align);
+
+      location.allowRange(rangeFrom, rangeTo, addressAnd, addressOr, align)
     })
   }
 
@@ -35,7 +49,7 @@ export default class CompilerScope extends Class {
       if (item.getClassName() === 'String') {
         const str = item.getMember('__value').getValue();
         for (let item of str.split('')) {
-          self.writer.write(item.charCodeAt(0), bytesPerItem);
+          self.block.code.write(item.charCodeAt(0), bytesPerItem);
           numItems++;
         }
       } else {
@@ -47,16 +61,16 @@ export default class CompilerScope extends Class {
 
   writeItem(self, context, item, bytesPerItem) {
     if (item.getClassName() === 'FutureNumber') {
-      self.writer.writeCalculation(item.getCalculation(), bytesPerItem);
+      self.block.code.writeCalculation(item.getCalculation(), bytesPerItem);
       return;
     }
 
     if (item.hasMember('to_n')) {
       const number = item.getMember('to_n').callWithParameters(context.getContext());
-      self.writer.write(number.getMember('__value').getValue(), bytesPerItem);
+      self.block.code.write(number.getMember('__value').getValue(), bytesPerItem);
     } else if (item.hasMember('to_future_number')) {
       const number = item.getMember('to_future_number').callWithParameters(context.getContext());
-      self.writer.write(number.getCalculation(), bytesPerItem);
+      self.block.code.write(number.getCalculation(), bytesPerItem);
     } else {
       throw new InterpreterError(`Unable to convert type ${item.getClassName()} to Number`);
     }

@@ -1,15 +1,25 @@
 ; Extends the memory manager for some core functions
 class CompilerMemoryManager
-  macro allow(bank=nil, at=nil, range=nil)
-    Compiler.print "allow MemoryManager ", bank, " ", at, " ", range
+  macro allow(bank=nil, at=nil, range=nil, align=nil)
+    address_and = nil
+    address_or  = nil
+
+    unless bank.nil?
+      address_and = $FFFF
+      address_or  = bank << 16
+    end
+
+    unless at.nil?
+      range = at..at
+    end
+
+    self.allow_range range, address_and, address_or, align
   end
 end
 
 ; Extends the compiler scope
 class CompilerScope
   macro on_enter_function(function)
-    Compiler.print "Entering function"
-
     if function.key? "register_size_A"
       self.set_size :A, function.register_size_A
     end
@@ -33,7 +43,6 @@ class CompilerScope
   macro set_size(name, size)
     name = "XY" if name == "X" || name == "Y"
 
-    Compiler.print "set_size register_size_#{name} = ", size
     self["register_size_#{name}"] = size
   end
 
@@ -134,8 +143,10 @@ module Snes65816
   end
 
   RAM = CompilerMemoryManager.new
+  Compiler.register_dynamic_memory RAM
+
   ROM = CompilerMemoryManager.new
-  Compiler.register_static_code ROM
+  Compiler.register_static_memory ROM
 
   ;; All common data registers can be extended using this class
   class Register
@@ -250,67 +261,62 @@ module Snes65816
   ;; Configures the ROM
   macro configure_banks(banks, address, shadows_banks_from=nil, shadows_addresses_from=nil, located_at=nil)
     banks.each do |bank|
-      unless shadows_addresses_from.nil? && shadows_banks_from.nil?
-        child = ROM.allocate
-      else
-        child = ROM.allocate_shadow
-      end
+      ROM.allow bank: bank, range: address
+      ;child.location = located_at
 
-      child.allow bank: bank, range: address
-      child.location = located_at
+      ;unless shadows_addresses_from.nil?
+      ;  child.address_add = shadows_addresses_from - address.first
+      ;end
 
-      unless shadows_addresses_from.nil?
-        child.address_add = shadows_addresses_from - address.first
-      end
+      ;unless shadows_banks_from.nil?
+      ;  child.address_and = $FFFF
+      ;  child.address_or  = shadows_banks_from << 16
 
-      unless shadows_banks_from.nil?
-        child.address_and = $FFFF
-        child.address_or  = shadows_banks_from << 16
-
-        shadows_banks_from += 1
-      end
+      ;  shadows_banks_from += 1
+      ;end
     end
   end
 
   ;; Assigns the memory location to the scope
-  macro locate_at(bank=nil, address=nil)
-    range_from = nil
-    range_to = nil
+  macro locate_at(bank=nil, address=nil, range=nil, align=nil)
+    address_and = nil
+    address_or  = nil
 
-    unless bank.nil? && address.nil?
-      Compiler.print "TODO: locate_at"
+    unless bank.nil?
+      address_and = $FFFF
+      address_or  = bank << 16
     end
 
-    unless range_from.nil?
-      Compiler.current_scope.locate_at range_from..range_to
+    unless address.nil?
+      range = address..address
     end
+
+    Compiler.current_scope.locate_at range, address_and, address_or, align
   end
 end
 
 ;; Allocates a new RAM scope
-macro scope(name, bank=nil, at=nil, length=nil, in=nil, shadows_bank=nil, shared=false, align=0)
+macro scope(name, bank=nil, at=nil, length=nil, in=nil, shared=false, align=nil, shadows_bank=nil)
   address_range = nil
 
   if in.nil?
-    ram = Snes65816::RAM.allocate
+    in = Snes65816::RAM
+  end
+
+  if shadows_bank.nil?
+    ram = in.allocate_shadow
   else
     ram = in.allocate
   end
 
-  ram.align = align
   ram.shared = shared
 
-  unless bank.nil? && at.nil?
-    ram.allow bank: bank, at: at
+  unless bank.nil? && at.nil? && align.nil?
+    ram.allow bank: bank, at: at, align: align
   end
 
   unless length.nil?
     ram.item_size = length
-  end
-
-  unless shadows_bank.nil?
-    ram.address_and = $FFFF
-    ram.address_or  = shadows_bank << 16
   end
 
   callee[name] = ram
@@ -377,12 +383,10 @@ macro dp(number)
 end
 
 ;; Decorator for location
-macro locate_at(**kwargs)
-  Compiler.each_function do
-    Snes65816.locate_at **kwargs
+macro @locate_at(**kwargs)
+  Snes65816.locate_at **kwargs
 
-    yield
-  end
+  yield
 end
 
 ;; Memory block declaration
@@ -457,7 +461,7 @@ Snes65816.operator $3d, :and, :ADDRX
 Snes65816.operator $3e, :rol, :ADDRX
 Snes65816.operator $3f, :and, :LONGX
 Snes65816.operator $40, :rti, :impl do |opcode|
-  Compiler.print "TODO"
+  Compiler.current_scope.db opcode
 end
 Snes65816.operator $41, :eor, :IDPX
 Snes65816.operator $42, :wdm, :IM
@@ -565,11 +569,12 @@ Snes65816.operator $9f, :sta, :LONGX
 
 Snes65816.operator $a1, :lda, :IDPX
 Snes65816.operator $a2, :LDX, :im do |opcode, value|
+  Compiler.current_scope.db opcode
   case X.size
   when 8
-    Compiler.print "TODO LDX 8: ", value
+    Compiler.current_scope.db value
   when 16
-    Compiler.print "TODO LDX 16: ", value
+    Compiler.current_scope.dw value
   else
     raise "Unknown register size for X"
   end
@@ -581,11 +586,12 @@ Snes65816.operator $a6, :ldx, :DP
 Snes65816.operator $a7, :lda, :ILDP
 Snes65816.operator $a8, :tay, :IMPL
 Snes65816.operator $a9, :LDA, :im do |opcode, value|
+  Compiler.current_scope.db opcode
   case A.size
   when 8
-    Compiler.print "TODO LDA 8: ", value
+    Compiler.current_scope.db value
   when 16
-    Compiler.print "TODO LDA 16: ", value
+    Compiler.current_scope.dw value
   else
     raise "Unknown register size for A"
   end

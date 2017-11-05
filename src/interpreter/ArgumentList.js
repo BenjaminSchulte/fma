@@ -22,17 +22,24 @@ export default class ArgumentList {
   }
 
   buildFromStringList(list) {
+    var defaultValue = null;
+
     for (let item of list) {
+      if (item[0] === '?') {
+        item = item.substr(1);
+        defaultValue = new NilObject();
+      }
+
       if (item[0] === '*') {
         if (item[1] === '*') {
-          this.addArgument(item.substr(2), ArgumentList.TYPE_KEYWORD_ARGUMENTS);
+          this.addArgument(item.substr(2), ArgumentList.TYPE_KEYWORD_ARGUMENTS, defaultValue);
         } else {
-          this.addArgument(item.substr(1), ArgumentList.TYPE_ARGUMENTS);
+          this.addArgument(item.substr(1), ArgumentList.TYPE_ARGUMENTS, defaultValue);
         }
       } else if (item[0] === '&') {
-        this.addArgument(item.substr(1), ArgumentList.TYPE_BLOCK);
+        this.addArgument(item.substr(1), ArgumentList.TYPE_BLOCK, defaultValue);
       } else {
-        this.addArgument(item);
+        this.addArgument(item, ArgumentList.TYPE_ARGUMENT, defaultValue);
       }
     }
   }

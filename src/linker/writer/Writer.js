@@ -1,12 +1,45 @@
+import DynamicBuffer from './DynamicBuffer';
+import WriterCalculation from './WriterCalculation';
+import WriterSymbol from './WriterSymbol';
+
 export default class Writer {
   constructor() {
+    this.code = new DynamicBuffer();
+
+    this.symbols = [];
+    this.calculations = [];
   }
 
-  write(item, bytesPerItem=8) {
-    //console.log('WRITE', item, bytesPerItem);
+  getFirstSymbol() {
+    for (let symbol of this.symbols) {
+      if (symbol.offset === 0) {
+        return symbol.name;
+      }
+    }
+
+    return null;
+  }
+
+  size() {
+    return this.code.getLength();
+  }
+
+  writeSymbol(name) {
+    this.symbols.push(new WriterSymbol(this.size(), name));
+  }
+
+  write(item, bytesPerItem) {
+    while (bytesPerItem--) {
+      this.code.writeUInt8(item & 0xFF);
+      item <<= 8;
+    }
   }
 
   writeCalculation(calculation, bytesPerItem) {
-    //console.log('WRITECALC', calculation.toString(), bytesPerItem);
+    this.calculations.push(new WriterCalculation(this.size(), calculation, bytesPerItem));
+
+    while (bytesPerItem--) {
+      this.code.writeUInt8(0x00);
+    }
   }
 }

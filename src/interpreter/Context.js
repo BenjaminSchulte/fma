@@ -19,6 +19,12 @@ export default class Context {
     this.returnValue = new NilObject();
   }
 
+  clone() {
+    const context = new Context(this.interpreter, this.object);
+    context.parent = this.parent ? this.parent.clone() : null;
+    return context;
+  }
+
   withoutParents() {
     return new Context(this.getInterpreter(), this.object);
   }
@@ -45,6 +51,8 @@ export default class Context {
 
   injectParent(parent) {
     if (this.parent !== null) {
+      console.log(this)
+      console.log(this.parent);
       throw new InterpreterError('injectParent does not yet support injecting parents in trees')
     }
 

@@ -219,8 +219,8 @@ FunctionDeclaration
   }
 
 MacroDeclaration
-  = keyword_macro __ root:"::"? name:IDENTIFIER args:AnyMacroArgs? block:Block keyword_end {
-    return c(new n.MacroDeclaration(name)).setIsRoot(!!root).setChildren(block).setArguments(args ? args : []);
+  = keyword_macro __ root:"::"? is_decorator:"@"? name:IDENTIFIER args:AnyMacroArgs? block:Block keyword_end {
+    return c(new n.MacroDeclaration(name)).setIsRoot(!!root).setIsDecorator(!!is_decorator).setChildren(block).setArguments(args ? args : []);
   }
 
 AnyMacroArgs

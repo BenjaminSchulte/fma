@@ -1,5 +1,6 @@
 import NamedObject from './NamedObject';
 import MacroInstance from './MacroInstance';
+import FunctionHook from './FunctionHook';
 
 export default class MacroObject extends NamedObject {
   constructor(name) {
@@ -8,6 +9,11 @@ export default class MacroObject extends NamedObject {
     this.javascriptCallback = null;
     this.parentContext = null;
     this.arguments = null;
+    this.isDecorator = false;
+  }
+
+  setIsDecorator(decorator) {
+    this.isDecorator = decorator;
   }
 
   withSelf(self) {
@@ -45,6 +51,17 @@ export default class MacroObject extends NamedObject {
   }
 
   call(context, self=null) {
+    if (this.isDecorator) {
+      context.resolveChild('callee').getObject().addFunctionHook(
+        new FunctionHook(this, context, self)
+      );
+      return;
+    }
+
+    return this.callWithoutDecoratorCheck(context, self);
+  }
+
+  callWithoutDecoratorCheck(context, self) {
     try {
       if (this.javascriptCallback) {
         return this.javascriptCallback(context, self);

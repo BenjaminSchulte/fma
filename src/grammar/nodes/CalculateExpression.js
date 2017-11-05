@@ -9,13 +9,10 @@ export default class CalculateExpression extends NestedExpressionNode {
   }
 
   dump() {
-    var left = this.parent;
-    var right = this.right;
+    var left = this.parent.dump ? this.parent.dump() : this.parent.type();
+    var right = this.right.dump ? this.right.dump() : this.right.type();
 
-    if (left.dump) { left = left.dump() } else { left = left.type(); }
-    if (right.dump) { right = right.dump() } else { right = right.type(); }
-
-    return `(${left} ${this.operator} ${right})`
+    return `(${left} ${this.operator} ${right})`;
   }
 
   static build(c, left, calcs) {
@@ -31,7 +28,7 @@ export default class CalculateExpression extends NestedExpressionNode {
       calcs
     );
 
-    console.log(result.dump());
+    //console.log(result.dump());
 
     return result;
   }
@@ -71,7 +68,6 @@ export default class CalculateExpression extends NestedExpressionNode {
 }
 
 const PRIORITY = [
-  ['='],
   ['*', '/'],
   ['+', '-'],
   ['<<', '>>'],
@@ -80,6 +76,7 @@ const PRIORITY = [
   ['<', '>'],
   ['==', '!='],
   ['||', '&&'],
+  ['='],
 ];
 
 CalculateExpression.PRIORITY_INDEX = {};

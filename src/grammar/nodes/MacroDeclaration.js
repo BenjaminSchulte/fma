@@ -7,6 +7,12 @@ export default class MacroDeclaration extends BlockDeclaration {
 
     this.arguments = new ArgumentList();
     this.isRoot = false;
+    this.isDecorator = false;
+  }
+
+  setIsDecorator(dec) {
+    this.isDecorator = dec;
+    return this;
   }
 
   setIsRoot(root) {
