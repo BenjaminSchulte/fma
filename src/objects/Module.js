@@ -8,4 +8,12 @@ export default class ModuleObject extends NamedObject {
   type() {
     return 'Module';
   }
+
+  setMember(name, value) {
+    if (value.type() === 'Macro') {
+    //  value = value.withSelf(value);
+    }
+
+    super.setMember(name, value);
+  }
 }

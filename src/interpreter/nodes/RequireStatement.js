@@ -11,7 +11,7 @@ export default class RequireStatement extends AbstractInterpreter {
     const project = this.context.getInterpreter().getProject();
     const parser = new Parser(project);
 
-    const program = parser.parseRelativeFile(file + '.pasm', path.dirname(this.node.getLocation().getFile()));
+    const program = parser.parseRelativeFile(file + '.fma', path.dirname(this.node.getLocation().getFile()));
 
     this.context.process(program);
 

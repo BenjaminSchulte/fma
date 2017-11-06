@@ -23,6 +23,14 @@ export default class StringType extends InternalValueClass {
       return self;
     })
 
+    klass.on('to_n', [], (self, context) => {
+      const number = parseInt(self.getMember('__value').getValue(), 10);
+      if (isNaN(number)) {
+        throw new InterpreterError('Can not convert String to Number: Invalid number');
+      }
+      return context.create('Number', new InternalValue(number));
+    })
+
     klass.on('upcase', [], (self, context) => {
       return context.create('String', new InternalValue(self.getMember('__value').getValue().toUpperCase()));
     })

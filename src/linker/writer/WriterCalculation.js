@@ -5,7 +5,7 @@ export default class WriterCalculation {
     this.size = size;
   }
 
-  calculate(symbols) {
-    return this.calculation.calculate(symbols);
+  calculate(symbols, linker) {
+    return this.calculation.calculate(symbols, linker);
   }
 }

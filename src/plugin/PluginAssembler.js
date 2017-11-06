@@ -1,4 +1,4 @@
-export default class Assembler {
+export default class PluginAssembler {
   getName() {
     return 'Assembler';
   }

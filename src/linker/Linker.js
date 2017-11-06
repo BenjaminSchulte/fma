@@ -2,15 +2,21 @@ import LinkerObject from './LinkerObject';
 import SymbolList from './SymbolList';
 import RomWriter from './writer/RomWriter';
 import LinkerResult from './LinkerResult';
+import LinkerCommands from './LinkerCommands';
 
 export default class Linker {
   constructor(project) {
     this.project = project;
     this.object = new LinkerObject();
+    this.commands = new LinkerCommands();
   }
 
   addObject(object) {
     this.object.merge(object);
+  }
+
+  addCommand(command) {
+    return this.commands.add(command);
   }
 
   log(...args) {
@@ -35,7 +41,7 @@ export default class Linker {
 
   fillCalculations(symbols) {
     for (let block of this.object.getStaticCodeBlocks()) {
-      block.fillCalculations(symbols);
+      block.fillCalculations(symbols, this);
     }
   }
 
@@ -61,6 +67,11 @@ export default class Linker {
     this.log('info', 'Building ROM file.');
     const rom = this.build();
 
-    return new LinkerResult(rom.getBuffer(), symbols, this.object.getRomBlock().getMemoryRecalculator());
+    return new LinkerResult(
+      rom.getBuffer(),
+      symbols,
+      this.object.getRomBlock().getMemoryRecalculator(),
+      this.commands
+    );
   }
 }

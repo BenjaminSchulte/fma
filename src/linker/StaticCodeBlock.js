@@ -34,8 +34,8 @@ export default class StaticCodeBlock {
     }
   }
 
-  fillCalculations(symbols) {
-    this.code.fillCalculations(symbols);
+  fillCalculations(symbols, linker) {
+    this.code.fillCalculations(symbols, linker);
   }
 
   getRomOffset() {

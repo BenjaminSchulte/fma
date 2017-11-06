@@ -13,6 +13,14 @@ export default class Interpreter {
 
     this.functionQueue = [];
     this.callQueue = [];
+
+    for (let plugin of project.getPlugins()) {
+      plugin.preProcess(project, this);
+    }
+  }
+
+  getRoot() {
+    return this.root;
   }
 
   afterwards(callback) {

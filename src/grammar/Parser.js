@@ -30,16 +30,39 @@ export default class Parser {
     return result;
   }
 
-  parseFile(file) {
-    const content = fs.readFileSync(file, {encoding: 'utf-8'});
-    if (content === undefined || content === null) {
-      throw new Error(`Could not read from file: ${file}`);
+  parseFileAbsolute(file) {
+    try {
+      if (!fs.statSync(file).isFile()) {
+        return null;
+      }
+    } catch(err) {
+      return null;
     }
 
-    return this.parseString(content, file);
+    return this.parseString(fs.readFileSync(file, {encoding: 'utf-8'}), file);
+  }
+
+  parseFile(file) {
+    var result;
+    if (result = this.parseFileAbsolute(file)) {
+      return result;
+    }
+
+    for (let dir of this.project.getIncludeDirs()) {
+      if (result = this.parseFileAbsolute(path.join(dir, file))) {
+        return result;
+      }
+    }
+
+    throw new Error(`Could not find include file: ${file}`);
   }
 
   parseRelativeFile(file, dir) {
-    return this.parseFile(path.join(dir, file));
+    var result;
+    if (result = this.parseFileAbsolute(path.join(dir, file))) {
+      return result;
+    }
+
+    return this.parseFile(file);
   }
 }

@@ -7,7 +7,7 @@ export default class StaticNumber extends BaseCalculation {
     this.number = number;
   }
 
-  calculate(symbols) {
+  calculate(symbols, linker) {
     return this.number;
   }
 

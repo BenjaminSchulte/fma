@@ -39,6 +39,8 @@ export default class NumberType extends InternalValueClass {
     })
 
     this.operatorBoolean(klass, '==', (a, b) => { return a == b; });
+    this.operatorBoolean(klass, '<', (a, b) => { return a < b; });
+    this.operatorBoolean(klass, '>', (a, b) => { return a > b; });
 
     this.operatorNumeric(klass, '+', (a, b) => { return a + b; });
     this.operatorNumeric(klass, '-', (a, b) => { return a - b; });

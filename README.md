@@ -28,7 +28,8 @@ Features
 Installing
 ----------
 
-This part is not yet finished, because the language is not even finished, yet. :<
+To use FMA from command line you need to install the `fma-cli` package. This package is
+only used for JavaScript integrations of FMA.
 
 
 Code example
@@ -60,3 +61,9 @@ loop:
   do_something_else
 end
 ```
+
+
+License
+-------
+
+FMA is licensed with the [MIT](./LICENSE.md) license. Author: Benjamin Schulte

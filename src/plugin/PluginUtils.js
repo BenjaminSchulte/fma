@@ -126,35 +126,6 @@ export default class PluginUtils {
     return macro;
   }
 
-/*
-  static onInstance(klass, name, args, callback) {
-    klass.onInstance(name, args, (context) => {
-      const self = (context.resolveChild('self')).getObject();
-      var params = [];
-
-      for (let arg of args) {
-        const name = arg.match(/^(&|\*{1,2})?(.*)$/)[2];
-        params.push((context.resolveChild(name)).getObject());
-      }
-
-      return callback(self, ...params, new PluginUtils(context));
-    })
-  }
-
-  static on(klass, name, args, callback) {
-    klass.on(name, args, (context) => {
-      var params = [];
-
-      for (let arg of args) {
-        const name = arg.match(/^(&|\*{1,2})?(.*)$/)[2];
-        params.push((context.resolveChild(name)).getObject());
-      }
-
-      return callback(...params, new PluginUtils(context));
-    })
-  }
-  */
-
   static require(name) {
     if (!PluginUtils.instances[name]) {
       PluginUtils.instances[name] = require(name).default;

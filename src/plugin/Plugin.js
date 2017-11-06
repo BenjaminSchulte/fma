@@ -3,6 +3,10 @@ export default class Plugin {
     return 'Untitled plugin';
   }
 
-  register(root) {
+  preProcess(project, interpreter) {
+  }
+
+  postProcess(project, result) {
+    return result;
   }
 }

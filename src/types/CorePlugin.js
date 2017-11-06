@@ -12,6 +12,10 @@ import CompilerMemoryManager from './CompilerMemoryManager';
 import ClassInstance from '../objects/ClassInstance';
 
 export default class CorePlugin extends Plugin {
+  preProcess(project, interpreter) {
+    this.register(interpreter.getRoot(), interpreter);
+  }
+
   register(root, interpreter) {
     root.setMember('Object', new ObjectType());
 

@@ -52,7 +52,7 @@ export default class CompilerMemoryManager extends Class {
         case 'uint24': self.memory.setItemSize(3); break;
         case 'uint32': self.memory.setItemSize(4); break;
         default:
-          throw new Error(`Unknown item type: ` + type);
+          throw new Error(`Unknown item type: ` + context.asString(type));
       }
     });
 

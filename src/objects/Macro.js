@@ -68,7 +68,17 @@ export default class MacroObject extends NamedObject {
       }
 
       context.injectParent(this.parentContext);
-      context.getObject().setMember('self', self === null ? this.parentContext.getObject() : self);
+
+      if (!self) {
+        self = context.resolveChild('self').getObject();
+        if (self.isUndefined()) {
+          self = this.parentContext.getObject();
+        }
+      }
+
+      if (self) {
+        context.getObject().setMember('self', self);
+      }
 
       return (context.processMany(this.children)).getObject();
     } catch(err) {

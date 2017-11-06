@@ -7,7 +7,7 @@ export default class SymbolLocation extends BaseCalculation {
     this.name = name;
   }
 
-  calculate(symbols) {
+  calculate(symbols, linker) {
     if (!symbols.has(this.name)) {
       throw new Error(`Could not resolve symbol: ${this.name}`);
     }

@@ -1,7 +1,9 @@
 import ObjectClass from './Object';
 import PluginUtils from '../plugin/PluginUtils';
 import InterpreterError from '../interpreter/InterpreterError';
+import InternalValue from './InternalValue';
 import BooleanObject from './Boolean';
+import ArrayObject from './Array';
 
 export default class HashObject extends ObjectClass {
   constructor(items={}) {
@@ -46,6 +48,12 @@ export default class HashObject extends ObjectClass {
 
   initializeClassMembers(klass) {
     super.initializeClassMembers(klass);
+
+    klass.on('keys', [], (self, context) => {
+      return new ArrayObject(Object.keys(self.items).map(key => {
+        return context.create('String', new InternalValue(key));
+      }))
+    });
 
     klass.on('key?', ['key'], (self, key, context) => {
       if (!key.hasMember('to_s')) {

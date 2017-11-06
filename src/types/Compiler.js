@@ -1,6 +1,8 @@
 import Class from '../objects/Class';
 import FunctionObject from '../objects/Function';
 import PluginUtils from '../plugin/PluginUtils';
+import FutureNumber from '../objects/FutureNumber';
+import Command from '../linker/calculate/Command';
 
 export default class Compiler extends Class {
   constructor(interpreter) {
@@ -22,6 +24,10 @@ export default class Compiler extends Class {
 
     klass.on('print', ['*args'], (self, args, context) => {
       this.print(context, ...args.getItems());
+    })
+
+    klass.on('command', ['text'], (self, text, context) => {
+      return new FutureNumber(new Command(context.asString(text)));
     })
 
     klass.on('define', ['?name', '&block'], (self, name, args, context) => {

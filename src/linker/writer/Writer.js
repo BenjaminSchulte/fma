@@ -14,9 +14,9 @@ export default class Writer {
     return this.code;
   }
 
-  fillCalculations(symbols) {
+  fillCalculations(symbols, linker) {
     for (let calculation of this.calculations) {
-      var value = calculation.calculate(symbols);
+      var value = calculation.calculate(symbols, linker);
 
       const buffer = this.code.buffer;
       for (let i=0; i<calculation.size; i++) {

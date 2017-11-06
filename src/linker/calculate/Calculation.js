@@ -9,9 +9,9 @@ export default class Calculation extends BaseCalculation {
     this.right = right;
   }
 
-  calculate(symbols) {
-    const left = this.left.calculate(symbols);
-    const right = this.right.calculate(symbols);
+  calculate(symbols, linker) {
+    const left = this.left.calculate(symbols, linker);
+    const right = this.right.calculate(symbols, linker);
 
     switch (this.operator) {
     case '+': return left + right;

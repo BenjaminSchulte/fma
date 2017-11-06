@@ -61,7 +61,7 @@ ReturnStatement
   = keyword_return expr:OptionalExpression? { return c(new n.ReturnStatement(expr ? expr : null)); }
 
 LabelDeclaration
-  = ident:IDENTIFIER ":" { return c(new n.LabelDeclaration(ident)); }
+  = ident:IDENTIFIER ":" !":" { return c(new n.LabelDeclaration(ident)); }
 
 PostStmt
   = __ keyword_if __ expr:Expr { return c(new n.IfStatement()).setCondition(expr); }
@@ -348,7 +348,7 @@ DoBlock
 
 InlineBlock
   = "{" _ args:BlockArgs? _ expr:Expr _ "}" {
-    return c(new f.MacroDeclaration(null)).setChildren(block).setArguments(args);
+    return c(new n.MacroDeclaration(null)).setChildren([c(new n.ExpressionStatement(expr))]).setArguments(args);
   }
 
 BlockArgs
@@ -362,7 +362,7 @@ Literal
   = Numeric
 
 Numeric
-  = f:[0-9]+ { return c(new n.NumericLiteral(parseInt(f.join(''), 10))); }
+  = neg:"-"? f:[0-9]+ { return c(new n.NumericLiteral(parseInt((neg ? "-" : "") + f.join(''), 10))); }
   / "$" f:[a-fA-F0-9]+ { return c(new n.NumericLiteral(parseInt(f.join(''), 16))); }
 
 String
