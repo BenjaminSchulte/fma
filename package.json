@@ -1,11 +1,12 @@
 {
-  "name": "pasm",
+  "name": "fma",
   "version": "0.5.1",
-  "description": "Ruby macro powered assembler",
+  "description": "Famicom Macro Assembler",
   "main": "dist/index.js",
   "scripts": {
     "start": "node_modules/babel-cli/bin/babel-node.js src/index.js",
     "build-compiler": "pegjs -o src/grammar/grammar.js src/grammar/grammar.pegjs",
+    "prepublish": "npm run build",
     "build": "node_modules/babel-cli/bin/babel.js src --source-maps --out-dir ./dist"
   },
   "devDependencies": {
@@ -21,6 +22,6 @@
     "babel-runtime": "^6.26.0",
     "winston": "^3.0.0-rc1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Benjamin Schulte",
+  "license": "MIT"
 }

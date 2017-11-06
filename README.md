@@ -1,9 +1,9 @@
-PASM
+FMA
 ====
 
-PASM (working title) is a new multi platform cross assembler, mainly used for SNES development.
+FMA (famicom macro assembler) is a new multi platform cross assembler, mainly used for SNES development.
 
-PASM speeds up development by adding lots of macro features, utilities and improved readability to your project. It allows you to write games in a ruby like syntax, but still keep full control over your application.
+FMA speeds up development by adding lots of macro features, utilities and improved readability to your project. It allows you to write games in a ruby like syntax, but still keep full control over your application.
 
 
 Warning
