@@ -39,6 +39,8 @@ export default class MacroDeclaration extends AbstractInterpreter {
       }
     }
 
+    macro.getDocumentation().add(this.comments);
+
     return new ValueAccessor(new MacroPointer(macro));
   }
 

@@ -1,5 +1,6 @@
 import PluginUtils from '../plugin/PluginUtils';
 import ClassMembers from './ClassMembers';
+import Documentation from '../interpreter/Documentation';
 
 export default class AbstractObject {
   constructor() {
@@ -9,10 +10,15 @@ export default class AbstractObject {
     this.fullName = null;
     this.nameHint = null;
     this.symbolName = null;
+    this.documentation = new Documentation(this);
 
     this.functionHooks = [];
 
     this.klassMembers = null;
+  }
+
+  getDocumentation() {
+    return this.documentation;
   }
 
   setNameHint(name) {

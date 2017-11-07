@@ -1,0 +1,56 @@
+Syntax
+======
+
+The syntax of FMA is very similar to *ruby* but still a little different.
+
+The main focus of the syntax is to be easily readable.
+
+
+== Identifiers
+
+Identifiers are names for variables, macros or classes. FMA identifiers are
+case sensitive. That means that `hello` and `Hello` are two different objects.
+
+Identifiers can container alphanumeric characters and the underscore character,
+but may not begin with a number.
+
+
+== Reserved words
+
+The following list shows the reserved words of FMA. You can not use these words
+as own variables
+
+- `if`
+- `elsif`
+- `end`
+- `case`
+- `module`
+- `macro`
+- `do`
+- `unless`
+- `class`
+- `def`
+- `when`
+- `else`
+- `raise`
+- `return`
+- `require`
+- `true`
+- `false`
+- `nil`
+
+
+== Comments
+
+Comments start with the `;` character and end at the end of the line. A comment
+can be written at any point at the end of a line.
+
+Currently there is no way to add multiline comments.
+
+For documentation purposes it is expected to write `;;` as comment like in this
+example:
+
+[source,ruby]
+;; This function does nothing
+def my_function
+end

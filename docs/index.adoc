@@ -1,0 +1,13 @@
+FMA - Famicom macro assembler
+=============================
+
+FMA (famicom macro assembler) is a new multi platform cross assembler, mainly used for SNES development.
+
+WARNING: This documentation is still very incomplete!
+
+---
+
+== Language
+
+- link:./language/syntax.adoc[Syntax]
+- link:./language/ifelse.adoc[if-conditions]

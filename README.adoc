@@ -1,20 +1,16 @@
 FMA
-====
+===
 
 FMA (famicom macro assembler) is a new multi platform cross assembler, mainly used for SNES development.
 
 FMA speeds up development by adding lots of macro features, utilities and improved readability to your project. It allows you to write games in a ruby like syntax, but still keep full control over your application.
 
-
-Warning
--------
-
-This project is still in the very, very alpha version! Core features might change
+WARNING: This project is still in the very, very alpha version! Core features might change
 without any backwards compatibility.
 
+---
 
-Features
---------
+== Features
 
 * **Ruby like syntax** for assembler projects
 * Manage code in **modules**, **macros** and **classes**
@@ -25,19 +21,27 @@ Features
 * **Other assemblers** can be implemented, even if they have totally different opcodes
 
 
-Installing
-----------
+== Installing
 
 To use FMA from command line you need to install the `fma-cli` package. This package is
 only used for JavaScript integrations of FMA.
 
+For a detailed introduction on how to write an application, see the `fma-snes` package.
 
-Code example
-------------
+
+== Documentation
+
+The current documentation can be found here:
+
+link:./docs/index.adoc[FMA documentation]
+
+
+== Code example
 
 Simple example of macro usage:
 
-```ruby
+[source, ruby]
+----
 module SNES
   macro set_screen_brightness(brightness, enabled=true)
     LDA   #brightness | (enabled ? 0 : $80) unless brightness.A?
@@ -60,10 +64,9 @@ loop:
 
   do_something_else
 end
-```
+----
 
 
-License
--------
+== License
 
 FMA is licensed with the [MIT](./LICENSE.md) license. Author: Benjamin Schulte

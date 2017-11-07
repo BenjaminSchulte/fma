@@ -26,6 +26,8 @@ export default class ModuleDeclaration extends AbstractInterpreter {
       context = context.enter(object.getObject());
     }
 
+    context.getObject().getDocumentation().add(this.comments);
+
     return context.processMany(this.node.getChildren());
 
   }
