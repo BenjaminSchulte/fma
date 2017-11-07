@@ -29,13 +29,13 @@ export default class CalculateExpression extends AbstractInterpreter {
     if (operator !== '') {
       var calcLeft = left.getObject();
       if (calcLeft.canBeCalled()) {
-        calcLeft = (calcLeft.callWithParameters(this.context));
+        calcLeft = this.callWithParameters(calcLeft);
       }
       if (!calcLeft.hasMember(operator)) {
         if (calcLeft.hasMember('to_n')) {
-          calcLeft = calcLeft.getMember('to_n').callWithParameters(this.context);
+          calcLeft = this.callWithParameters(calcLeft.getMember('to_n'));
         } else if (calcLeft.hasMember('to_future_number')) {
-          calcLeft = calcLeft.getMember('to_future_number').callWithParameters(this.context);
+          calcLeft = this.callWithParameters(calcLeft.getMember('to_future_number'));
         }
 
         if (!calcLeft.hasMember(operator)) {
@@ -43,7 +43,7 @@ export default class CalculateExpression extends AbstractInterpreter {
         }
       }
 
-      result = calcLeft.getMember(operator).callWithParameters(this.context, right);
+      result = this.callWithParameters(calcLeft.getMember(operator), right);
       if (!result) {
         result = new UndefinedObject();
       }

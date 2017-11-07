@@ -47,6 +47,7 @@ export default class ArgumentList {
   buildContext(calleeContext, params, parent = null) {
     const block = new Block();
     var context = new Context(calleeContext.getInterpreter(), block, parent);
+    context.stack = calleeContext.stack;
 
     var args = [];
     var kwargs = {};

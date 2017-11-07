@@ -1,5 +1,6 @@
 import AbstractObject from './Object';
 import PluginUtils from '../plugin/PluginUtils';
+import InternalValue from './InternalValue';
 
 export default class BooleanObject extends AbstractObject {
   constructor(value) {
@@ -27,6 +28,10 @@ export default class BooleanObject extends AbstractObject {
 
     klass.on('&&', ['other'], (self, other, context) => {
       return new BooleanObject(self.value && (context.asBoolean(other)));
+    })
+
+    klass.on('??', ['other'], (self, other, context) => {
+      return self.value ? other : context.create('Number', new InternalValue(0));
     })
 
     klass.on('||', ['other'], (self, other, context) => {

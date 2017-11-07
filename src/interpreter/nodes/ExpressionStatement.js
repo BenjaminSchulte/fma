@@ -9,14 +9,14 @@ export default class ExpressionStatement extends AbstractInterpreter {
     var expressionResult = object;
 
     if (object.canBeCalled()) {
-      expressionResult = object.callWithParameters(this.context);
+      expressionResult = this.callWithParameters(object);
     } else if (object.isUndefined()) {
       this.log("error", "Expression is undefined");
     }
 
     if (expressionResult.type() === 'Function') {
       const scope = (this.context.getRoot().resolveChild('Compiler')).getObject();
-      scope.getMember('current_scope').getMember('on_call_function').callWithParameters(this.context, expressionResult);
+      this.callWithParameters(scope.getMember('current_scope').getMember('on_call_function'), expressionResult);
     }
 
     return new ValueAccessor(expressionResult);

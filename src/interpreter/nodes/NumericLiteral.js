@@ -11,6 +11,6 @@ export default class NumericLiteral extends AbstractInterpreter {
     const str = (this.context.getRoot().resolveChild("Number")).getObject();
     const value = new InternalValue(this.asNumber());
 
-    return new ValueAccessor(str.getMember('new').callWithParameters(this.context, value));
+    return new ValueAccessor(this.callWithParameters(str.getMember('new'), value));
   }
 }

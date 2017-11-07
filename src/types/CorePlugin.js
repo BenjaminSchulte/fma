@@ -4,12 +4,14 @@ import ObjectType from './ObjectType';
 import NumberType from './NumberType';
 import TypedNumber from './TypedNumber';
 import StringType from './StringType';
+import SystemTypeWrapper from './SystemTypeWrapper';
 import MacroPointer from './MacroPointer';
 
 import Compiler from './Compiler';
 import CompilerScope from './CompilerScope';
 import CompilerMemoryManager from './CompilerMemoryManager';
 import ClassInstance from '../objects/ClassInstance';
+import FutureNumber from '../objects/FutureNumber';
 
 export default class CorePlugin extends Plugin {
   preProcess(project, interpreter) {
@@ -18,6 +20,8 @@ export default class CorePlugin extends Plugin {
 
   register(root, interpreter) {
     root.setMember('Object', new ObjectType());
+
+    root.setMember('FutureNumber', new SystemTypeWrapper(new FutureNumber(null)))
 
     root.setMember('Number', new NumberType());
     root.setMember('TypedNumber', new TypedNumber());

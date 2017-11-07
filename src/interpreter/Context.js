@@ -5,6 +5,7 @@ import NilObject from '../objects/Nil';
 import ChildValueAccessor from './ChildValueAccessor';
 import ValueAccessor from './ValueAccessor';
 import InterpreterError from './InterpreterError';
+import CallStack from './CallStack';
 
 export default class Context {
   constructor(interpreter, object, parent=null) {
@@ -14,6 +15,7 @@ export default class Context {
 
     this.interpreter = interpreter;
     this.comments = new CommentCollector();
+    this.stack = new CallStack();
     this.object = object;
     this.parent = parent;
     this.returnValue = new NilObject();
@@ -22,11 +24,14 @@ export default class Context {
   clone() {
     const context = new Context(this.interpreter, this.object);
     context.parent = this.parent ? this.parent.clone() : null;
+    context.stack = this.stack;
     return context;
   }
 
   withoutParents() {
-    return new Context(this.getInterpreter(), this.object);
+    const context = new Context(this.getInterpreter(), this.object);
+    context.stack = this.stack;
+    return context;
   }
 
   resolveChild(name) {
@@ -46,7 +51,9 @@ export default class Context {
   }
 
   enter(object) {
-    return new Context(this.getInterpreter(), object, this);
+    const context = new Context(this.getInterpreter(), object, this);
+    context.stack = this.stack;
+    return context;
   }
 
   injectParent(parent) {
@@ -60,7 +67,9 @@ export default class Context {
   }
 
   getRoot() {
-    return new Context(this.getInterpreter(), this.getInterpreter().root);
+    const context = new Context(this.getInterpreter(), this.getInterpreter().root);
+    context.stack = this.stack;
+    return context;
   }
 
   getInterpreter() {
@@ -94,12 +103,22 @@ export default class Context {
     } catch(err) {
       if (!err.doNotShowError) {
         this.getInterpreter().log('error', node.getLocation().toString() + ': ' + err.toString());
+        for (let location of this.stack.getLocations().reverse()) {
+          this.getInterpreter().log('error', 'in: ' + location);
+        }
         console.error(err);
         err = new Error('There was at least one unrecoverable error while compiling.');
         err.doNotShowError = true;
       }
       throw err;
     }
+  }
+
+  callWithParameters(node, object, ...args) {
+    this.stack.push(node);
+    const result = object.callWithParameters(this, ...args);
+    this.stack.pop();
+    return result;
   }
 
   preprocessMany(nodes) {

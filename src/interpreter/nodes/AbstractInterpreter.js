@@ -13,6 +13,10 @@ export default class AbstractInterpreter {
     this.context.getInterpreter().log(type, prefix + ": " + args.join(''));
   }
 
+  callWithParameters(object, ...args) {
+    return this.context.callWithParameters(this.node, object, ...args)
+  }
+
   setComments(collector) {
     if (!collector.hasComments()) {
       return false;

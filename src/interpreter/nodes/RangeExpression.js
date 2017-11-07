@@ -20,8 +20,8 @@ export default class RangeExpression extends AbstractInterpreter {
       throw new InterpreterError('Operators for range must have to_n method');
     }
 
-    const leftNumber = leftObject.getMember('to_n').callWithParameters(this.context)
-    const rightNumber = rightObject.getMember('to_n').callWithParameters(this.context)
+    const leftNumber = this.callWithParameters(leftObject.getMember('to_n'))
+    const rightNumber = this.callWithParameters(rightObject.getMember('to_n'))
     if (leftNumber.type() !== 'ClassInstance' || rightNumber.type() !== 'ClassInstance' || leftNumber.getClassName() !== 'Number' || rightNumber.getClassName() !== 'Number') {
       throw new InterpreterError('to_n must return Number');
     }

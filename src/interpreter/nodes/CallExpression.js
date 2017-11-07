@@ -26,7 +26,7 @@ export default class CallExpression extends AbstractInterpreter {
 
       result = target.getObject();
     } else {
-      result = target.getObject().callWithParameters(this.context, ...parameters.map(parameter => parameter.getObject()));
+      result = this.callWithParameters(target.getObject(), ...parameters.map(parameter => parameter.getObject()));
     }
 
     if (!result) {

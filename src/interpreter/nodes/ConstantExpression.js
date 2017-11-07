@@ -11,6 +11,6 @@ export default class ConstantExpression extends AbstractInterpreter {
       throw new InterpreterError(`${object.type()} has no member to_constant`);
     }
 
-    return new ValueAccessor(object.getMember('to_constant').callWithParameters(this.context));
+    return new ValueAccessor(this.callWithParameters(object.getMember('to_constant')));
   }
 }

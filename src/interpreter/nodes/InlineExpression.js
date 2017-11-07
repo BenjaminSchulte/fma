@@ -9,14 +9,14 @@ export default class InlineExpression extends AbstractInterpreter {
     var expressionResult = object;
 
     if (object.canBeCalled()) {
-      expressionResult = object.callWithParameters(this.context);
+      expressionResult = this.callWithParameters(object);
     }
 
     if (!object.hasMember('to_s')) {
       throw new InterpreterError(`Can not convert ${object.type()} to String`);
     }
 
-    const str = object.getMember('to_s').callWithParameters(this.context);
+    const str = this.callWithParameters(object.getMember('to_s'));
 
     return str.getMember('__value').getValue();
   }

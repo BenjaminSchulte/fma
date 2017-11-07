@@ -21,7 +21,7 @@ export default class SwitchStatement extends AbstractInterpreter {
       switch (child.type()) {
       case 'SwitchCase':
         const right = this.context.resolve(child.value);
-        const result = left.callWithParameters(this.context, right.getObject());
+        const result = this.callWithParameters(left, right.getObject());
         if (result.type() !== 'Boolean') {
           throw new InterpreterError(`Operator ${object.type()}.== must return boolean`);
         }
