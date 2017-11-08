@@ -28,6 +28,11 @@ only used for JavaScript integrations of FMA.
 
 For a detailed introduction on how to write an application, see the `fma-snes` package.
 
+However, if you want to install this package as node module, you can simply install
+it using npm:
+
+[source,bash]
+npm install fma
 
 == Documentation
 
