@@ -22,10 +22,23 @@ export default class CallExpression extends NestedExpressionNode {
     return this.parameters.getChildren();
   }
 
+  setIsRoot() {
+    this.parent.setIsRoot();
+  }
+
   serialize(s) {
     return [
       super.serialize(s),
       s.serializeList(this.parameters.getChildren())
     ];
+  }
+
+  asCallExpression(callback) {
+    callback(this);
+    return this;
+  }
+
+  dump() {
+    return this.parent.dump() + '(' + this.getParameters().map(par => par ? par.dump() : '???').join(', ') + ')';
   }
 }

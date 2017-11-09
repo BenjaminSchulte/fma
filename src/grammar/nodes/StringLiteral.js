@@ -12,4 +12,8 @@ export default class StringLiteral extends ExpressionNode {
       s.serialize(this.identifier)
     ];
   }
+
+  dump() {
+    return JSON.stringify(this.identifier.dump());
+  }
 }

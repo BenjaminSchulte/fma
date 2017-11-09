@@ -13,4 +13,8 @@ export default class NumericLiteral extends ExpressionNode {
       this.number
     ];
   }
+
+  dump() {
+    return this.number.toString();
+  }
 }

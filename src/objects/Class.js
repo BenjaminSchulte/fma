@@ -121,6 +121,5 @@ export default class ClassObject extends NamedObject {
   }
 
   initializeInstanceMembers(klass) {
-
   }
 }

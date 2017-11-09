@@ -23,10 +23,9 @@ Stmt
   / stmt:PostStmts post:PostStmt? {
     if (post) {
       if (post.type() === 'Parameter') {
-        if (stmt.type() !== 'CallExpression') {
-          stmt = c(new n.CallExpression(stmt));
-        }
-        stmt.addParameters([post]);
+        stmt = stmt.asCallExpression(function (call) {
+          call.addParameters([post]);
+        })
         stmt = c(new n.ExpressionStatement(stmt));
       } else {
         post.setChildren([c(new n.ExpressionStatement(stmt))]);
@@ -160,14 +159,7 @@ CalcExpr
 ExprItem
   = not:"!"? _ root:"::"? primary:Primary {
     if (root) {
-      switch (primary.type()) {
-      case 'Identifier':
-        primary.setIsRoot();
-        break;
-
-      default:
-        throw new Error('Can not set ROOT on ' + primary.type());
-      }
+      primary.setIsRoot();
     }
 
     if (not) {

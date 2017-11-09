@@ -13,4 +13,8 @@ export default class ExpressionStatement extends Node {
       s.serialize(this.expression)
     ];
   }
+
+  dump() {
+    return this.expression.dump();
+  }
 }

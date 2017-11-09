@@ -15,8 +15,12 @@ export default class ExpressionStatement extends AbstractInterpreter {
     }
 
     if (expressionResult.type() === 'Function') {
-      const scope = (this.context.getRoot().resolveChild('Compiler')).getObject();
-      this.callWithParameters(scope.getMember('current_scope').getMember('on_call_function'), expressionResult);
+      const compiler = (this.context.getRoot().resolveChild('Compiler')).getObject();
+
+      if (compiler.hasMember('current_scope')) {
+        const scope = compiler.getMember('current_scope');
+        this.callWithParameters(scope.getMember('on_call_function'), expressionResult);
+      }
     }
 
     return new ValueAccessor(expressionResult);

@@ -24,6 +24,10 @@ export default class ArrayObject extends ObjectClass {
       }
     });
 
+    klass.on('length', [], (self, context) => {
+      return context.returnNumber(self.items.length);
+    });
+
     klass.on('each', ['&callback'], (self, block, context) => {
       var result = [];
 

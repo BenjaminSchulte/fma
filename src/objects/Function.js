@@ -78,7 +78,10 @@ export default class FunctionObject extends NamedObject {
   }
 
   callWithParameters(context) {
-    context.getInterpreter().compileFunction(this);
+    const compiler = context.resolveChild('Compiler').getObject();
+    if (compiler.hasMember('current_scope')) {
+      context.getInterpreter().compileFunction(this);
+    }
 
     return this;
   }

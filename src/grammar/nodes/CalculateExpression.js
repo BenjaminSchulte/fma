@@ -9,10 +9,12 @@ export default class CalculateExpression extends NestedExpressionNode {
   }
 
   dump() {
-    var left = this.parent.dump ? this.parent.dump() : this.parent.type();
-    var right = this.right.dump ? this.right.dump() : this.right.type();
+    return `(${this.parent.dump()} ${this.operator} ${this.right.dump()})`;
+  }
 
-    return `(${left} ${this.operator} ${right})`;
+  asCallExpression(callback) {
+    this.right.asCallExpression(callback);
+    return this;
   }
 
   static build(c, left, calcs) {

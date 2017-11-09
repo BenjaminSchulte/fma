@@ -17,6 +17,16 @@ export default class PluginUtils {
     return instance;
   }
 
+  returnString(value) {
+    const InternalValue = PluginUtils.require('../objects/InternalValue');
+    return this.create('String', new InternalValue(value));
+  }
+
+  returnNumber(number) {
+    const InternalValue = PluginUtils.require('../objects/InternalValue');
+    return this.create('Number', new InternalValue(number));
+  }
+
   asString(self, log=null) {
     return this.asType(self, log, 'to_s', 'ClassInstance', "String", "", (object) => {
       return object.getMember('__value').getValue();

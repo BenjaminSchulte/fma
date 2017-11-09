@@ -74,7 +74,8 @@ export default class ArgumentList {
             break;
 
           case Parameter.TYPE_CONTEXT:
-            context = new Context(calleeContext.getInterpreter(), param.value);
+            context = new Context(calleeContext.getInterpreter(), param.value, parent);
+            context = context.injectParent(new Context(calleeContext.getInterpreter(), block));
             break;
 
           case Parameter.TYPE_ARGUMENTS:

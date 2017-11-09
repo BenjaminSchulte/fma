@@ -34,11 +34,21 @@ it using npm:
 [source,bash]
 npm install fma
 
+
 == Documentation
 
 The current documentation can be found here:
 
 link:./docs/index.adoc[FMA documentation]
+
+
+== Targets
+
+Currently there is only one target supported for FMA, but feel free to implement your own one.
+
+* *SNES 65816*:
+  https://github.com/BenjaminSchulte/fma-snes65816[GIT repository],
+  https://github.com/BenjaminSchulte/fma-snes65816/docs/index.adoc[Documentation]
 
 
 == Code example

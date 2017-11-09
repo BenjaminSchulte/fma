@@ -57,13 +57,27 @@ export default class Context {
   }
 
   injectParent(parent) {
-    if (this.parent !== null) {
-      console.log(this)
-      console.log(this.parent);
-      throw new InterpreterError('injectParent does not yet support injecting parents in trees')
+    if (this.parent === null) {
+      this.parent = parent;
+      return this;
     }
 
-    this.parent = parent;
+    var context = this.clone();
+    context.getTreeRoot().parent = parent;
+
+    return context;
+  }
+
+  tree() {
+    return (this.parent ? this.parent.tree() : []).concat([this]);
+  }
+
+  getNames() {
+    return this.tree().map(context => context.object.getFullName());
+  }
+
+  getTreeRoot() {
+    return this.parent ? this.parent.getTreeRoot() : this;
   }
 
   getRoot() {

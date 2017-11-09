@@ -15,6 +15,10 @@ export default class FunctionDeclaration extends AbstractInterpreter {
     func.setParentContext(this.context);
     func.setChildren(this.node.getChildren());
 
+    for (let decorator of this.node.getDecorators()) {
+      this.context.process(decorator);
+    }
+
     node.define(func);
 
     this.context.enter(func).preprocessMany(this.node.getChildren());

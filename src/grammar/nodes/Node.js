@@ -25,4 +25,8 @@ export default class Node {
   serialize(s) {
     return s.serializeLocation(this.location);
   }
+
+  dump() {
+    return this.type();
+  }
 }

@@ -1,4 +1,5 @@
 import NestedExpressionNode from './NestedExpressionNode';
+import CallExpression from './CallExpression';
 
 export default class ChildExpression extends NestedExpressionNode {
   constructor(parent) {
@@ -6,6 +7,10 @@ export default class ChildExpression extends NestedExpressionNode {
 
     this.child = null;
     this.isResolved = false;
+  }
+
+  setIsRoot() {
+    this.parent.setIsRoot();
   }
 
   setIsResolved(resolved) {
@@ -24,5 +29,15 @@ export default class ChildExpression extends NestedExpressionNode {
       s.serialize(this.child),
       this.isResolved
     ];
+  }
+
+  asCallExpression(callback) {
+    const expr = new CallExpression(this);
+    callback(expr);
+    return expr;
+  }
+
+  dump() {
+    return this.parent.dump() + '.' + this.child.dump();
   }
 }

@@ -28,15 +28,22 @@ export default class StringType extends InternalValueClass {
       if (isNaN(number)) {
         throw new InterpreterError('Can not convert String to Number: Invalid number');
       }
-      return context.create('Number', new InternalValue(number));
+      return context.returnNumber(number);
     })
 
     klass.on('upcase', [], (self, context) => {
-      return context.create('String', new InternalValue(self.getMember('__value').getValue().toUpperCase()));
+      return context.returnString(self.getMember('__value').getValue().toUpperCase());
+    })
+
+    klass.on('classify', [], (self, context) => {
+      var value = self.getMember('__value').getValue();
+      value = value[0].toUpperCase() + value.substr(1).replace(/_([a-z])/g, function(a, b) { return b.toUpperCase()});
+
+      return context.returnString(value);
     })
 
     klass.on('downcase', [], (self, context) => {
-      return context.create('String', new InternalValue(self.getMember('__value').getValue().toLowerCase()));
+      return context.returnString(self.getMember('__value').getValue().toLowerCase());
     })
 
     this.operatorBoolean(klass, '==', (a, b) => { return a == b; });

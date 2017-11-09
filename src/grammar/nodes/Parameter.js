@@ -29,4 +29,8 @@ export default class Parameter extends ExpressionNode {
       s.serializeString(this.parameterType)
     ];
   }
+
+  dump() {
+    return this.value.dump();
+  }
 }

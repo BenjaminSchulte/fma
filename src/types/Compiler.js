@@ -46,6 +46,8 @@ export default class Compiler extends Class {
       })
 
       this.interpreter.compileFunction(func);
+
+      return func;
     })
   }
 

@@ -67,7 +67,7 @@ export default class MacroObject extends NamedObject {
         return this.javascriptCallback(context, self);
       }
 
-      context.injectParent(this.parentContext);
+      context = context.injectParent(this.parentContext);
 
       if (!self) {
         self = context.resolveChild('self').getObject();
