@@ -31,6 +31,10 @@ export default class MacroDeclaration extends AbstractInterpreter {
     macro.setChildren(this.node.getChildren());
     macro.setIsDecorator(this.node.isDecorator);
 
+    for (let decorator of this.node.getDecorators()) {
+      this.context.enter(macro).process(decorator);
+    }
+
     if (node) {
       if (node.getTargetType() === 'Class') {
         node.getTarget().setInstanceMember(node.getName(), macro);

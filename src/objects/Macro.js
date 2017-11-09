@@ -50,6 +50,27 @@ export default class MacroObject extends NamedObject {
     return true;
   }
 
+  collectFunctionHooks() {
+    return this.functionHooks;
+  }
+
+  processFunctionHooks(callback) {
+    var hooks = this.collectFunctionHooks();
+    if (!hooks.length) {
+      return callback();
+    }
+
+    const next = () => {
+      if (!hooks.length) {
+        return callback();
+      }
+
+      hooks.shift().call(this, next);
+    }
+
+    next();
+  }
+
   call(context, self=null) {
     if (this.isDecorator) {
       context.resolveChild('callee').getObject().addFunctionHook(
@@ -63,24 +84,31 @@ export default class MacroObject extends NamedObject {
 
   callWithoutDecoratorCheck(context, self) {
     try {
-      if (this.javascriptCallback) {
-        return this.javascriptCallback(context, self);
-      }
+      var result = null;
 
-      context = context.injectParent(this.parentContext);
-
-      if (!self) {
-        self = context.resolveChild('self').getObject();
-        if (self.isUndefined()) {
-          self = this.parentContext.getObject();
+      this.processFunctionHooks(() => {
+        if (this.javascriptCallback) {
+          result = this.javascriptCallback(context, self);
+          return;
         }
-      }
 
-      if (self) {
-        context.getObject().setMember('self', self);
-      }
+        context = context.injectParent(this.parentContext);
 
-      return (context.processMany(this.children)).getObject();
+        if (!self) {
+          self = context.resolveChild('self').getObject();
+          if (self.isUndefined()) {
+            self = this.parentContext.getObject();
+          }
+        }
+
+        if (self) {
+          context.getObject().setMember('self', self);
+        }
+
+        result = (context.processMany(this.children)).getObject();
+      })
+
+      return result;
     } catch(err) {
       if (err.isReturn) {
         return err.returnValue;
