@@ -29,19 +29,23 @@ export default class InternalValueClass extends Class {
 
   operator(klass, operator, callback) {
     klass.on(operator, ['other'], (self, other, context) => {
-      if (!other.hasMember(this.getConvertMethodName())) {
-        throw new Error(`Can not convert ${other.type()} to ${this.getTargetType()}`)
-      }
+      return this.onOperator(self, operator, callback, other, context);
+    });
+  }
 
-      const otherValue = other.getMember(this.getConvertMethodName()).callWithParameters(context.getContext())
-      if (otherValue.type() !== 'ClassInstance' || otherValue.getClassName() !== this.getTargetType()) {
-        throw new Error(`${other.type()}.${this.getConvertMethodName()} method must return a ${this.getTargetType()}`);
-      }
+  onOperator(self, operator, callback, other, context) {
+    if (!other.hasMember(this.getConvertMethodName())) {
+      throw new Error(`Can not convert ${other.type()} to ${this.getTargetType()}`)
+    }
 
-      const left = self.getMember('__value').value;
-      const right = otherValue.getMember('__value').value;
+    const otherValue = other.getMember(this.getConvertMethodName()).callWithParameters(context.getContext())
+    if (otherValue.type() !== 'ClassInstance' || otherValue.getClassName() !== this.getTargetType()) {
+      throw new Error(`${other.type()}.${this.getConvertMethodName()} method must return a ${this.getTargetType()}`);
+    }
 
-      return callback(left, right, context);
-    })
+    const left = self.getMember('__value').value;
+    const right = otherValue.getMember('__value').value;
+
+    return callback(left, right, context);
   }
 }

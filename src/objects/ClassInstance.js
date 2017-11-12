@@ -15,7 +15,7 @@ export default class ClassInstanceObject extends ObjectClass {
   }
 
   getName() {
-    if (this.nameHint) {
+    if (this.nameHint !== null) {
       return this.nameHint;
     }
 
@@ -31,7 +31,7 @@ export default class ClassInstanceObject extends ObjectClass {
       return true;
     }
 
-    return this.klass.hasInstanceMember(name);
+    return this.klass.hasInstanceMember(name, this);
   }
 
   asString(context) {

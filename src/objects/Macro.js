@@ -105,6 +105,8 @@ export default class MacroObject extends NamedObject {
           context.getObject().setMember('self', self);
         }
 
+        context.preprocessMany(this.children);
+
         result = (context.processMany(this.children)).getObject();
       })
 

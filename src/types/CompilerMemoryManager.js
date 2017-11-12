@@ -2,7 +2,10 @@ import Class from '../objects/Class';
 import ClassInstance from '../objects/ClassInstance';
 import FutureNumber from '../objects/FutureNumber';
 import SymbolLocation from '../linker/calculate/SymbolLocation';
+import StaticNumber from '../linker/calculate/StaticNumber';
+import Calculation from '../linker/calculate/Calculation';
 import PluginUtils from '../plugin/PluginUtils';
+import Block from '../objects/Block';
 
 import MemoryAllocation from '../memory/MemoryAllocation';
 import RootMemoryAllocation from '../memory/RootMemoryAllocation';
@@ -12,6 +15,113 @@ export default class CompilerMemoryManager extends Class {
     super('CompilerMemoryManager');
 
     this.interpreter = interpreter;
+  }
+
+  hasInstanceMember(name, self) {
+    if (super.hasInstanceMember(name, self)) {
+      return true;
+    }
+
+    if (self.isArray) {
+      return this.hasArrayIndex(name, self);
+    }
+
+    if (self.memberKlass && self.instances) {
+      return self.instances[0].hasMember(name);
+    }
+
+    return false;
+  }
+
+  hasArrayIndex(name, self) {
+    if (!name.match(/^\d+$/)) {
+      return false;
+    }
+
+    const index = parseInt(name, 10);
+    if (index < 0 || index >= self.memory.getNumItems()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  getInstanceMember(name, self) {
+    if (super.hasInstanceMember(name, self)) {
+      return super.getInstanceMember(name, self);
+    }
+
+    if (self.isArray) {
+      const index = parseInt(name, 10);
+      if (self.isSystemClass) {
+        return new FutureNumber(new Calculation(
+          new StaticNumber(index * self.memory.getItemSize()),
+          '+',
+          new SymbolLocation(self.getSymbolName())
+        ));
+      } else {
+        return self.instances[index];
+      }
+    }
+
+    return self.instances[0].getMember(name);
+  }
+
+  setClassItemType(self, type, context) {
+    self.isSystemClass = false;
+    self.memberKlass = type;
+    self.memberKlassContext = context;
+
+    var times = 1;
+    if (self.isArray) {
+      times = self.memory.getNumItems();
+    }
+
+    self.instances = [];
+    while (times-- > 0) {
+      self.instances.push(this.createNewInstance(self));
+    }
+  }
+
+  setItemSize(self, size) {
+    self.memory.setItemSize(size);
+  }
+
+  setNumItems(self, size) {
+    self.isArray = true;
+    self.memory.setNumItems(size);
+
+    if (self.memberKlass) {
+      while (self.instances.length < size) {
+        self.instances.push(this.createNewInstance(self));
+      }
+    }
+  }
+
+  createNewInstance(self) {
+    const block = new Block();
+    const context = self.memberKlassContext.getContext().enter(block);
+    const scope = self.getMember('allocate').callWithParameters(self.memberKlassContext.getContext());
+    scope.setNameHint(self.instances.length);
+    block.setMember('$scope', scope);
+
+    const instance = self.memberKlass.getMember('new').call(context)
+    instance.setNameParent(scope.getParent());
+    instance.setNameHint(self.instances.length);
+    return instance;
+  }
+
+  setSystemItemType(self, type) {
+    self.isSystemClass = true;
+
+    switch (type) {
+      case 'uint8': self.memory.setItemSize(1); break;
+      case 'uint16': self.memory.setItemSize(2); break;
+      case 'uint24': self.memory.setItemSize(3); break;
+      case 'uint32': self.memory.setItemSize(4); break;
+      default:
+        throw new Error(`Unknown item type: ${type}`);
+    }
   }
 
   initializeInstanceMembers(klass) {
@@ -27,9 +137,13 @@ export default class CompilerMemoryManager extends Class {
         throw new Error('Parent of memory allocation must be CompilerMemoryManager');
       }
 
+      self.children = [];
+      self.isArray = false;
       self.memory = memory;
+      self.parent = null;
       this.interpreter.afterwards(() => {
-        self.memory.setSymbolName(self.getSymbolName());
+        const name = self.getSymbolName();
+        self.memory.setSymbolName(name);
       });
     })
 
@@ -38,7 +152,7 @@ export default class CompilerMemoryManager extends Class {
         return;
       }
 
-      self.memory.setItemSize(context.asNumber(size));
+      this.setItemSize(self, context.asNumber(size));
     });
 
     klass.on('set_item_type', ['type'], (self, type, context) => {
@@ -46,13 +160,10 @@ export default class CompilerMemoryManager extends Class {
         return;
       }
 
-      switch (context.asString(type)) {
-        case 'uint8': self.memory.setItemSize(1); break;
-        case 'uint16': self.memory.setItemSize(2); break;
-        case 'uint24': self.memory.setItemSize(3); break;
-        case 'uint32': self.memory.setItemSize(4); break;
-        default:
-          throw new Error(`Unknown item type: ` + context.asString(type));
+      if (type.type() === 'Class') {
+        this.setClassItemType(self, type, context);
+      } else {
+        this.setSystemItemType(self, context.asString(type));
       }
     });
 
@@ -61,13 +172,26 @@ export default class CompilerMemoryManager extends Class {
         return;
       }
 
-      self.memory.setNumItems(context.asNumber(size));
+      this.setNumItems(self, context.asNumber(size));
     });
 
     klass.on('allocate', [], (self, context) => {
       const instance = context.create('CompilerMemoryManager', self);
-
+      self.children.push(instance);
+      instance.parent = self;
       return instance;
+    })
+
+    klass.on('detach', [], (self, context) => {
+      self.memory.detach();
+    })
+
+    klass.on('set_is_shared', ['shared'], (self, shared, context) => {
+      self.memory.setIsShared(context.asBoolean(shared));
+    })
+
+    klass.on('include', ['other'], (self, other, context) => {
+      self.memory.addIncluded(other.memory)
     })
 
     klass.on('allocate_shadow', [], (self, context) => {

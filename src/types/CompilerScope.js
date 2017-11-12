@@ -4,6 +4,7 @@ import StaticCodeBlock from '../linker/StaticCodeBlock';
 import FutureNumber from '../objects/FutureNumber';
 import SymbolLocation from '../linker/calculate/SymbolLocation';
 import InterpreterError from '../interpreter/InterpreterError';
+import fs from 'fs';
 
 export default class CompilerScope extends Class {
   constructor() {
@@ -35,6 +36,10 @@ export default class CompilerScope extends Class {
 
     klass.on('db', ['*args', '**kwargs'], (self, args, kwargs, context) => {
       this.write(self, context, args.getItems(), kwargs.getItems(), 1);
+    })
+
+    klass.on('file', ['file'], (self, file, context) => {
+      self.block.code.writeBuffer(fs.readFileSync(context.asString(file)));
     })
 
     klass.on('locate_at', ['range', 'address_and', 'address_or', 'align'], (self, range, addressAnd, addressOr, align, context) => {

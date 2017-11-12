@@ -78,7 +78,7 @@ const PRIORITY = [
   ['<', '>'],
   ['==', '!='],
   ['||', '&&'],
-  ['='],
+  ['=', '|=', '&=', '+=', '-=', '*=', '/='],
 ];
 
 CalculateExpression.PRIORITY_INDEX = {};

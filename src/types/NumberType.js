@@ -2,6 +2,8 @@ import InternalValueClass from './InternalValueClass';
 import InternalValue from '../objects/InternalValue';
 import PluginUtils from '../plugin/PluginUtils';
 import BooleanObject from '../objects/Boolean';
+import FutureNumber from '../objects/FutureNumber';
+import StaticNumber from '../linker/calculate/StaticNumber';
 
 export default class NumberType extends InternalValueClass {
   constructor() {
@@ -16,6 +18,15 @@ export default class NumberType extends InternalValueClass {
     return 'Number'
   }
 
+  onOperator(self, operator, callback, other, context) {
+    if (other.type() === 'FutureNumber') {
+      self = new FutureNumber(new StaticNumber(context.asNumber(self)));
+      return self.getMember(operator).callWithParameters(context.getContext(), other);
+    }
+
+    return super.onOperator(self, operator, callback, other, context);
+  }
+
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
@@ -26,6 +37,15 @@ export default class NumberType extends InternalValueClass {
 
     klass.on('to_n', [], (self, context) => {
       return self;
+    })
+
+    klass.on('times', ['&block'], (self, block, context) => {
+      const macro = block.getMacro();
+      const times = self.getMember('__value').value;
+
+      for (var i=0; i<times; i++) {
+        macro.callWithParameters(context.getContext(), context.create('Number', new InternalValue(i)));
+      }
     })
 
     klass.on('to_constant', [], (self, context) => {

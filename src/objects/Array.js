@@ -48,6 +48,10 @@ export default class ArrayObject extends ObjectClass {
       return new ArrayObject(result);
     });
 
+    klass.on('reverse', [], (self, context) => {
+      return new ArrayObject(self.items.reverse());
+    })
+
     klass.on('sort', [], (self, context) => {
       var items = self.items.slice();
       items = items.sort((a, b) => {

@@ -1,5 +1,6 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import ValueAccessor from '../ValueAccessor';
+import NilObject from '../../objects/Nil';
 
 export default class ExpressionStatement extends AbstractInterpreter {
   process() {
@@ -9,7 +10,7 @@ export default class ExpressionStatement extends AbstractInterpreter {
     var expressionResult = object;
 
     if (object.canBeCalled()) {
-      expressionResult = this.callWithParameters(object);
+      expressionResult = this.objectOrNil(this.callWithParameters(object));
     } else if (object.isUndefined()) {
       this.log("error", "Expression is undefined");
     }
@@ -21,6 +22,8 @@ export default class ExpressionStatement extends AbstractInterpreter {
         const scope = compiler.getMember('current_scope');
         this.callWithParameters(scope.getMember('on_call_function'), expressionResult);
       }
+
+      expressionResult = new NilObject();
     }
 
     return new ValueAccessor(expressionResult);

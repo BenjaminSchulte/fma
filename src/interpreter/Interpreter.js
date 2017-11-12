@@ -14,6 +14,8 @@ export default class Interpreter {
     this.functionQueue = [];
     this.callQueue = [];
 
+    this.context = new Context(this, this.root);
+
     for (let plugin of project.getPlugins()) {
       plugin.preProcess(project, this);
     }
@@ -48,18 +50,7 @@ export default class Interpreter {
   }
 
   process(program) {
-    const context = new Context(this, this.root);
-
-    context.process(program);
-
-    while (this.functionQueue.length) {
-      const func = this.functionQueue.shift();
-      func.compile(context);
-    }
-
-    while (this.callQueue.length) {
-      this.callQueue.shift()();
-    }
+    this.context.process(program);
   }
 
   addRomBlock(memory) {
@@ -70,7 +61,20 @@ export default class Interpreter {
     this.ramBlocks.push(memory);
   }
 
+  finalize() {
+    while (this.functionQueue.length) {
+      const func = this.functionQueue.shift();
+      func.compile(this.context);
+    }
+
+    while (this.callQueue.length) {
+      this.callQueue.shift()();
+    }
+  }
+
   buildObject() {
+    this.finalize();
+
     const object = new LinkerObject();
 
     for (let block of this.staticCodeBlocks) {

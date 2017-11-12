@@ -1,10 +1,18 @@
 import InterpreterError from '../InterpreterError';
+import NilObject from '../../objects/Nil';
 
 export default class AbstractInterpreter {
   constructor(context, node) {
     this.context = context;
     this.comments = null;
     this.node = node;
+  }
+
+  objectOrNil(object) {
+    if (!object) {
+      object = new NilObject();
+    }
+    return object;
   }
 
   log(type, ...args) {

@@ -2,6 +2,7 @@ import NamedObject from './NamedObject';
 import ClassInstance from './ClassInstance';
 import ArgumentList from '../interpreter/ArgumentList';
 import InterpreterError from '../interpreter/InterpreterError';
+import MacroInstance from './MacroInstance';
 import ClassMembers from './ClassMembers';
 
 export default class ClassObject extends NamedObject {
@@ -10,6 +11,7 @@ export default class ClassObject extends NamedObject {
 
     this.instanceMembers = {};
     this.extended = [];
+    this.memberInitializers = []
   }
 
   initializeMembers() {
@@ -110,6 +112,20 @@ export default class ClassObject extends NamedObject {
         self.extendsClass(obj);
       }
 
+      if (self.memberInitializers.length) {
+        const scopeChild = context.getContext().resolveChild('$scope');
+        if (scopeChild.isUndefined()) {
+          throw new InterpreterError('Can not instanciate a class with RAM instance members, yet');
+        }
+
+        const scope = scopeChild.getObject();
+        for (let init of self.memberInitializers) {
+          const macro = new MacroInstance(init)
+          macro.self = instance;
+          macro.callWithParameters(context.getContext(), scope);
+        }
+      }
+
       if (instance.hasMember('initialize')) {
         const member = instance.getMember('initialize');
         const callContext = member.getArguments().buildContextByProxy(context.getContext());
@@ -117,6 +133,10 @@ export default class ClassObject extends NamedObject {
       }
 
       return instance;
+    })
+
+    klass.on('on_initialize_members', ['&block'], (self, block, context) => {
+      self.memberInitializers.push(block.getMacro());
     })
   }
 

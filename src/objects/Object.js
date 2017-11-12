@@ -9,6 +9,7 @@ export default class AbstractObject {
     this.parent = null;
     this.fullName = null;
     this.nameHint = null;
+    this.nameParent = null;
     this.symbolName = null;
     this.documentation = new Documentation(this);
 
@@ -17,12 +18,20 @@ export default class AbstractObject {
     this.klassMembers = null;
   }
 
+  getParent() {
+    return this.parent;
+  }
+
   getDocumentation() {
     return this.documentation;
   }
 
   setNameHint(name) {
     this.nameHint = name;
+  }
+
+  setNameParent(parent) {
+    this.nameParent = parent;
   }
 
   addFunctionHook(hook) {
@@ -52,21 +61,27 @@ export default class AbstractObject {
 
     var prefix = '';
 
-    if (this.parent) {
+    if (this.nameParent) {
+      prefix = this.nameParent.getFullName() + '.';
+    } else if (this.parent) {
       prefix = this.parent.getFullName() + '.';
+    }
 
-      if (prefix === '.') {
-        prefix = '';
-      }
+    if (prefix === '.') {
+      prefix = '';
     }
 
     this.fullName = prefix + this.getName();
     return this.fullName;
   }
 
+  buildSymbolName() {
+    return this.getFullName()
+  }
+
   getSymbolName() {
     if (this.symbolName === null) {
-      this.symbolName = this.getFullName();
+      this.symbolName = this.buildSymbolName();
     }
 
     return this.symbolName;

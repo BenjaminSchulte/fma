@@ -57,6 +57,10 @@ export default class Writer {
     }
   }
 
+  writeBuffer(buffer) {
+    this.code.write(buffer);
+  }
+
   writeCalculation(calculation, bytesPerItem) {
     this.calculations.push(new WriterCalculation(this.size(), calculation, bytesPerItem));
 

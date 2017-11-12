@@ -12,6 +12,7 @@ import CompilerScope from './CompilerScope';
 import CompilerMemoryManager from './CompilerMemoryManager';
 import ClassInstance from '../objects/ClassInstance';
 import FutureNumber from '../objects/FutureNumber';
+import Class from '../objects/Class';
 
 export default class CorePlugin extends Plugin {
   preProcess(project, interpreter) {
@@ -22,6 +23,7 @@ export default class CorePlugin extends Plugin {
     root.setMember('Object', new ObjectType());
 
     root.setMember('FutureNumber', new SystemTypeWrapper(new FutureNumber(null)))
+    root.setMember('Class', new SystemTypeWrapper(new Class('$$system')))
 
     root.setMember('Number', new NumberType());
     root.setMember('TypedNumber', new TypedNumber());

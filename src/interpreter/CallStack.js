@@ -12,6 +12,6 @@ export default class CallStack {
   }
 
   getLocations() {
-    return this.stack.map(item => item.getLocation().toString());
+    return this.stack.map(item => item.getLocation() ? item.getLocation().toString() : '<unknown>');
   }
 }

@@ -84,4 +84,4 @@ end
 
 == License
 
-FMA is licensed with the [MIT](./LICENSE.md) license. Author: Benjamin Schulte
+FMA is licensed with the link:./LICENSE.md[MIT] license. Author: Benjamin Schulte

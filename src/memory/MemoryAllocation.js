@@ -3,7 +3,7 @@ import OldMemoryLocation from './old/MemoryLocation';
 import MemoryAddress from './MemoryAddress';
 
 export default class MemoryAllocation {
-  constructor(parent, memory) {
+  constructor(parent) {
     this.parent = parent;
     this.children = [];
 
@@ -13,11 +13,27 @@ export default class MemoryAllocation {
     this.numItems = 1;
     this.name = null;
     this.symbolName = null;
+    this.isShared = false;
 
     this.allowed = [];
     this.shadows = [];
+    this.included = [];
 
     this.appliedShadows = [];
+    this.isBuild = false;
+    this.isAttached = true;
+  }
+
+  detach() {
+    this.isAttached = false;
+  }
+
+  setIsShared(shared) {
+    this.isShared = shared;
+  }
+
+  addIncluded(other) {
+    this.included.push(other);
   }
 
   getRoot() {
@@ -69,8 +85,16 @@ export default class MemoryAllocation {
     this.size = size;
   }
 
+  getItemSize() {
+    return this.size;
+  }
+
   setNumItems(num) {
     this.numItems = num;
+  }
+
+  getNumItems() {
+    return this.numItems;
   }
 
   getFullSize() {
@@ -134,11 +158,29 @@ export default class MemoryAllocation {
 
   buildMemory() {
     const memory = this.parent.memory.allocate();
+    if (!this.isAttached) {
+      memory.detach();
+    }
+
     memory.size(this.getFullSize()).withDebugName(this.name);
+    if (this.isShared) {
+      memory.shared();
+    }
+
+    for (let included of this.included) {
+      included.build();
+      memory.link(included.memory);
+    }
+
     this.memory = memory;
   }
 
   build() {
+    if (this.isBuild) {
+      return;
+    }
+    this.isBuild = true;
+
     this.buildMemory();
     this.buildItem();
 
