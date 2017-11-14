@@ -1,6 +1,6 @@
 {
   "name": "fma",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Famicom Macro Assembler",
   "main": "dist/index.js",
   "keywords": ["snes", "famicom", "macro", "assembler", "compiler", "nintendo"],

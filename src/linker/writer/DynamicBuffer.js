@@ -47,7 +47,7 @@ export default class DynamicBuffer {
     const newSize = size + this.size;
 
     if (newSize > this.totalSize) {
-      this.resize((this.totalSize + this.stepSize) & ~(this.stepSize - 1));
+      this.resize((newSize + this.stepSize) & ~(this.stepSize - 1));
     }
 
     this.size += size;
@@ -73,7 +73,6 @@ export default class DynamicBuffer {
     this.allocate(size);
 
     buffer.copy(this.buffer, this.offset, offset, offset + size);
-
     this.offset += size;
   }
 
