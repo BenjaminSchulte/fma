@@ -19,6 +19,11 @@ export default class NumberType extends InternalValueClass {
   }
 
   onOperator(self, operator, callback, other, context) {
+    if (other.getClassName() !== 'Number') {
+      if (!other.hasMember('to_n') && other.hasMember('to_future_number')) {
+        other = other.getMember('to_future_number').callWithParameters(context.getContext());
+      }
+    }
     if (other.type() === 'FutureNumber') {
       self = new FutureNumber(new StaticNumber(context.asNumber(self)));
       return self.getMember(operator).callWithParameters(context.getContext(), other);
