@@ -6,6 +6,7 @@ import StaticNumber from '../linker/calculate/StaticNumber';
 import Calculation from '../linker/calculate/Calculation';
 import PluginUtils from '../plugin/PluginUtils';
 import Block from '../objects/Block';
+import VariableTypes from '../interpreter/VariableTypes';
 
 import MemoryAllocation from '../memory/MemoryAllocation';
 import RootMemoryAllocation from '../memory/RootMemoryAllocation';
@@ -71,6 +72,7 @@ export default class CompilerMemoryManager extends Class {
     self.isSystemClass = false;
     self.memberKlass = type;
     self.memberKlassContext = context;
+    self.memory.setStringedTogether();
 
     var times = 1;
     if (self.isArray) {
@@ -106,6 +108,7 @@ export default class CompilerMemoryManager extends Class {
     block.setMember('$scope', scope);
 
     const instance = self.memberKlass.getMember('new').call(context)
+    instance.memoryScope = scope;
     instance.setNameParent(scope.getParent());
     instance.setNameHint(self.instances.length);
     return instance;
@@ -113,15 +116,7 @@ export default class CompilerMemoryManager extends Class {
 
   setSystemItemType(self, type) {
     self.isSystemClass = true;
-
-    switch (type) {
-      case 'uint8': self.memory.setItemSize(1); break;
-      case 'uint16': self.memory.setItemSize(2); break;
-      case 'uint24': self.memory.setItemSize(3); break;
-      case 'uint32': self.memory.setItemSize(4); break;
-      default:
-        throw new Error(`Unknown item type: ${type}`);
-    }
+    self.memory.setItemSize(VariableTypes.getSizeOf(type));
   }
 
   initializeInstanceMembers(klass) {
@@ -156,6 +151,9 @@ export default class CompilerMemoryManager extends Class {
     });
 
     klass.on('set_item_type', ['type'], (self, type, context) => {
+      if (type.isUndefined()) {
+        throw new Error('Item type can not be undefined')
+      }
       if (type.isNil()) {
         return;
       }

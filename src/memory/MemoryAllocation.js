@@ -14,6 +14,7 @@ export default class MemoryAllocation {
     this.name = null;
     this.symbolName = null;
     this.isShared = false;
+    this.stringedTogether = false;
 
     this.allowed = [];
     this.shadows = [];
@@ -22,6 +23,10 @@ export default class MemoryAllocation {
     this.appliedShadows = [];
     this.isBuild = false;
     this.isAttached = true;
+  }
+
+  setStringedTogether() {
+    this.stringedTogether = true;
   }
 
   detach() {
@@ -165,6 +170,9 @@ export default class MemoryAllocation {
     memory.size(this.getFullSize()).withDebugName(this.name);
     if (this.isShared) {
       memory.shared();
+    }
+    if (this.stringedTogether) {
+      memory.withStringedTogether();
     }
 
     for (let included of this.included) {

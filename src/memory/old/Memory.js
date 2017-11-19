@@ -12,6 +12,10 @@ export default class Memory extends MemoryAllocationContainer {
     return true;
   }
 
+  isStringedTogether() {
+    return false;
+  }
+
   createSection(size, bankNumber=0) {
     return new MemorySectionNode(new Bank(bankNumber, size));
   }

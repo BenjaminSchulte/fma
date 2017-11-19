@@ -1,6 +1,5 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import ValueAccessor from '../ValueAccessor';
-import Parser from '../../grammar/Parser';
 import path from 'path';
 
 export default class RequireStatement extends AbstractInterpreter {
@@ -9,9 +8,8 @@ export default class RequireStatement extends AbstractInterpreter {
     const result = this.context.process(this.node.parent);
     const file = result.getObject().asString(this.context);
     const project = this.context.getInterpreter().getProject();
-    const parser = new Parser(project);
 
-    const program = parser.parseRelativeFile(file + '.fma', path.dirname(this.node.getLocation().getFile()));
+    var program = this.context.getInterpreter().preprocessedRequire.parseRelativeFile(file + '.fma', path.dirname(this.node.getLocation().getFile()));
 
     this.context.process(program);
 

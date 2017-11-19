@@ -106,6 +106,15 @@ export default class Context {
     return instance;
   }
 
+  precalculate(node) {
+    const processor = this.getProcessor(node);
+    processor.precalculate(node);
+
+    async.forEachOf(processor.getChildren(), (value, key, callback) => {
+      this.precalculate(value);
+    });
+  }
+
   process(node) {
     const instance = this.getProcessor(node);
     if (instance.setComments(this.comments)) {

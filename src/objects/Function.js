@@ -10,6 +10,7 @@ export default class FunctionObject extends NamedObject {
     this.hasBeenCompiled = false;
     this.javascriptCallback = null;
     this.children = null;
+    this.isInQueue = false;
   }
 
   setCallback(javascriptCallback) {
@@ -79,8 +80,9 @@ export default class FunctionObject extends NamedObject {
 
   callWithParameters(context) {
     const compiler = context.resolveChild('Compiler').getObject();
-    if (compiler.hasMember('current_scope')) {
+    if (!this.isInQueue && compiler.hasMember('current_scope')) {
       context.getInterpreter().compileFunction(this);
+      this.isInQueue = true;
     }
 
     return this;

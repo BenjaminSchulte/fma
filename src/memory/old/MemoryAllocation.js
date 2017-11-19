@@ -12,8 +12,28 @@ export default class MemoryAllocation extends MemoryAllocationContainer {
     this._allow = [];
     this._name = null;
 
+    this.stringedTogether = false;
     this.staticAddress = null;
     this.sharedStaticAddressAllocations = [];
+  }
+
+  isStringedTogether() {
+    if (this.stringedTogether) {
+      return true;
+    }
+
+    for (let parent of this.parents) {
+      if (parent.isStringedTogether()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  withStringedTogether() {
+    this.stringedTogether = true;
+    return this;
   }
 
   withDebugName(name) {
@@ -78,6 +98,10 @@ export default class MemoryAllocation extends MemoryAllocationContainer {
   }
 
   getOwnSectionSize() {
+    if (this.isStringedTogether()) {
+      return this.getTotalSize();
+    }
+
     return this._size || 0;
   }
 

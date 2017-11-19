@@ -3,7 +3,14 @@
   "version": "0.2.5",
   "description": "Famicom Macro Assembler",
   "main": "dist/index.js",
-  "keywords": ["snes", "famicom", "macro", "assembler", "compiler", "nintendo"],
+  "keywords": [
+    "snes",
+    "famicom",
+    "macro",
+    "assembler",
+    "compiler",
+    "nintendo"
+  ],
   "scripts": {
     "start": "node_modules/babel-cli/bin/babel-node.js src/index.js",
     "build-compiler": "pegjs -o src/grammar/grammar.js src/grammar/grammar.pegjs",
@@ -28,7 +35,9 @@
     "pegjs": "^0.10.0"
   },
   "dependencies": {
+    "async": "^2.6.0",
     "babel-runtime": "^6.26.0",
+    "sync": "^0.2.5",
     "winston": "^3.0.0-rc1"
   },
   "author": "Benjamin Schulte <benj@minschulte.de>",

@@ -19,7 +19,7 @@ export default class ModuleDeclaration extends AbstractInterpreter {
       if (object.isUndefined()) {
         object.define(new Module(name));
       } else if (object.getObjectType() !== 'Module') {
-        this.log('warning', `The object ${object.getName()} has already been defined, but is redefined as Module.`);
+        this.log('warn', `The object ${object.getName()} has already been defined, but is redefined as Module.`);
         object.define(new Module(name));
       }
 
