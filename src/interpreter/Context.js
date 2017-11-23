@@ -16,21 +16,28 @@ export default class Context {
     this.interpreter = interpreter;
     this.comments = new CommentCollector();
     this.stack = new CallStack();
+    this.includeStack = new CallStack();
     this.object = object;
     this.parent = parent;
     this.returnValue = new NilObject();
+  }
+
+  getParentLocations() {
+    return this.includeStack.getLocationObjects().concat(this.stack.getLocationObjects());
   }
 
   clone() {
     const context = new Context(this.interpreter, this.object);
     context.parent = this.parent ? this.parent.clone() : null;
     context.stack = this.stack;
+    context.includeStack = this.includeStack;
     return context;
   }
 
   withoutParents() {
     const context = new Context(this.getInterpreter(), this.object);
     context.stack = this.stack;
+    context.includeStack = this.includeStack;
     return context;
   }
 
@@ -53,6 +60,7 @@ export default class Context {
   enter(object) {
     const context = new Context(this.getInterpreter(), object, this);
     context.stack = this.stack;
+    context.includeStack = this.includeStack;
     return context;
   }
 
@@ -83,6 +91,7 @@ export default class Context {
   getRoot() {
     const context = new Context(this.getInterpreter(), this.getInterpreter().root);
     context.stack = this.stack;
+    context.includeStack = this.includeStack;
     return context;
   }
 

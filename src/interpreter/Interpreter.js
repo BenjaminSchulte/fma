@@ -31,6 +31,14 @@ export default class Interpreter {
     return this.root;
   }
 
+  setCurrentBlock(block) {
+    this.currentBlock = block;
+  }
+
+  getCurrentBlock() {
+    return this.currentBlock;
+  }
+
   afterwards(callback) {
     this.callQueue.push(callback);
   }

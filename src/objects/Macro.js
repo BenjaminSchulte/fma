@@ -3,13 +3,22 @@ import MacroInstance from './MacroInstance';
 import FunctionHook from './FunctionHook';
 
 export default class MacroObject extends NamedObject {
-  constructor(name) {
+  constructor(name, location) {
     super(name);
 
     this.javascriptCallback = null;
     this.parentContext = null;
     this.arguments = null;
     this.isDecorator = false;
+    this.locations = [];
+  }
+
+  setLocations(locations) {
+    this.locations = locations;
+  }
+
+  getLocations() {
+    return this.locations;
   }
 
   setIsDecorator(decorator) {
@@ -106,6 +115,13 @@ export default class MacroObject extends NamedObject {
         }
 
         context.preprocessMany(this.children);
+
+        const block = context.getInterpreter().getCurrentBlock();
+        if (block) {
+          for (let location of this.getLocations()) {
+            block.addDependency(location.getFile());
+          }
+        }
 
         result = (context.processMany(this.children)).getObject();
       })

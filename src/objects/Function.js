@@ -11,6 +11,11 @@ export default class FunctionObject extends NamedObject {
     this.javascriptCallback = null;
     this.children = null;
     this.isInQueue = false;
+    this.parentLocations = [];
+  }
+
+  setParentLocations(locations) {
+    this.parentLocations = locations.slice()
   }
 
   setCallback(javascriptCallback) {
@@ -62,7 +67,12 @@ export default class FunctionObject extends NamedObject {
     const Compiler = (root.resolveChild('Compiler')).getObject();
     const scope = CompilerScope.getMember('new').callWithParameters(root, this);
 
+    context.getInterpreter().setCurrentBlock(scope.block);
     Compiler.setMember('current_scope', scope);
+
+    for (let location of this.parentLocations) {
+      scope.block.addDependency(location.getFile());
+    }
 
     context.getInterpreter().log('info', `Compiling function ${this.getFullName()}`);
     scope.getMember('on_enter_function').callWithParameters(context, this);
@@ -76,6 +86,7 @@ export default class FunctionObject extends NamedObject {
     });
 
     scope.getMember('on_leave_function').callWithParameters(context, this);
+    context.getInterpreter().setCurrentBlock(null);
   }
 
   callWithParameters(context) {

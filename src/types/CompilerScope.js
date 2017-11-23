@@ -19,7 +19,7 @@ export default class CompilerScope extends Class {
     klass.on('on_leave_function', ['function'], () => {})
 
     klass.on('initialize', ['function'], (self, func, context) => {
-      self.block = new StaticCodeBlock();
+      self.block = new StaticCodeBlock(func.getSymbolName());
       self.block.code.writeSymbol(func.getSymbolName());
       context.getInterpreter().registerStaticCodeBlock(self.block);
     })
@@ -39,7 +39,9 @@ export default class CompilerScope extends Class {
     })
 
     klass.on('file', ['file'], (self, file, context) => {
-      self.block.code.writeBuffer(fs.readFileSync(context.asString(file)));
+      const fileName = context.asString(file);
+      self.block.addDependency(fileName);
+      self.block.code.writeBuffer(fs.readFileSync(fileName));
     })
 
     klass.on('locate_at', ['range', 'address_and', 'address_or', 'align'], (self, range, addressAnd, addressOr, align, context) => {

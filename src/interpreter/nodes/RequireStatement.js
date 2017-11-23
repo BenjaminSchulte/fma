@@ -9,9 +9,10 @@ export default class RequireStatement extends AbstractInterpreter {
     const file = result.getObject().asString(this.context);
     const project = this.context.getInterpreter().getProject();
 
+    this.context.includeStack.push(this.node);
     var program = this.context.getInterpreter().preprocessedRequire.parseRelativeFile(file + '.fma', path.dirname(this.node.getLocation().getFile()));
-
     this.context.process(program);
 
+    this.context.includeStack.pop();
   }
 }

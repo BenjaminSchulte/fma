@@ -2,10 +2,17 @@ import Writer from './writer/Writer';
 import LocationHint from './location/LocationHint';
 
 export default class StaticCodeBlock {
-  constructor() {
+  constructor(name) {
+    this.name = name;
     this.code = new Writer();
     this.locationHint = new LocationHint();
     this.location = null;
+
+    this.dependentFiles = {};
+  }
+
+  addDependency(file) {
+    this.dependentFiles[file] = true;
   }
 
   getSize() {
