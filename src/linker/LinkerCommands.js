@@ -1,6 +1,11 @@
 export default class LinkerCommands {
   constructor() {
     this.commands = [];
+    this.configurations = [];
+  }
+
+  addConfiguration(configuration) {
+    this.configurations.push(configuration);
   }
 
   add(command) {
@@ -15,5 +20,9 @@ export default class LinkerCommands {
 
   all() {
     return this.commands;
+  }
+
+  allConfigurations() {
+    return this.configurations;
   }
 }

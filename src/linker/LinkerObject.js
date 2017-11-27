@@ -1,8 +1,17 @@
 export default class LinkerObject {
   constructor() {
     this.staticCodeBlocks = [];
+    this.configurations = [];
     this.romBlock = null;
     this.ramBlock = null;
+  }
+
+  addConfiguration(configuration) {
+    this.configurations.push(configuration);
+  }
+
+  getConfigurations() {
+    return this.configurations;
   }
 
   addStaticCode(block) {
@@ -47,6 +56,7 @@ export default class LinkerObject {
 
   merge(other) {
     this.staticCodeBlocks = this.staticCodeBlocks.concat(other.staticCodeBlocks);
+    this.configurations = this.configurations.concat(other.configurations);
     this.addRomBlock(other.romBlock);
     this.addRamBlock(other.ramBlock);
   }

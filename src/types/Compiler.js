@@ -26,8 +26,13 @@ export default class Compiler extends Class {
       this.print(context, ...args.getItems());
     })
 
-    klass.on('command', ['text'], (self, text, context) => {
-      return new FutureNumber(new Command(context.asString(text)));
+    klass.on('command', ['*text'], (self, text, context) => {
+      return new FutureNumber(this.buildCommand(context, text));
+    })
+
+    klass.on('configure_debugger', ['*text'], (self, text, context) => {
+      const command = this.buildCommand(context, text)
+      this.interpreter.addConfiguration(this.buildCommand(context, text, true));
     })
 
     klass.on('define', ['?name', '&block'], (self, name, args, context) => {
@@ -49,6 +54,21 @@ export default class Compiler extends Class {
 
       return func;
     })
+  }
+
+  buildCommand(context, parts, returnString=false) {
+    return new Command(parts.getItems().map(item => {
+      if (item.getClassName() === 'String') {
+        return context.asString(item);
+      }
+
+      if (item.getClassName() === 'FutureNumber') {
+        return item.calculation;
+      }
+
+      console.log(item.getClassName())
+      return "???";
+    }), returnString);
   }
 
   print(context, ...messages) {

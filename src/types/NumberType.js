@@ -35,8 +35,13 @@ export default class NumberType extends InternalValueClass {
   initializeInstanceMembers(klass) {
     super.initializeInstanceMembers(klass);
 
-    klass.on('to_s', [], (self, context) => {
-      const value = new InternalValue(self.getMember('__value').value.toString());
+    klass.on('to_s', ['?base'], (self, base, context) => {
+      var baseValue = 10;
+      if (!base.isNil()) {
+        baseValue = context.asNumber(base);
+      }
+
+      const value = new InternalValue(self.getMember('__value').value.toString(baseValue));
       return context.create('String', value);
     })
 

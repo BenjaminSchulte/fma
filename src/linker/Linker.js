@@ -43,6 +43,10 @@ export default class Linker {
     for (let block of this.object.getStaticCodeBlocks()) {
       block.fillCalculations(symbols, this);
     }
+
+    for (let configuration of this.object.getConfigurations()) {
+      this.commands.addConfiguration(configuration.calculate(symbols, this));
+    }
   }
 
   build() {

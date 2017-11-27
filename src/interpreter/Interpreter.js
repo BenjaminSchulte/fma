@@ -13,6 +13,7 @@ export default class Interpreter {
     this.root = new RootObject;
     this.preprocessedRequire = new PreprocessedRequire(project);
 
+    this.configurations = [];
     this.staticCodeBlocks = [];
     this.ramBlocks = [];
     this.romBlocks = [];
@@ -69,6 +70,10 @@ export default class Interpreter {
     this.context.process(program);
   }
 
+  addConfiguration(configuration) {
+    this.configurations.push(configuration);
+  }
+
   addRomBlock(memory) {
     this.romBlocks.push(memory);
   }
@@ -107,6 +112,10 @@ export default class Interpreter {
   buildObject(callback) {
     this.finalize(() => {
       const object = new LinkerObject();
+
+      for (let config of this.configurations) {
+        object.addConfiguration(config);
+      }
 
       for (let block of this.staticCodeBlocks) {
         object.addStaticCode(block);
