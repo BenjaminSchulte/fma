@@ -2,6 +2,8 @@ import ObjectClass from './Object';
 import Context from '../interpreter/Context';
 import ArgumentList from '../interpreter/ArgumentList'
 import InterpreterError from '../interpreter/InterpreterError'
+import FutureNumber from './FutureNumber';
+import SymbolLocation from '../linker/calculate/SymbolLocation';
 
 export default class ClassInstanceObject extends ObjectClass {
   constructor(klass) {
@@ -12,6 +14,18 @@ export default class ClassInstanceObject extends ObjectClass {
 
   type() {
     return 'ClassInstance';
+  }
+
+  setMemoryScope(scope) {
+    this.memoryScope = scope;
+
+    this.klass.instance.on('to_future_number', [], (self, context) => {
+      if (!self.memoryScope) {
+        throw new InterpreterError('Can not convert an instance which is no memory declaration to future number');
+      }
+
+      return new FutureNumber(new SymbolLocation(self.memoryScope.getSymbolName()));
+    });
   }
 
   getName() {
