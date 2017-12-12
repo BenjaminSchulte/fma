@@ -105,6 +105,7 @@ export default class MacroObject extends NamedObject {
 
         if (!self) {
           self = context.resolveChild('self').getObject();
+
           if (self.isUndefined()) {
             self = this.parentContext.getObject();
           }

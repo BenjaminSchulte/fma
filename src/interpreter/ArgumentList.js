@@ -1,5 +1,6 @@
 import Context from './Context';
 import Block from '../objects/Block';
+import ReadOnlyBlock from '../objects/ReadOnlyBlock';
 import Parameter from '../objects/Parameter';
 import ArrayObject from '../objects/Array';
 import MacroPointer from '../objects/MacroPointer';
@@ -53,6 +54,7 @@ export default class ArgumentList {
     var args = [];
     var kwargs = {};
     var blockObject = null;
+    var readOnlyBlocks = [];
 
     for (let param of params) {
       if (param.type() === 'Parameter') {
@@ -75,7 +77,9 @@ export default class ArgumentList {
             break;
 
           case Parameter.TYPE_CONTEXT:
-            context = new Context(calleeContext.getInterpreter(), param.value, parent);
+            var newBlock = new ReadOnlyBlock(param.value);
+            readOnlyBlocks.push(newBlock);
+            context = new Context(calleeContext.getInterpreter(), newBlock, parent);
             context = context.injectParent(new Context(calleeContext.getInterpreter(), block));
             break;
 
@@ -159,6 +163,10 @@ export default class ArgumentList {
 
     if (Object.keys(kwargs).length) {
       throw new InterpreterError('Too many arguments for method: ' + Object.keys(kwargs).join(', '));
+    }
+
+    for (let ro of readOnlyBlocks) {
+      ro.lock();
     }
 
     return context;
