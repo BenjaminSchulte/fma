@@ -5,8 +5,6 @@ import InterpreterError from '../interpreter/InterpreterError';
 import VariableTypes from '../interpreter/VariableTypes';
 import MacroInstance from './MacroInstance';
 import ClassMembers from './ClassMembers';
-import FutureNumber from './FutureNumber';
-import SymbolLocation from '../linker/calculate/SymbolLocation';
 
 export default class ClassObject extends NamedObject {
   constructor(name) {
@@ -235,12 +233,5 @@ export default class ClassObject extends NamedObject {
   }
 
   initializeInstanceMembers(klass) {
-    klass.on('to_future_number', [], (self, context) => {
-      if (!self.memoryScope) {
-        throw new InterpreterError('Can not convert an instance which is no memory declaration to future number');
-      }
-
-      return new FutureNumber(new SymbolLocation(self.memoryScope.getSymbolName()));
-    })
   }
 }

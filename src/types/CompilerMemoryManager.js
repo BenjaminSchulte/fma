@@ -108,7 +108,7 @@ export default class CompilerMemoryManager extends Class {
     block.setMember('$scope', scope);
 
     const instance = self.memberKlass.getMember('new').call(context)
-    instance.memoryScope = scope;
+    instance.setMemoryScope(scope);
     instance.setNameParent(scope.getParent());
     instance.setNameHint(self.instances.length);
     return instance;
