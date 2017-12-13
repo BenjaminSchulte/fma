@@ -71,11 +71,17 @@ export default class Linker {
     this.log('info', 'Building ROM file.');
     const rom = this.build();
 
-    return new LinkerResult(
+    var result = new LinkerResult(
       rom.getBuffer(),
       symbols,
       this.object.getRomBlock().getMemoryRecalculator(),
       this.commands
     );
+
+    for (let plugin of this.project.getPlugins().reverse()) {
+      result = plugin.postProcess(this.project, result);
+    }
+
+    return result;
   }
 }

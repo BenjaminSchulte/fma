@@ -44,6 +44,7 @@ export default class Compiler extends Class {
       }
 
       const func = new FunctionObject(functionName);
+      func.fullName = functionName;
 
       func.setCallback(() => {
         const block = (context.getContext().resolveChild('block')).getObject();
