@@ -6,7 +6,7 @@ import ArrayObject from '../objects/Array';
 import MacroPointer from '../objects/MacroPointer';
 import HashObject from '../objects/Hash';
 import UndefinedObject from '../objects/Undefined';
-import NilObject from '../objects/Nil';
+import {Instance as NilObject} from '../objects/Nil';
 import InterpreterError from './InterpreterError';
 
 export default class ArgumentList {
@@ -28,7 +28,7 @@ export default class ArgumentList {
     for (let item of list) {
       if (item[0] === '?') {
         item = item.substr(1);
-        defaultValue = new NilObject();
+        defaultValue = NilObject;
       }
 
       if (item[0] === '*') {
@@ -147,7 +147,7 @@ export default class ArgumentList {
 
     if (blockName) {
       if (!blockObject) {
-        blockObject = new NilObject();
+        blockObject = NilObject;
       }
 
       block.setMember(blockName, blockObject);

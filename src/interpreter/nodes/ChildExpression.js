@@ -1,6 +1,6 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import ChildValueAccessor from '../ChildValueAccessor';
-import UndefinedObject from '../../objects/Undefined';
+import {Instance as UndefinedObject} from '../../objects/Undefined';
 import InterpreterError from '../InterpreterError';
 
 export default class ChildExpression extends AbstractInterpreter {
@@ -21,7 +21,7 @@ export default class ChildExpression extends AbstractInterpreter {
 
     const object = target.getObject();
     if (!object.hasMember(child)) {
-      return new ChildValueAccessor(object, new UndefinedObject(), child);
+      return new ChildValueAccessor(object, UndefinedObject, child);
     }
 
     const item = object.getMember(child);

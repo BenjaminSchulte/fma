@@ -11,7 +11,10 @@ export default class AbstractObject {
     this.nameHint = null;
     this.nameParent = null;
     this.symbolName = null;
-    this.documentation = new Documentation(this);
+    this.documentation = null;
+
+//    AbstractObject.statistics[this.type()] = AbstractObject.statistics[this.type()] ? AbstractObject.statistics[this.type()]+1 : 1;
+//    console.log(AbstractObject.statistics);
 
     this.functionHooks = [];
 
@@ -23,6 +26,10 @@ export default class AbstractObject {
   }
 
   getDocumentation() {
+    if (!this.documentation) {
+      this.documentation = new Documentation(this);
+    }
+
     return this.documentation;
   }
 
@@ -184,3 +191,5 @@ export default class AbstractObject {
 }
 
 AbstractObject.nextId = 1;
+
+AbstractObject.statistics = {}

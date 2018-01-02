@@ -1,6 +1,6 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import ValueAccessor from '../ValueAccessor';
-import NilObject from '../../objects/Nil';
+import {Instance as NilObject} from '../../objects/Nil';
 
 export default class ExpressionStatement extends AbstractInterpreter {
   process() {
@@ -23,7 +23,7 @@ export default class ExpressionStatement extends AbstractInterpreter {
         this.callWithParameters(scope.getMember('on_call_function'), expressionResult);
       }
 
-      expressionResult = new NilObject();
+      expressionResult = NilObject;
     }
 
     return new ValueAccessor(expressionResult);

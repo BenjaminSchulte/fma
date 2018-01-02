@@ -1,6 +1,6 @@
 import Macro from './Macro';
 import ArgumentList from '../interpreter/ArgumentList';
-import NilObject from './Nil';
+import {Instance as NilObject} from './Nil';
 
 export default class FunctionHook {
   constructor(macro, context, self) {
@@ -13,7 +13,7 @@ export default class FunctionHook {
     const macro = new Macro('decorator' + FunctionHook.nextId++);
     macro.setCallback(() => {
       callback();
-      return new NilObject();
+      return NilObject;
     });
     macro.setArguments(new ArgumentList());
 

@@ -1,6 +1,6 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import InterpreterError from '../InterpreterError';
-import UndefinedObject from '../../objects/Undefined';
+import {Instance as UndefinedObject} from '../../objects/Undefined';
 import ValueAccessor from '../ValueAccessor';
 
 export default class CalculateExpression extends AbstractInterpreter {
@@ -45,7 +45,7 @@ export default class CalculateExpression extends AbstractInterpreter {
 
       result = this.callWithParameters(calcLeft.getMember(operator), right);
       if (!result) {
-        result = new UndefinedObject();
+        result = UndefinedObject;
       }
     }
 

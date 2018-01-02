@@ -1,6 +1,6 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import ReturnError from '../ReturnError';
-import NilObject from '../../objects/Nil';
+import {Instance as NilObject} from '../../objects/Nil';
 
 export default class ReturnStatement extends AbstractInterpreter {
   process() {
@@ -9,7 +9,7 @@ export default class ReturnStatement extends AbstractInterpreter {
     if (this.node.parent) {
       result = (this.context.process(this.node.parent)).getObject();
     } else {
-      result = new NilObject();
+      result = NilObject;
     }
 
     throw new ReturnError(result);

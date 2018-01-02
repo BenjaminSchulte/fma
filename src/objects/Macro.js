@@ -3,7 +3,7 @@ import MacroInstance from './MacroInstance';
 import FunctionHook from './FunctionHook';
 
 export default class MacroObject extends NamedObject {
-  constructor(name, location) {
+  constructor(name) {
     super(name);
 
     this.javascriptCallback = null;

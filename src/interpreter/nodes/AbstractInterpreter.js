@@ -1,5 +1,5 @@
 import InterpreterError from '../InterpreterError';
-import NilObject from '../../objects/Nil';
+import {Instance as NilObject} from '../../objects/Nil';
 
 export default class AbstractInterpreter {
   constructor(context, node) {
@@ -10,7 +10,7 @@ export default class AbstractInterpreter {
 
   objectOrNil(object) {
     if (!object) {
-      object = new NilObject();
+      object = NilObject;
     }
     return object;
   }

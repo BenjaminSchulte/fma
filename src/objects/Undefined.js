@@ -38,3 +38,9 @@ export default class UndefinedObject extends AbstractObject {
     return true;
   }
 }
+
+const Instance = new UndefinedObject();
+
+export {
+  Instance
+}

@@ -9,3 +9,9 @@ export default class NilObject extends AbstractObject {
     return true;
   }
 }
+
+const Instance = new NilObject;
+
+export {
+  Instance
+}

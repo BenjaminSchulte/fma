@@ -1,6 +1,6 @@
 import AbstractInterpreter from './AbstractInterpreter';
 import ValueAccessor from '../ValueAccessor';
-import NilObject from '../../objects/Nil';
+import {Instance as NilObject} from '../../objects/Nil';
 import InterpreterError from '../InterpreterError';
 
 export default class CallExpression extends AbstractInterpreter {
@@ -30,7 +30,7 @@ export default class CallExpression extends AbstractInterpreter {
     }
 
     if (!result) {
-      result = new NilObject();
+      result = NilObject;
     }
 
     return new ValueAccessor(result);

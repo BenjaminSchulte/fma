@@ -1,7 +1,7 @@
 import * as Nodes from './nodes';
 import CommentCollector from './CommentCollector';
-import UndefinedObject from '../objects/Undefined';
-import NilObject from '../objects/Nil';
+import {Instance as UndefinedObject} from '../objects/Undefined';
+import {Instance as NilObject} from '../objects/Nil';
 import ChildValueAccessor from './ChildValueAccessor';
 import ValueAccessor from './ValueAccessor';
 import InterpreterError from './InterpreterError';
@@ -19,7 +19,7 @@ export default class Context {
     this.includeStack = new CallStack();
     this.object = object;
     this.parent = parent;
-    this.returnValue = new NilObject();
+    this.returnValue = NilObject;
   }
 
   getParentLocations() {
@@ -54,7 +54,7 @@ export default class Context {
       }
     }
 
-    return new ChildValueAccessor(this.object, new UndefinedObject(), name);
+    return new ChildValueAccessor(this.object, UndefinedObject, name);
   }
 
   enter(object) {
@@ -167,7 +167,7 @@ export default class Context {
     }
 
     if (!result) {
-      result = new ValueAccessor(new NilObject());
+      result = new ValueAccessor(NilObject);
     }
 
     return result;
@@ -185,7 +185,7 @@ export default class Context {
       result = object.callWithParameters(this);
 
       if (!result) {
-        result = new ValueAccessor(new NilObject());
+        result = new ValueAccessor(NilObject);
       } else {
         result = new ValueAccessor(result);
       }
