@@ -11,6 +11,24 @@ export default class ArrayObject extends ObjectClass {
     return this.items;
   }
 
+  hasMember(name) {
+    const number = parseInt(name, 10);
+    if (!isNaN(number) && number >=0 && number < this.items.length) {
+      return true;
+    }
+
+    return super.hasMember(name);
+  }
+
+  getMember(name) {
+    const number = parseInt(name, 10);
+    if (!isNaN(number) && number >=0 && number < this.items.length) {
+      return this.items[number];
+    }
+
+    return super.getMember(name);
+  }
+
   type() {
     return 'Array';
   }
