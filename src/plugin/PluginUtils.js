@@ -137,11 +137,15 @@ export default class PluginUtils {
   }
 
   static require(name) {
-    if (!PluginUtils.instances[name]) {
-      PluginUtils.instances[name] = require(name).default;
-    }
+    switch (name) {
+      case '../objects/Boolean': return require('../objects/Boolean').default;
+      case '../objects/InternalValue': return require('../objects/InternalValue').default;
+      case '../objects/Macro': return require('../objects/Macro').default;
+      case '../interpreter/ArgumentList': return require('../interpreter/ArgumentList').default;
 
-    return PluginUtils.instances[name];
+      default:
+        throw new Error(`Can not import module: ${name}`);
+    }
   }
 }
 
