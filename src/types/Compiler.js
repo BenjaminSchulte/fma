@@ -58,18 +58,32 @@ export default class Compiler extends Class {
   }
 
   buildCommand(context, parts, returnString=false) {
-    return new Command(parts.getItems().map(item => {
-      if (item.getClassName() === 'String') {
-        return context.asString(item);
-      }
+    var result = [];
 
-      if (item.getClassName() === 'FutureNumber') {
-        return item.calculation;
-      }
+    const process = (item) => {
 
-      console.log(item.getClassName())
-      return "???";
-    }), returnString);
+      switch (item.getClassName()) {
+      case 'String':
+        result.push(context.asString(item));
+        break;
+
+      case 'FutureNumber':
+        result.push(item.calculation);
+        break;
+
+      case 'Array':
+        item.getItems().map(process);
+        break;
+
+      default:
+        console.log(item.getClassName())
+        return "???";
+      }
+    }
+
+    parts.getItems().map(process)
+
+    return new Command(result, returnString);
   }
 
   print(context, ...messages) {
