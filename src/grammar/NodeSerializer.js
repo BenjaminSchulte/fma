@@ -20,6 +20,10 @@ export default class NodeSerializer {
   }
 
   serializeLocation(location) {
+    if (!location) {
+      return -1;
+    }
+
     const file = this.serializeString(location.file);
     const line = location.line;
     const col  = location.column;
@@ -63,11 +67,12 @@ export default class NodeSerializer {
   }
 
   serializeProgram(program) {
-    return this.stringify([
+    return [
       NodeSerializer.VERSION,
       this.strings,
+      this.locations,
       this.serialize(program)
-    ])
+    ]
   }
 
   stringify(tree) {

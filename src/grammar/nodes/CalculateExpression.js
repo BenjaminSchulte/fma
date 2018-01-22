@@ -8,6 +8,26 @@ export default class CalculateExpression extends NestedExpressionNode {
     this.right = right;
   }
 
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serializeString(this.operator),
+      s.serialize(this.right)
+    ]
+  }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.operator = s.deserializeString(args[1]);
+    this.right = s.deserialize(args[2]);
+  }
+
+  static deserialize(s, args) {
+    const node = new CalculateExpression(null, null, null);
+    node.deserialize(s, args);
+    return node;
+  }
+
   dump() {
     return `(${this.parent.dump()} ${this.operator} ${this.right.dump()})`;
   }

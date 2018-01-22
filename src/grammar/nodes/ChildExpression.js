@@ -23,14 +23,6 @@ export default class ChildExpression extends NestedExpressionNode {
     return this;
   }
 
-  serialize(s) {
-    return [
-      super.serialize(s),
-      s.serialize(this.child),
-      this.isResolved
-    ];
-  }
-
   asCallExpression(callback) {
     const expr = new CallExpression(this);
     callback(expr);
@@ -39,5 +31,25 @@ export default class ChildExpression extends NestedExpressionNode {
 
   dump() {
     return this.parent.dump() + '.' + this.child.dump();
+  }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      s.serialize(this.child),
+      this.isResolved
+    ];
+  }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.child = s.deserialize(args[1]);
+    this.isResolved = args[2];
+  }
+
+  static deserialize(s, args) {
+    const node = new ChildExpression(null);
+    node.deserialize(s, args);
+    return node;
   }
 }

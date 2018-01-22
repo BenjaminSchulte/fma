@@ -24,4 +24,15 @@ export default class FunctionDeclaration extends BlockDeclaration {
       s.serializeList(this.decorators.getChildren())
     ];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.decorators.setChildren(s.deserializeList(args[1]));
+  }
+
+  static deserialize(s, args) {
+    const node = new FunctionDeclaration(null);
+    node.deserialize(s, args);
+    return node;
+  }
 }

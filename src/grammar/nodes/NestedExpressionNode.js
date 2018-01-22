@@ -17,4 +17,15 @@ export default class NestedExpressionNode extends ExpressionNode {
       s.serialize(this.parent)
     ];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.parent = s.deserialize(args[1]);
+  }
+
+  static deserialize(s, args) {
+    const node = new NestedExpressionNode();
+    node.deserialize(s, args);
+    return node;
+  }
 }

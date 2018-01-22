@@ -45,7 +45,23 @@ export default class MacroDeclaration extends BlockDeclaration {
   serialize(s) {
     return [
       super.serialize(s),
-      s.serializeList(this.arguments.getChildren())
+      s.serializeList(this.arguments.getChildren()),
+      this.isRoot,
+      this.isDecorator
     ];
+  }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+
+    this.arguments.setChildren(s.deserializeList(args[1]));
+    this.isRoot = args[2];
+    this.isDecorator = args[3];
+  }
+
+  static deserialize(s, args) {
+    const node = new MacroDeclaration();
+    node.deserialize(s, args);
+    return node;
   }
 }

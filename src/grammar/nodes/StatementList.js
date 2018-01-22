@@ -32,4 +32,15 @@ export default class StatementList extends Node {
   serialize(s) {
     return [super.serialize(s), s.serializeList(this.children)];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.children = s.deserializeList(args[1]);
+  }
+
+  static deserialize(s, args) {
+    const node = new StatementList();
+    node.deserialize(s, args);
+    return node;
+  }
 }

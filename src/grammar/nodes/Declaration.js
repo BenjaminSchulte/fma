@@ -13,4 +13,15 @@ export default class Declaration extends Node {
       s.serialize(this.name)
     ];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.name = s.deserialize(args[1]);
+  }
+
+  static deserialize(s, args) {
+    const node = new Declaration();
+    node.deserialize(s, args);
+    return node;
+  }
 }

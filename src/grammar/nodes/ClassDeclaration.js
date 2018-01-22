@@ -20,4 +20,15 @@ export default class ClassDeclaration extends BlockDeclaration {
       s.serializeList(this.extendedClasses.getChildren())
     ];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.extendedClasses.setChildren(s.deserializeList(args[1]));
+  }
+
+  static deserialize(s, args) {
+    const node = new ClassDeclaration(null);
+    node.deserialize(s, args);
+    return node;
+  }
 }

@@ -8,4 +8,10 @@ export default class ExpressionNode extends Node {
   asCallExpression(callback) {
     throw new Error('Can not make CALL EXPRESSION on ' + this.type());
   }
+
+  static deserialize(s, args) {
+    const node = new ExpressionNode();
+    node.deserialize(s, args);
+    return node;
+  }
 }

@@ -30,6 +30,19 @@ export default class Parameter extends ExpressionNode {
     ];
   }
 
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.name = s.deserialize(args[1]);
+    this.value = s.deserialize(args[2]);
+    this.parameterType = s.deserializeString(args[3]);
+  }
+
+  static deserialize(s, args) {
+    const node = new Parameter();
+    node.deserialize(s, args);
+    return node;
+  }
+
   dump() {
     return this.value.dump();
   }

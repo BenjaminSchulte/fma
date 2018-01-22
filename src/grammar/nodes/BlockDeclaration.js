@@ -31,4 +31,15 @@ export default class BlockDeclaration extends Declaration {
       s.serializeList(this.getChildren())
     ];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.setChildren(s.deserializeList(args[1]));
+  }
+
+  static deserialize(s, args) {
+    const node = new BlockDeclaration(null);
+    node.deserialize(s, args);
+    return node;
+  }
 }

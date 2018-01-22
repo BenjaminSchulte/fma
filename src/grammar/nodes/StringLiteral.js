@@ -13,6 +13,17 @@ export default class StringLiteral extends ExpressionNode {
     ];
   }
 
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.identifier = s.deserialize(args[1]);
+  }
+
+  static deserialize(s, args) {
+    const node = new StringLiteral();
+    node.deserialize(s, args);
+    return node;
+  }
+
   dump() {
     return JSON.stringify(this.identifier.dump());
   }

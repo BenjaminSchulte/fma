@@ -48,8 +48,9 @@ export default class Parser {
       return result;
     }
 
-    for (let dir of this.project.getIncludeDirs()) {
-      if (result = this.parseFileAbsolute(path.join(dir, file))) {
+    for (let source of this.project.fileSources) {
+      result = source.parseFile(this, file);
+      if (result) {
         return result;
       }
     }
@@ -59,8 +60,18 @@ export default class Parser {
 
   parseRelativeFile(file, dir) {
     var result;
-    if (result = this.parseFileAbsolute(path.join(dir, file))) {
+    var fullPath = path.join(dir, file);
+
+    result = this.parseFileAbsolute(fullPath);
+    if (result) {
       return result;
+    }
+
+    for (let source of this.project.fileSources) {
+      result = source.parseFile(this, fullPath);
+      if (result) {
+        return result;
+      }
     }
 
     return this.parseFile(file);

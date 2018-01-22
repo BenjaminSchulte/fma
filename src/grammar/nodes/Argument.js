@@ -29,4 +29,17 @@ export default class Argument extends ExpressionNode {
       s.serializeString(this.argumentType)
     ];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.name = s.deserialize(args[1])
+    this.defaultValue = s.deserialize(args[2]);
+    this.argumentType = s.deserializeString(args[3]);
+  }
+
+  static deserialize(s, args) {
+    const node = new Argument(null);
+    node.deserialize(s, args);
+    return node;
+  }
 }

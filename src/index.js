@@ -1,3 +1,5 @@
+import NodeSerializer from './grammar/NodeSerializer';
+import NodeDeserializer from './grammar/NodeDeserializer';
 import Parser from './grammar/Parser';
 import Project from './project/Project';
 import Interpreter from './interpreter/Interpreter';
@@ -28,6 +30,8 @@ export {
   Linker,
   LinkerResult,
   Nil,
+  NodeSerializer,
+  NodeDeserializer,
   PluginAssembler,
   Plugin,
   CorePlugin

@@ -13,4 +13,15 @@ export default class IdentifierName extends ExpressionNode {
       s.serializeString(this.name)
     ];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.name = s.deserializeString(args[1]);
+  }
+
+  static deserialize(s, args) {
+    const node = new IdentifierName();
+    node.deserialize(s, args);
+    return node;
+  }
 }

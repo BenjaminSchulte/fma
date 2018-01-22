@@ -1,22 +1,28 @@
 import winston from 'winston';
 import CorePlugin from '../types/CorePlugin';
+import DirectorySource from '../grammar/source/DirectorySource';
 
 export default class Project {
   constructor() {
     this.currentLog = null;
 
     this.plugins = []
-    this.includeDirs = [];
+    //this.includeDirs = [];
+    this.fileSources = [];
     this.registerPlugin(new CorePlugin());
   }
 
-  addIncludeDir(dir) {
-    this.includeDirs.push(dir);
+  addFileSource(source) {
+    this.fileSources.push(source);
   }
 
-  getIncludeDirs() {
-    return this.includeDirs.slice();
+  addIncludeDir(dir) {
+    this.addFileSource(new DirectorySource(dir));
   }
+
+  /*getIncludeDirs() {
+    return this.includeDirs.slice();
+  }*/
 
   registerPlugin(plugin) {
     this.plugins.push(plugin);

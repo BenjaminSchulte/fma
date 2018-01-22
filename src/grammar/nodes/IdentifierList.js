@@ -21,6 +21,17 @@ export default class IdentifierList extends ExpressionList {
     ];
   }
 
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.isRoot = args[1];
+  }
+
+  static deserialize(s, args) {
+    const node = new IdentifierList();
+    node.deserialize(s, args);
+    return node;
+  }
+
   asCallExpression(callback) {
     const expr = new CallExpression(this);
     callback(expr);

@@ -29,4 +29,12 @@ export default class Node {
   dump() {
     return this.type();
   }
+
+  deserialize(s, args) {
+    this.location = s.deserializeLocation(args);
+  }
+
+  static deserialize(s, args) {
+    throw new Error(`Don't know how to deserialize type: ${this.name}`);
+  }
 }

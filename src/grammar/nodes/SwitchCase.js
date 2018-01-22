@@ -19,4 +19,15 @@ export default class SwitchCase extends StatementList {
       s.serialize(this.value)
     ];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.value = s.deserialize(args[1]);
+  }
+
+  static deserialize(s, args) {
+    const node = new SwitchCase();
+    node.deserialize(s, args);
+    return node;
+  }
 }

@@ -27,4 +27,16 @@ export default class IfStatement extends StatementList {
       s.serialize(this.otherwise)
     ];
   }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.condition = s.deserialize(args[1]);
+    this.otherwise = s.deserialize(args[2]);
+  }
+
+  static deserialize(s, args) {
+    const node = new IfStatement();
+    node.deserialize(s, args);
+    return node;
+  }
 }

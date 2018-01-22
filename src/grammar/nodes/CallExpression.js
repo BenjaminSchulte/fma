@@ -33,6 +33,17 @@ export default class CallExpression extends NestedExpressionNode {
     ];
   }
 
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.parameters.setChildren(s.deserializeList(args[1]));
+  }
+
+  static deserialize(s, args) {
+    const node = new CallExpression(null);
+    node.deserialize(s, args);
+    return node;
+  }
+
   asCallExpression(callback) {
     callback(this);
     return this;

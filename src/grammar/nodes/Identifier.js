@@ -21,4 +21,22 @@ export default class Identifier extends ExpressionList {
       return '\{' + node.dump() + '}';
     }).join('');
   }
+
+  serialize(s) {
+    return [
+      super.serialize(s),
+      this.isRoot
+    ]
+  }
+
+  deserialize(s, args) {
+    super.deserialize(s, args[0]);
+    this.isRoot = args[1];
+  }
+
+  static deserialize(s, args) {
+    const node = new Identifier();
+    node.deserialize(s, args);
+    return node;
+  }
 }
