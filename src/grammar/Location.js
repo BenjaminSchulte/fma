@@ -5,6 +5,12 @@ export default class Location {
     this.column = column;
   }
 
+  clone() {
+    const l = new Location(this.line, this.column);
+    l.file = this.file;
+    return l;
+  }
+
   getLine() {
     return this.line;
   }

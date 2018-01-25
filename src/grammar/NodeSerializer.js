@@ -1,11 +1,12 @@
 export default class NodeSerializer {
   static VERSION = 1;
 
-  constructor() {
+  constructor(locationModifier) {
     this.strings = [];
 
     this.locations = [];
     this.locationHashes = {};
+    this.locationModifier = locationModifier;
   }
 
   serializeString(string) {
@@ -23,6 +24,9 @@ export default class NodeSerializer {
     if (!location) {
       return -1;
     }
+
+    location = location.clone();
+    this.locationModifier(location);
 
     const file = this.serializeString(location.file);
     const line = location.line;

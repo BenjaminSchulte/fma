@@ -3,9 +3,10 @@ import Location from './Location';
 import * as Nodes from './nodes';
 
 export default class NodeDeserializer {
-  constructor(strings, locations) {
+  constructor(strings, locations, locationModifier) {
     this.strings = strings;
     this.locations = locations;
+    this.locationModifier = locationModifier;
   }
 
   deserializeString(index) {
@@ -20,6 +21,9 @@ export default class NodeDeserializer {
     const args = this.locations[node];
     const location = new Location(args[1], args[2]);
     location.file = this.deserializeString(args[0]);
+
+    this.locationModifier(location);
+
     return location;
   }
 
@@ -53,12 +57,12 @@ export default class NodeDeserializer {
     return Type.deserialize(this, node)
   }
 
-  static deserializeProgram(program) {
+  static deserializeProgram(program, locationModifier) {
     if (program[0] !== NodeSerializer.VERSION) {
       throw new Error(`Incompatible version for deserializer. Is ${program[0]}, must be ${NodeSerializer.VERSION}`);
     }
 
-    const instance = new NodeDeserializer(program[1], program[2]);
+    const instance = new NodeDeserializer(program[1], program[2], locationModifier);
     return instance.deserialize(program[3]);
   }
 

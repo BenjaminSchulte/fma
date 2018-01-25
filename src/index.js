@@ -1,3 +1,4 @@
+import AbstractFileSource from './grammar/source/AbstractFileSource';
 import NodeSerializer from './grammar/NodeSerializer';
 import NodeDeserializer from './grammar/NodeDeserializer';
 import Parser from './grammar/Parser';
@@ -19,6 +20,7 @@ import InternalValue from './objects/InternalValue'
 export * from './objects';
 
 export {
+  AbstractFileSource,
   ArgumentList,
   Calculation,
   FutureNumber,
