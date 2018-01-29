@@ -149,7 +149,12 @@ export default class MemorySectionNode {
     return new StaticAddress(this.node, address, size);
   }
 
+  dumpUsage() {
+    const bank = this.node.address.toString(16).padStart(2, '0');
 
+    console.log("BANK: " + bank);
+    this.getFreeAreas().dump()
+  }
 
   dumpTree() {
     var root = this;

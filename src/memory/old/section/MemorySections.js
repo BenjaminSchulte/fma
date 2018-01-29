@@ -101,4 +101,10 @@ export default class MemorySections {
       section.setIsShared(true);
     }
   }
+
+  dumpUsage(banks) {
+    for (let section of this.sections.filter(section => section.node.isBank(banks))) {
+      section.dumpUsage();
+    }
+  }
 }

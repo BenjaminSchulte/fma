@@ -46,6 +46,8 @@ export default class RootMemoryAllocation extends MemoryAllocation {
 
     const arranger = new MemoryArranger(this.memory);
     arranger.arrange();
+
+    super.dump()
   }
 
   getRomOffset(fullAddress) {

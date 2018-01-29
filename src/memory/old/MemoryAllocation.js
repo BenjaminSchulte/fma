@@ -142,6 +142,19 @@ export default class MemoryAllocation extends MemoryAllocationContainer {
     return this;
   }
 
+  dumpUsage() {
+    var banks = [];
+    for (let allow of this._allow) {
+      for (let bank of allow.banks) {
+        if (banks.indexOf(bank) === -1) {
+          banks.push(bank);
+        }
+      }
+    }
+
+    this.sections.dumpUsage(banks);
+  }
+
   dump(spaces="") {
     const attr = (key, value=true) => {
       var color = "33";

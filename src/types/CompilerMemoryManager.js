@@ -188,6 +188,10 @@ export default class CompilerMemoryManager extends Class {
       self.memory.setIsShared(context.asBoolean(shared));
     })
 
+    klass.on('set_dump_usage', ['shared'], (self, shared, context) => {
+      self.memory.setDumpUsage(context.asBoolean(shared));
+    })
+
     klass.on('include', ['other'], (self, other, context) => {
       self.memory.addIncluded(other.memory)
     })

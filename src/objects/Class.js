@@ -146,6 +146,10 @@ export default class ClassObject extends NamedObject {
   getSizeOfInstanceVariables() {
     var currentOffset = 0;
 
+    for (let parent of this.extended) {
+      currentOffset += parent.getSizeOfInstanceVariables();
+    }
+
     for (let member of this.instanceVariables) {
       if (member.klass) {
         currentOffset += member.klass.getSizeOfInstanceVariables();

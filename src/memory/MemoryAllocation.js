@@ -15,6 +15,7 @@ export default class MemoryAllocation {
     this.symbolName = null;
     this.isShared = false;
     this.stringedTogether = false;
+    this.dumpNode = false;
 
     this.allowed = [];
     this.shadows = [];
@@ -35,6 +36,10 @@ export default class MemoryAllocation {
 
   setIsShared(shared) {
     this.isShared = shared;
+  }
+
+  setDumpUsage(dump) {
+    this.dumpNode = dump;
   }
 
   addIncluded(other) {
@@ -263,6 +268,17 @@ export default class MemoryAllocation {
       }
 
       this.memory.allow(address);
+    }
+  }
+
+  dump() {
+    if (this.dumpNode) {
+      console.log("=== Memory size of: " + this.name + ' ===');
+      this.memory.dumpUsage();
+    }
+
+    for (let child of this.children) {
+      child.dump();
     }
   }
 }
