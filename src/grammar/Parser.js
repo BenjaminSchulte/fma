@@ -42,7 +42,7 @@ export default class Parser {
     return this.parseString(fs.readFileSync(file, {encoding: 'utf-8'}), file);
   }
 
-  parseFile(file) {
+  parseFile(file, throwErrorOnFail=true) {
     var result;
     if (result = this.parseFileAbsolute(file)) {
       return result;
@@ -55,25 +55,49 @@ export default class Parser {
       }
     }
 
-    throw new Error(`Could not find include file: ${file}`);
+    if (throwErrorOnFail) {
+      throw new Error(`Could not find include file: ${file}`);
+    }
+
+    return null;
   }
 
   parseRelativeFile(file, dir) {
-    var result;
-    var fullPath = path.join(dir, file);
-
-    result = this.parseFileAbsolute(fullPath);
-    if (result) {
-      return result;
+    if (file.substr(-4) === '.fma') {
+      file = file.substr(0, -4);
     }
 
-    for (let source of this.project.fileSources) {
-      result = source.parseFile(this, fullPath);
+    var tests = [
+      file + '.fma',
+      path.join(file, 'index.fma')
+    ];
+
+    for (let testFile of tests) {
+      var result;
+      var fullPath = path.join(dir, testFile);
+
+      result = this.parseFileAbsolute(fullPath);
       if (result) {
         return result;
       }
     }
 
-    return this.parseFile(file);
+    for (let testFile of tests) {
+      for (let source of this.project.fileSources) {
+        result = source.parseFile(this, fullPath);
+        if (result) {
+          return result;
+        }
+      }
+    }
+
+    for (let testFile of tests) {
+      result = this.parseFile(testFile, false);
+      if (result) {
+        return result;
+      }
+    }
+
+    throw new Error(`Could not find include file: ${file}`);
   }
 }

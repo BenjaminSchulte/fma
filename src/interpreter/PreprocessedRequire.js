@@ -47,7 +47,7 @@ export default class PreprocessedRequire {
       return;
     }
 
-    this.parseRelativeFile(fileName + ".fma", searchPath);
+    this.parseRelativeFile(fileName, searchPath);
   }
 
   preprocess(node) {

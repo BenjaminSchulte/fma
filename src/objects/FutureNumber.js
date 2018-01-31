@@ -39,6 +39,7 @@ export default class FutureNumber extends ObjectClass {
     this.initializeOperator(klass, '/');
     this.initializeOperator(klass, '<<');
     this.initializeOperator(klass, '>>');
+    this.initializeOperator(klass, '^');
     this.initializeOperator(klass, '&');
     this.initializeOperator(klass, '|');
   }

@@ -193,6 +193,7 @@ ExprList
   / _ "%" _ item:ExprItem { return ["%", item] }
   / _ "&" __ item:ExprItem { return ["&", item] }
   / _ "|" _ item:ExprItem { return ["|", item] }
+  / _ "^" _ item:ExprItem { return ["^", item] }
 
 Decorator
   = "@" expr:ExprOrCommand Terms+ { return expr; }

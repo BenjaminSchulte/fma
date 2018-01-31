@@ -105,5 +105,8 @@ export default class FunctionObject extends NamedObject {
     klass.on('to_future_number', [], (self) => {
       return new FutureNumber(new SymbolLocation(self.getSymbolName()));
     })
+    klass.on('name', [], (self, context) => {
+      return context.returnString(self.getFullName());
+    })
   }
 }
