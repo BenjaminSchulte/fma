@@ -14,4 +14,11 @@ export default class StaticNumber extends BaseCalculation {
   toString() {
     return '$' + this.number.toString(16);
   }
+
+  serialize() {
+    return {
+      type: 'number',
+      op: [this.number]
+    }
+  }
 }

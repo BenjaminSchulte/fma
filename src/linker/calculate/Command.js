@@ -31,4 +31,11 @@ export default class Command extends BaseCalculation {
   toString() {
     return JSON.stringify(this.parts);
   }
+
+  serialize() {
+    return {
+      type: 'command',
+      op: [this.parts, this.returnString]
+    }
+  }
 }

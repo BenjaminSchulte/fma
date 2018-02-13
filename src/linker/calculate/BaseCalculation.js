@@ -6,4 +6,9 @@ export default class BaseCalculation {
   calculate(symbols, linker) {
     throw new Error('BaseCalculation.calculate not implemented');
   }
+
+  serialize() {
+    return {
+    }
+  }
 }

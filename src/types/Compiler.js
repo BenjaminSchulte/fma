@@ -35,6 +35,10 @@ export default class Compiler extends Class {
       this.interpreter.addConfiguration(this.buildCommand(context, text, true));
     })
 
+    klass.on('add_dependency', ['func'], (self, func, context) => {
+      this.interpreter.compileFunction(func);
+    });
+
     klass.on('define', ['?name', '&block'], (self, name, args, context) => {
       var functionName = '';
       if (name.isNil()) {

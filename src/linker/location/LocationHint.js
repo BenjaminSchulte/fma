@@ -11,6 +11,16 @@ export default class LocationHint extends AbstractLocationHint {
     this.addressInclude = null;
   }
 
+  serialize() {
+    return {
+      align: this.align,
+      rangeFrom: this.rangeFrom,
+      rangeTo: this.rangeTo,
+      addressMask: this.addressMask,
+      addressInclude: this.addressInclude
+    }
+  }
+
   applyTo(memory) {
     memory.allowRange(this.rangeFrom, this.rangeTo, this.addressMask, this.addressInclude, this.align);
   }

@@ -25,8 +25,9 @@ export default class LinkerObject {
   addRomBlock(block) {
     if (this.romBlock === null) {
       this.romBlock = block;
+    } else if (block === null) {
     } else {
-      this.romBlock.merge(block);
+      this.romBlock = this.romBlock.merge(block);
     }
   }
 
@@ -41,8 +42,9 @@ export default class LinkerObject {
   addRamBlock(block) {
     if (this.ramBlock === null) {
       this.ramBlock = block;
+    } else if (block === null) {
     } else {
-      this.ramBlock.merge(block);
+      this.ramBlock = this.ramBlock.merge(block);
     }
   }
 
@@ -59,5 +61,11 @@ export default class LinkerObject {
     this.configurations = this.configurations.concat(other.configurations);
     this.addRomBlock(other.romBlock);
     this.addRamBlock(other.ramBlock);
+  }
+
+  serialize() {
+    return {
+      staticCodeBlocks: this.staticCodeBlocks.map(block => block.serialize())
+    }
   }
 }

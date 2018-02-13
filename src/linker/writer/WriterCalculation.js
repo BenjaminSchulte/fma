@@ -8,4 +8,12 @@ export default class WriterCalculation {
   calculate(symbols, linker) {
     return this.calculation.calculate(symbols, linker);
   }
+
+  serialize() {
+    return {
+      offset: this.offset,
+      calculation: this.calculation.serialize(),
+      size: this.size
+    }
+  }
 }

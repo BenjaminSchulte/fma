@@ -38,6 +38,7 @@ Stmt
     return stmt;
   }
   / RequireStatement
+  / ImportStatement
   / ModuleDeclaration   // OK
   / MacroDeclaration    // OK
   / FunctionDeclaration // OK
@@ -69,6 +70,9 @@ PostStmt
 
 RequireStatement
   = keyword_require __ expr:Expr { return c(new n.RequireStatement(expr)) }
+
+ImportStatement
+  = keyword_import __ expr:IDENTIFIER { return c(new n.ImportStatement(expr)) }
 
 IfKeyword
   = keyword_if { return false }
@@ -196,7 +200,12 @@ ExprList
   / _ "^" _ item:ExprItem { return ["^", item] }
 
 Decorator
-  = "@" expr:ExprOrCommand Terms+ { return expr; }
+  = "@" expr:ExprOrCommand Terms+ {
+    if (expr.type() === 'Identifier') {
+      expr = new n.CallExpression(expr)
+    }
+    return expr;
+  }
 
 Decorators
   = Decorator+
@@ -207,9 +216,12 @@ Block
   }
 
 FunctionDeclaration
-  = dec:Decorators? keyword_def __ name:IDENTIFIER block:Block keyword_end  {
-    return c(new n.FunctionDeclaration(name)).setChildren(block).setDecorators(dec ? dec : []);
+  = dec:Decorators? exp:ExportPrefix? keyword_def __ name:IDENTIFIER block:Block keyword_end  {
+    return c(new n.FunctionDeclaration(name)).setChildren(block).setDecorators(dec ? dec : []).setIsExport(!!exp);
   }
+
+ExportPrefix
+  = keyword_export __ { return true; }
 
 MacroDeclaration
   = dec:Decorators? keyword_macro __ root:"::"? is_decorator:"@"? name:IDENTIFIER args:AnyMacroArgs? block:Block keyword_end {
@@ -419,6 +431,8 @@ keyword_else = "else" !IdentifierEndOrPart
 keyword_raise = "raise" !IdentifierEndOrPart
 keyword_return = "return" !IdentifierEndOrPart
 keyword_require = "require" !IdentifierEndOrPart
+keyword_export = "export" !IdentifierEndOrPart
+keyword_import = "import" !IdentifierEndOrPart
 keyword_true = "true" !IdentifierEndOrPart
 keyword_false = "false" !IdentifierEndOrPart
 keyword_nil = "nil" !IdentifierEndOrPart
@@ -439,6 +453,8 @@ ReservedWordItem
   / "raise"
   / "return"
   / "require"
+  / "export"
+  / "import"
   / "true"
   / "false"
   / "nil"

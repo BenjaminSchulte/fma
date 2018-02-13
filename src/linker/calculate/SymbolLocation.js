@@ -18,4 +18,11 @@ export default class SymbolLocation extends BaseCalculation {
   toString() {
     return this.name;
   }
+
+  serialize() {
+    return {
+      type: 'symbol',
+      op: [this.name]
+    }
+  }
 }

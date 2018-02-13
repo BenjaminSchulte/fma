@@ -6,6 +6,12 @@ export default class FunctionDeclaration extends BlockDeclaration {
     super(name);
 
     this.decorators = new StatementList();
+    this.isExport = false;
+  }
+
+  setIsExport(exp) {
+    this.isExport = exp;
+    return this;
   }
 
   setDecorators(decs) {
@@ -21,13 +27,15 @@ export default class FunctionDeclaration extends BlockDeclaration {
   serialize(s) {
     return [
       super.serialize(s),
-      s.serializeList(this.decorators.getChildren())
+      s.serializeList(this.decorators.getChildren()),
+      this.isExport
     ];
   }
 
   deserialize(s, args) {
     super.deserialize(s, args[0]);
     this.decorators.setChildren(s.deserializeList(args[1]));
+    this.isExport = args[2];
   }
 
   static deserialize(s, args) {

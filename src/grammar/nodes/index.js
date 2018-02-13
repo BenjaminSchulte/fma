@@ -15,6 +15,7 @@ import Identifier from './Identifier';
 import IdentifierList from './IdentifierList';
 import IdentifierName from './IdentifierName';
 import IfStatement from './IfStatement';
+import ImportStatement from './ImportStatement';
 import InlineExpression from './InlineExpression';
 import LabelDeclaration from './LabelDeclaration';
 import MacroDeclaration from './MacroDeclaration';
@@ -52,6 +53,7 @@ export {
   IdentifierList,
   IdentifierName,
   IfStatement,
+  ImportStatement,
   InlineExpression,
   LabelDeclaration,
   MacroDeclaration,

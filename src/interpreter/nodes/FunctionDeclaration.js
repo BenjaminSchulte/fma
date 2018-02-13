@@ -27,6 +27,10 @@ export default class FunctionDeclaration extends AbstractInterpreter {
 
     func.getDocumentation().add(this.comments);
 
+    if (this.node.isExport) {
+      this.context.getInterpreter().compileFunction(func);
+    }
+
     return new ValueAccessor(func);
 
   }

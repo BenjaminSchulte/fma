@@ -30,4 +30,12 @@ export default class Calculation extends BaseCalculation {
   toString() {
     return `(${this.left.toString()}${this.operator}${this.right.toString()})`;
   }
+
+  serialize() {
+    return {
+      type: 'calc',
+      calc: this.left.serialize(),
+      op: [this.operator, this.right.serialize()]
+    }
+  }
 }

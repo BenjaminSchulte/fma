@@ -11,6 +11,14 @@ export default class StaticCodeBlock {
     this.dependentFiles = {};
   }
 
+  serialize() {
+    return {
+      name: this.name,
+      code: this.code.serialize(),
+      locationHint: this.locationHint.serialize()
+    }
+  }
+
   addDependency(file) {
     this.dependentFiles[file] = true;
   }

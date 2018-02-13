@@ -10,6 +10,14 @@ export default class Writer {
     this.calculations = [];
   }
 
+  serialize() {
+    return {
+      code: this.code.getBuffer(),
+      symbols: this.symbols.map(s => s.serialize()),
+      calculations: this.calculations.map(c => c.serialize())
+    }
+  }
+
   getCode() {
     return this.code;
   }

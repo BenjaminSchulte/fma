@@ -3,4 +3,11 @@ export default class WriterSymbol {
     this.offset = offset;
     this.name = name;
   }
+
+  serialize() {
+    return {
+      offset: this.offset,
+      name: this.name
+    }
+  }
 }
