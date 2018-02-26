@@ -102,6 +102,9 @@ export default class FunctionObject extends NamedObject {
   initializeClassMembers(klass) {
     super.initializeClassMembers(klass);
 
+    klass.on('address', [], (self, context) => {
+      return new FutureNumber(new SymbolLocation(self.getSymbolName()));
+    })
     klass.on('to_future_number', [], (self) => {
       return new FutureNumber(new SymbolLocation(self.getSymbolName()));
     })
