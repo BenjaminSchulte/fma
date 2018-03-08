@@ -35,7 +35,9 @@ export default class Linker {
       block.collectSymbols(symbols);
     }
     this.object.getRomBlock().collectSymbols(symbols);
-    this.object.getRamBlock().collectSymbols(symbols);
+    if (this.object.getRamBlock()) {
+      this.object.getRamBlock().collectSymbols(symbols);
+    }
     return symbols;
   }
 
@@ -62,7 +64,9 @@ export default class Linker {
 
     this.log('info', 'Arranging memory blocks.');
     this.object.getRomBlock().build();
-    this.object.getRamBlock().build();
+    if (this.object.getRamBlock()) {
+      this.object.getRamBlock().build();
+    }
 
     this.log('info', 'Resolving missing symbols.');
     const symbols = this.collectSymbols();

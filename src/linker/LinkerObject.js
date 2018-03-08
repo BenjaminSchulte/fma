@@ -50,7 +50,7 @@ export default class LinkerObject {
 
   getRamBlock() {
     if (!this.ramBlock) {
-      throw new Error('No RAM block has been defined');
+      return null;
     }
 
     return this.ramBlock;

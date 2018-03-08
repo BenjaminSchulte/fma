@@ -28,7 +28,7 @@ export default class MemoryRecalculator {
     const address = fullAddress & 0xFFFF;
 
     for (let allowed of this.allowed) {
-      if (allowed.bank !== bank) {
+      if (allowed.bank !== null && allowed.bank !== bank) {
         continue;
       }
 
