@@ -17,6 +17,7 @@ export default class AbstractMemoryItemArranger {
     }
 
     const locations = this.getLocations(node);
+
     const target = node.sections.getBestLocation(locations, size);
     if (!target) {
       throw new Error(`Can not allocate address for node. Size: ${size}`);

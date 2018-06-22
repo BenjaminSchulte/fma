@@ -7,7 +7,7 @@ export default class MemoryConditionJoiner {
     }
   }
 
-  joinChild(node, conditions=[]) {
+  join(node, conditions=[]) {
     var newConditions = [];
 
     if (!conditions.length) {
@@ -28,8 +28,12 @@ export default class MemoryConditionJoiner {
       throw new Error(`Could not join two location lists, because they excluded each other:\n\n${node._name}: ${node.getAllowed()}\nWITH: ${conditions}`);
     }
 
-    node.setAllowed(newConditions);
+    return newConditions;
+  }
 
+  joinChild(node, conditions=[]) {
+    const newConditions = this.join(node, conditions);
+    node.setAllowed(newConditions);
     this.joinChildren(node, newConditions);
   }
 }

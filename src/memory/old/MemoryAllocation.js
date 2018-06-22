@@ -17,6 +17,39 @@ export default class MemoryAllocation extends MemoryAllocationContainer {
     this.sharedStaticAddressAllocations = [];
   }
 
+  getParents() {
+    return this.parents;
+  }
+
+  siblings() {
+    var all = [];
+    for (let parent of this.parents) {
+      all = all.concat(parent.getChildren());
+    }
+    return all;
+  }
+
+  siblingIndex() {
+    return this.siblings().indexOf(this);
+  }
+
+  rateAllLocations(score) {
+    var bestPriority = Number.MAX_VALUE;
+    for (let location of this.getAllowed()) {
+      bestPriority = Math.min(bestPriority, location.ratePriority(score));
+    }
+    return bestPriority;
+  }
+
+  ratePriority() {
+    var score = 0;
+    score = (score * 2) + (this.isLinked() ? 1 : 0);
+    score = this.rateAllLocations(score);
+    score = (score * 2) + (this.stringedTogether ? 1 : 0);
+    score = (score * 2) + (this.isStringedTogether() ? 1 : 0);
+    return score;
+  }
+
   isStringedTogether() {
     if (this.stringedTogether) {
       return true;
@@ -155,7 +188,7 @@ export default class MemoryAllocation extends MemoryAllocationContainer {
     this.sections.dumpUsage(banks);
   }
 
-  dump(spaces="") {
+  dump(spaces="", maxDepth=null) {
     const attr = (key, value=true) => {
       var color = "33";
 
@@ -191,14 +224,15 @@ export default class MemoryAllocation extends MemoryAllocationContainer {
 
     if (this.staticAddress) {
       var allowFlags = [];
-      allowFlags.push(attr('FROM', this.staticAddress.section.address.toString(16) + ":" + this.staticAddress.offset.toString(16)));
-      allowFlags.push(attr('TO', this.staticAddress.section.address.toString(16) + ":" + (this.staticAddress.offset + this.staticAddress.size - 1).toString(16)));
+      const address = (this.staticAddress.section.address ? this.staticAddress.section.address : 0)
+      allowFlags.push(attr('FROM', address.toString(16) + ":" + this.staticAddress.offset.toString(16)));
+      allowFlags.push(attr('TO', address.toString(16) + ":" + (this.staticAddress.offset + this.staticAddress.size - 1).toString(16)));
       allow.push(`\x1b[32;1m== \x1b[m<${allowFlags.join(' ')}>`);
     }
 
     for (let location of this.getAllowed()) {
       var allowFlags = [];
-      allowFlags.push(attr('BANK', (location.banks.length ? location.banks.map(bank => bank.toString(16)).join(',') : null)));
+      allowFlags.push(attr('BANK', (location.banks.length ? location.banks.map(bank => (bank ? bank.toString(16) : 'NIL')).join(',') : null)));
       allowFlags.push(attr('ADDRESS', (location.addresses.length ? location.addresses.map(address => address.toString(16)).join(',') : null)));
       allowFlags.push(attr('RANGE', (location.addressRanges.length ? location.addressRanges.map(range => `${range[0].toString(16)}-${(range[0]+range[1]-1).toString(16)}`).join(',') : null)));
       allowFlags.push(attr('ALIGN', (location.alignedToAddresses.length ? location.alignedToAddresses.map(address => address.toString(16)).join(',') : null)));
@@ -213,8 +247,10 @@ export default class MemoryAllocation extends MemoryAllocationContainer {
 
     console.log(`${spaces}${prefix} ${this.sections.id} \x1b[34;1mALLOCATION\x1b[m<${flags.join(' ')}> @ ${allow.join(' || ')}`);
 
-    for (let child of this.children) {
-      child.dump(spaces + '  ')
+    if (maxDepth === null || maxDepth > 0) {
+      for (let child of this.children) {
+        child.dump(spaces + '  ', maxDepth - 1)
+      }
     }
   }
 }

@@ -1,7 +1,5 @@
-import MemoryConditionJoiner from './MemoryConditionJoiner';
-import AnyMemoryItemArranger from './AnyMemoryItemArranger';
-import MemoryFixedAddressArranger from './MemoryFixedAddressArranger';
-import MemoryAlignedAddressArranger from './MemoryAlignedAddressArranger';
+import MemoryNodeProcessor from './MemoryNodeProcessor';
+import MemoryConditionJoiner from '../_arrange/MemoryConditionJoiner';
 
 export default class MemoryArranger {
   constructor(memory) {
@@ -13,57 +11,73 @@ export default class MemoryArranger {
     joiner.joinChildren(this.memory);
   }
 
-  processFixedAddresses(node, onlyLinked=false) {
-    const arranger = new MemoryFixedAddressArranger();
-    this.walk(node, onlyLinked, location => location.isStaticAddress(), node => arranger.arrange(node));
+  _flattenNodes(result, node) {
+    for (let child of node.getChildren()) {
+      result.push(child);
+
+      this._flattenNodes(result, child);
+    }
   }
 
-  processAlignedAddresses(node, onlyLinked=false) {
-    const arranger = new MemoryAlignedAddressArranger();
-    this.walk(node, onlyLinked, location => location.isAlignedAddress(), node => arranger.arrange(node));
-  }
+  flattenNodes(node) {
+    var fullResult = [];
+    this._flattenNodes(fullResult, this.memory);
 
-  processOther(node, onlyLinked=false) {
-    const arranger = new AnyMemoryItemArranger();
-    this.walk(node, onlyLinked, location => true, node => {
-      if (node.getOwnSectionSize()) {
-        arranger.arrange(node)
-      }
-    });
-  }
-
-  walk(node, onlyLinked, filter, callback) {
-    const locations = node.getAllowed().filter(filter);
-    if (locations.length && !node.hasStaticAddress()) {
-      if (!onlyLinked || node.isLinked()) {
-        try {
-          callback(node);
-        } catch(err) {
-          node.dump();
-          throw new Error('Error processing node ' + (node._name || '') + ': ' + err.toString());
-        }
-        onlyLinked = false;
+    var result = [];
+    for (let item of fullResult) {
+      if (result.indexOf(item) === -1) {
+        result.push(item);
       }
     }
+    return result;
+  }
 
-    node.getChildren().forEach(child => this.walk(child, onlyLinked, filter, callback));
+  priorizeNodes(nodes) {
+    return nodes.sort((a, b) => {
+      const r = b.ratePriority() - a.ratePriority();
+      if (r !== 0) {
+        return r;
+      }
+
+      return a.siblingIndex() - b.siblingIndex();
+    })
   }
 
   arrange() {
-    //this.memory.getChildren().forEach(child => this.dumpAll(child));
-
     this.joinConditions();
 
-    this.memory.getChildren().forEach(child => this.processFixedAddresses(child));
-    this.memory.getChildren().forEach(child => this.processAlignedAddresses(child, true));
-    this.memory.getChildren().forEach(child => this.processOther(child, true));
-    this.memory.getChildren().forEach(child => this.processAlignedAddresses(child));
-    this.memory.getChildren().forEach(child => this.processOther(child));
+    const processor = new MemoryNodeProcessor();
+    var nodes = this.priorizeNodes(this.flattenNodes());
+    while (nodes.length) {
+      var numNodes = nodes.length;
+      var unprocessedNodes = [];
+
+      for (let i=0; i<numNodes; i++) {
+        const node = nodes[i];
+
+        if (!processor.process(node)) {
+          unprocessedNodes.push(node);
+        } else if (unprocessedNodes.length) {
+          nodes = unprocessedNodes.concat(nodes.slice(i + 1));
+          unprocessedNodes = [];
+          numNodes = nodes.length;
+          i = 0;
+          console.log(nodes.length);
+        }
+      }
+
+      if (unprocessedNodes.length === numNodes) {
+        this.dumpNodes(unprocessedNodes);
+        throw new Error('Unable to process any further node');
+      }
+
+      nodes = unprocessedNodes;
+    }
   }
 
-  dumpAll(child) {
-    child.dump();
-
-    child.getChildren().forEach(child => this.dumpAll(child));
+  dumpNodes(nodes) {
+    for (let node of nodes) {
+      node.dump('', 0);
+    }
   }
 }

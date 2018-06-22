@@ -20,6 +20,14 @@ export default class Memory extends MemoryAllocationContainer {
     return new MemorySectionNode(new Bank(bankNumber, size));
   }
 
+  getOwnSectionSize() {
+    return 0;
+  }
+
+  getParents() {
+    return [];
+  }
+
   registerSection(section) {
     this.sections.register(section);
     return section;

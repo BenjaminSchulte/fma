@@ -84,12 +84,47 @@ export default class MemoryLocation {
     return this.addresses.length;
   }
 
+  isStaticBank() {
+    return this.banks.length;
+  }
+
   isAlignedAddress() {
     return this.alignedToAddresses.length;
   }
 
   getBanks() {
     return this.banks;
+  }
+
+  ratePriority(baseScore=0) {
+    var staticBank = 0;
+    var staticAddress = 0;
+    var addressRanges = 0;
+    var alignedAddress = 0;
+
+    if (this.banks.length) {
+      staticBank = 10 - Math.min(9, this.banks.length);
+    }
+    if (this.addresses.length) {
+      staticAddress = 10 - Math.min(9, this.addresses.length);
+    }
+    if (this.addressRanges.length) {
+      addressRanges = 10 - Math.min(9, this.addressRanges.length);
+    }
+    if (this.alignedToAddresses.length) {
+      alignedAddress = Math.max.apply(Math, this.alignedToAddresses);
+    }
+    if (this.sections.length) {
+      console.log(this.sections);
+      throw new Error('TODO');
+    }
+
+    var score = baseScore;
+    score = (score * 10) + staticAddress;
+    score = (score * 10) + staticBank;
+    score = (score * 10) + addressRanges;
+    score = (score * 0x10000) + alignedAddress;
+    return score;
   }
 
   flags() {
@@ -124,6 +159,10 @@ export default class MemoryLocation {
   }
 
   inBank(bank) {
+    if (bank === null) {
+      return this;
+    }
+
     this.banks.push(bank);
     return this;
   }
