@@ -7,7 +7,11 @@ export default class Bank extends MemorySection {
     this.address = address;
   }
 
-  isBank(indices) {
+  isBank(indices=null) {
+    if (indices === null) {
+      return true;
+    }
+
     return indices.indexOf(this.address) >= 0;
   }
 }

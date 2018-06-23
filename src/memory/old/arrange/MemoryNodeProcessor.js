@@ -91,6 +91,7 @@ export default class MemoryNodeProcessor {
     if (!this.needsToBeProcessed(node)) {
       //console.log('SKIP:');
       //node.dump('', 0);
+      //this.__dumpParents(node);
 
       return true;
     }
@@ -111,6 +112,9 @@ export default class MemoryNodeProcessor {
     const locations = this.getLocations(node);
     const target = node.sections.getBestLocation(locations, size);
     if (!target) {
+      node.sections.dumpUsage();
+      node.dump('', 0);
+      this.__dumpParents(node);
       throw new Error(`Can not allocate address for node. Size: ${size}`);
     }
 

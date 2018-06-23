@@ -78,7 +78,7 @@ export default class MemoryAreas {
       currentIndex = (minIndex + maxIndex) >> 1;
       currentElement = this.areas[currentIndex];
 
-      if ((currentElement[0] + currentElement[1]) < address) {
+      if ((currentElement[0] + currentElement[1]) <= address) {
         minIndex = currentIndex + 1;
       } else if (currentElement[0] > address) {
         maxIndex = currentIndex - 1;

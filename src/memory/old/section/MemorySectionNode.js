@@ -150,7 +150,7 @@ export default class MemorySectionNode {
   }
 
   dumpUsage() {
-    const bank = this.node.address.toString(16).padStart(2, '0');
+    const bank = this.node.address ? this.node.address.toString(16).padStart(2, '0') : '00';
 
     console.log("BANK: " + bank);
     this.getFreeAreas().dump()

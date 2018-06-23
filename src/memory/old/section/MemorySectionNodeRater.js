@@ -81,7 +81,6 @@ export default class MemorySectionNodeRater {
     const block = areas.getBlockAt(index);
     const memBefore = address - block[0];
     const memAfter  = block[1] - memBefore - size;
-
     if (memBefore < 0 || memAfter < 0) {
       return [];
     }

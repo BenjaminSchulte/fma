@@ -24,9 +24,9 @@ export default class MemoryArranger {
     this._flattenNodes(fullResult, this.memory);
 
     var result = [];
-    for (let item of fullResult) {
-      if (result.indexOf(item) === -1) {
-        result.push(item);
+    for (let node of fullResult) {
+      if (result.indexOf(node) === -1) {
+        result.push({score: node.ratePriority(), node});
       }
     }
     return result;
@@ -34,12 +34,12 @@ export default class MemoryArranger {
 
   priorizeNodes(nodes) {
     return nodes.sort((a, b) => {
-      const r = b.ratePriority() - a.ratePriority();
+      const r = b.score - a.score;
       if (r !== 0) {
         return r;
       }
 
-      return a.siblingIndex() - b.siblingIndex();
+      return a.node.siblingIndex() - b.node.siblingIndex();
     })
   }
 
@@ -51,18 +51,26 @@ export default class MemoryArranger {
     while (nodes.length) {
       var numNodes = nodes.length;
       var unprocessedNodes = [];
+      var lastScore = null;
 
       for (let i=0; i<numNodes; i++) {
-        const node = nodes[i];
+        var {score, node} = nodes[i];
+
+        if (lastScore !== null && lastScore > score) {
+          lastScore = score;
+
+          if (unprocessedNodes.length) {
+            nodes = unprocessedNodes.concat(nodes.slice(i));
+            unprocessedNodes = [];
+            numNodes = nodes.length;
+            i = -1;
+            lastScore = null;
+            continue;
+          }
+        }
 
         if (!processor.process(node)) {
           unprocessedNodes.push(node);
-        } else if (unprocessedNodes.length) {
-          nodes = unprocessedNodes.concat(nodes.slice(i + 1));
-          unprocessedNodes = [];
-          numNodes = nodes.length;
-          i = 0;
-          console.log(nodes.length);
         }
       }
 

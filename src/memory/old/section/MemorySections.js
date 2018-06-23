@@ -56,7 +56,6 @@ export default class MemorySections {
     for (let location of locations) {
       ratings = ratings.concat(this.rateLocation(location, size));
     }
-
     ratings.sort((a, b) => a.score - b.score);
     return ratings;
   }
