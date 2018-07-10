@@ -49,6 +49,14 @@ export default class NumberType extends InternalValueClass {
       return self;
     })
 
+    klass.on('floor', [], (self, context) => {
+      return context.create('Number', new InternalValue(Math.floor(self.getMember('__value').value)));
+    })
+
+    klass.on('ceil', [], (self, context) => {
+      return context.create('Number', new InternalValue(Math.ceil(self.getMember('__value').value)));
+    })
+
     klass.on('times', ['&block'], (self, block, context) => {
       const macro = block.getMacro();
       const times = self.getMember('__value').value;
