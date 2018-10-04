@@ -71,6 +71,10 @@ export default class Compiler extends Class {
         result.push(context.asString(item));
         break;
 
+      case 'Number':
+        result.push(item.getMember('__value').value.toString(16));
+        break;
+
       case 'FutureNumber':
         result.push(item.calculation);
         break;
@@ -80,7 +84,7 @@ export default class Compiler extends Class {
         break;
 
       default:
-        console.log(item.getClassName())
+        console.log('buildCommand: ' + item.getClassName())
         return "???";
       }
     }
