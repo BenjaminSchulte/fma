@@ -30,6 +30,10 @@ export default class CompilerScope extends Class {
       return new FutureNumber(new SymbolLocation(symbolName));
     })
 
+    klass.on('addr', ['*args', '**kwargs'], (self, args, kwargs, context) => {
+      this.write(self, context, args.getItems(), kwargs.getItems(), 3);
+    })
+
     klass.on('dw', ['*args', '**kwargs'], (self, args, kwargs, context) => {
       this.write(self, context, args.getItems(), kwargs.getItems(), 2);
     })
