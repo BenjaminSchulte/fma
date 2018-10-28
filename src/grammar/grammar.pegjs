@@ -184,6 +184,7 @@ ExprList
   / _ "*=" _ item:ExprItem { return ["*=", item] }
   / _ "|=" _ item:ExprItem { return ["|=", item] }
   / _ "&=" _ item:ExprItem { return ["&=", item] }
+  / _ "||=" _ item:ExprItem { return ["||=", item] }
   / _ "??" _ item:ExprItem { return ["??", item] }
   / _ "||" _ item:ExprItem { return ["||", item] }
   / _ "&&" _ item:ExprItem { return ["&&", item] }

@@ -17,6 +17,7 @@ export default class CalculateExpression extends AbstractInterpreter {
       case '/=': operator='/'; break;
       case '*=': operator='*'; break;
       case '|=': operator='|'; break;
+      case '||=': operator='||'; break;
       case '&=': operator='&'; break;
       case '=': operator=''; break;
 
