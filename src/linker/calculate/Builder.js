@@ -12,6 +12,9 @@ export default class CalculationBuilder {
       case 'number':
         return this.number(value);
 
+      case 'string':
+        return this.symbol(value);
+
       default:
         return value;
     }
