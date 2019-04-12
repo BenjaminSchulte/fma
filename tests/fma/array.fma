@@ -1,0 +1,39 @@
+emptylist = []
+simplelist = [7,2,3]
+
+; operator[]
+Compiler.assert simplelist[0] == 7
+Compiler.assert simplelist[-1] == 3
+Compiler.assert simplelist[-2] == 2
+
+; operator[]=
+simplelist[0] = 1
+Compiler.assert simplelist[0] == 1
+
+; info about list
+Compiler.assert emptylist.empty?
+Compiler.assert !simplelist.empty?
+
+Compiler.assert simplelist.first == 1
+Compiler.assert simplelist.last == 3
+
+Compiler.assert simplelist.count == 3
+Compiler.assert simplelist.length == 3
+
+Compiler.assert simplelist.include?(1)
+Compiler.assert !simplelist.include?(4)
+
+; compare
+Compiler.assert [123] == [123]
+Compiler.assert [123, 1] != [123]
+Compiler.assert [123, 1] != [123, 0]
+Compiler.assert [123, [1, 3, 3, 7]] == [123, [1, 3, 3, 7]]
+Compiler.assert [123, [1, 3, 5, 7]] != [123, [1, 3, 3, 7]]
+Compiler.assert ["String"] != [123]
+Compiler.assert ["String"] == ["String"]
+
+; assign
+newlist = simplelist
+Compiler.assert newlist == [1,2,3]
+simplelist[3] = 4
+Compiler.assert newlist == [1,2,3,4]

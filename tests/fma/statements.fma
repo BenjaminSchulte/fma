@@ -1,0 +1,54 @@
+Compiler.assert true if true
+Compiler.assert false if false
+Compiler.assert true unless false
+Compiler.assert false unless true
+
+Compiler.assert true && true
+Compiler.assert !(true && false)
+Compiler.assert !(false && true)
+Compiler.assert !(false && false)
+
+Compiler.assert true || true
+Compiler.assert true || false
+Compiler.assert false || true
+Compiler.assert !(false || false)
+
+if true
+  Compiler.assert true
+else
+  Compiler.assert false
+end
+
+if false
+  Compiler.assert false
+elsif true
+  Compiler.assert true
+else
+  Compiler.assert false
+end
+
+unless true
+  Compiler.assert false
+else
+  Compiler.assert true
+end
+
+case 12
+when 11
+  Compiler.assert false
+when 12
+  Compiler.assert true
+when 13
+  Compiler.assert false
+else
+  Compiler.assert false
+end
+
+case 12
+when 11
+  Compiler.assert false
+when 13
+  Compiler.assert false
+else
+  Compiler.assert true
+end

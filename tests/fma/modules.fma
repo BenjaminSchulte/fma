@@ -1,0 +1,67 @@
+module SomeModule
+  module Inner
+    number = 123
+  end
+
+  module Inner
+    string = "hello"
+  end
+
+  module WithMacros
+    macro increment_number(by=1)
+      Inner.number += by
+    end
+
+    macro get_number
+      Inner.number
+    end
+  end
+
+  macro invoke
+    yield with_context WithMacros
+  end
+
+  value = 123
+  macro set_value(new_value)
+    value = new_value
+  end
+
+  macro main(a)
+    a += 10
+    a = ::main(a)
+    a += 10
+    a
+  end
+end
+
+macro main(a)
+  a *= 2
+  a
+end
+
+module SomeModule::Inner
+  boolean = true
+end
+
+Compiler.assert SomeModule.Inner.number == 123
+Compiler.assert SomeModule.Inner.string == "hello"
+Compiler.assert SomeModule.Inner.boolean
+
+SomeModule.WithMacros.increment_number
+
+Compiler.assert SomeModule.Inner.number == 124
+
+SomeModule.invoke do
+  increment_number by: 6
+
+  Compiler.assert get_number == 130
+end
+
+Compiler.assert SomeModule.Inner.number == 130
+
+Compiler.assert SomeModule.value == 123
+SomeModule.set_value 200
+Compiler.assert SomeModule.value == 200
+
+Compiler.assert main(10) == 20
+Compiler.assert SomeModule.main(10) == 50

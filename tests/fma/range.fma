@@ -1,0 +1,4 @@
+range = 10..20
+
+Compiler.assert range.first == 10
+Compiler.assert range.last == 20

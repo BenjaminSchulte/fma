@@ -1,0 +1,18 @@
+function(create_test target)
+  add_test(${target} test_fma ${PROJECT_SOURCE_DIR}/tests/fma/${target}.fma)
+endfunction()
+
+set(CMAKE_CXX_STANDARD 11)
+add_executable(test_fma test_fma.cpp)
+target_link_libraries(test_fma libfma)
+
+create_test(primitives)
+create_test(strings)
+create_test(variables)
+create_test(statements)
+create_test(macros)
+create_test(array)
+create_test(range)
+create_test(map)
+create_test(modules)
+create_test(classes)

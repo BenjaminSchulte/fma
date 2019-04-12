@@ -1,0 +1,216 @@
+macro return_true
+  true
+end
+
+macro return_true_from_if
+  if false 
+    return_false
+  else
+    return_true
+  end
+end
+
+macro return_false
+  false
+end
+
+macro return_negated(value)
+  !value
+end
+
+macro add_with_default_value(left, right=100)
+  left + right
+end
+
+SOME_CONSTANT=100
+macro add_with_other_default_value(left, right=SOME_CONSTANT)
+  left + right
+end
+
+macro calc(base, add=0, sub=0, mul=1, div=1)
+  (base + add - sub) * mul / div
+end
+
+macro set_variable(name, to)
+  callee[name] = to
+end
+
+macro set_local_variable(to)
+  set_variable :SOME_CONSTANT, to
+
+  SOME_CONSTANT
+end
+
+macro three(increment_by=1)
+  times_called = 0
+
+  macro inner_macro
+    times_called += increment_by
+  end
+
+  inner_macro
+  inner_macro
+  inner_macro
+
+  times_called
+end
+
+macro ilike(what, combined_by="<3")
+  "I #{combined_by} #{what}"
+end
+
+macro never
+end
+
+macro once
+  yield
+end
+
+macro repeat(num)
+  num.times do
+    yield
+  end
+end
+
+macro sumof(*args)
+  num = 0
+  args.each do |value|
+    num+=value
+  end
+  num
+end
+
+macro abs(num)
+  return -num if num < 0
+  num
+end
+
+macro call_to_block(&block)
+  block.call(5)
+end
+
+macro call_to_block_to_block(&block)
+  call_to_block &block
+end
+
+macro kwcalc(base, **kwargs)
+  base += kwargs[:add] if kwargs.key?(:add)
+  base -= kwargs[:sub] if kwargs.key?(:sub)
+  base *= kwargs[:mul] if kwargs.key?(:mul)
+  base /= kwargs[:div] if kwargs.key?(:div)
+  base
+end
+
+macro passthrough_kwcalc(*args, **kwargs)
+  kwcalc *args, **kwargs
+end
+
+macro @multiply_result(by=2, and_add=0)
+  yield * by + and_add
+end
+
+@multiply_result
+macro return_ten
+  5
+end
+
+@multiply_result by: 10, and_add: 3
+@multiply_result by: 10, and_add: 5
+macro return_x53(x)
+  x
+end
+
+macro set_count_number(times=0)
+  count_number = times
+  count_number
+end
+
+macro never_called
+  Compiler.assert false
+end
+
+Compiler.assert return_true
+Compiler.assert return_true_from_if
+Compiler.assert !return_false
+Compiler.assert return_negated(false)
+Compiler.assert !return_negated(true)
+
+Compiler.assert true || never_called
+Compiler.assert false || true || never_called
+Compiler.assert false || false || true
+Compiler.assert !(false && never_called)
+Compiler.assert !(true && false && never_called)
+Compiler.assert true && true && true
+
+Compiler.assert add_with_default_value(1, 2) == 3
+Compiler.assert add_with_default_value(1) == 101
+Compiler.assert add_with_other_default_value(1, 2) == 3
+Compiler.assert add_with_other_default_value(1) == 101
+SOME_CONSTANT = 200
+Compiler.assert add_with_other_default_value(1) == 201
+set_variable :SOME_CONSTANT, 300
+Compiler.assert add_with_other_default_value(1) == 301
+
+Compiler.assert set_local_variable(400) == 400
+Compiler.assert SOME_CONSTANT == 300
+
+Compiler.assert calc(100) == 100
+Compiler.assert calc(100, sub: 20) == 80
+Compiler.assert calc(100, sub: 20, mul: 2) == 160
+
+set_variable :nested_call_result, calc(100, sub: add_with_default_value(10, 20))
+Compiler.assert nested_call_result == 70
+
+Compiler.assert three == 3
+Compiler.assert three == 3
+Compiler.assert three(increment_by: 3) == 9
+
+Compiler.assert ilike("cake") == "I <3 cake"
+Compiler.assert ilike("cake", combined_by: "love") == "I love cake"
+Compiler.assert ilike("fma", "love") == "I love fma"
+
+Compiler.assert call_to_block {|a| a*2} == 10
+Compiler.assert call_to_block_to_block {|a| a*2} == 10
+
+never do
+  Compiler.assert false
+end
+
+count_number = 0
+once do
+  count_number += 1
+end
+Compiler.assert count_number == 1
+
+count_number = 0
+repeat 5 do
+  count_number += 1
+end
+Compiler.assert count_number == 5
+
+
+Compiler.assert sumof(1000, 300, 30, 7) == 1337
+
+Compiler.assert abs(10) == 10
+Compiler.assert abs(-10) == 10
+
+set_count_number +1
+Compiler.assert count_number == 1
+set_count_number+1
+Compiler.assert count_number == 0
+set_count_number(100) + 1
+Compiler.assert count_number == 100
+set_count_number (100) + 1
+Compiler.assert count_number == 101
+
+Compiler.assert kwcalc(100) == 100
+Compiler.assert kwcalc(100, sub: 20) == 80
+Compiler.assert kwcalc(100, sub: 20, mul: 2) == 160
+
+Compiler.assert passthrough_kwcalc(100) == 100
+Compiler.assert passthrough_kwcalc(100, sub: 20) == 80
+Compiler.assert passthrough_kwcalc(100, sub: 20, mul: 2) == 160
+
+Compiler.assert return_ten == 10
+Compiler.assert return_x53(7) == 753
+

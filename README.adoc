@@ -1,87 +1,42 @@
-FMA
-===
+= Famicom Macro Assembler
 
-FMA (famicom macro assembler) is a new multi platform cross assembler, mainly used for SNES development.
+xxx
 
-FMA speeds up development by adding lots of macro features, utilities and improved readability to your project. It allows you to write games in a ruby like syntax, but still keep full control over your application.
+== Overview
 
-WARNING: This project is still in the very, very alpha version! Core features might change
-without any backwards compatibility.
-
----
-
-== Features
-
-* **Ruby like syntax** for assembler projects
-* Manage code in **modules**, **macros** and **classes**
-* Auto generated locations for variables
-* Memory ranges can be reused for other variables
-* Automatically keeps track about size of A, X and Y registers
-* Pass numbers, strings or even registers to macros
-* **Other assemblers** can be implemented, even if they have totally different opcodes
+=== Features
 
 
-== Installing
-
-To use FMA from command line you need to install the `fma-cli` package. This package is
-only used for JavaScript integrations of FMA.
-
-For a detailed introduction on how to write an application, see the `fma-snes` package.
-
-However, if you want to install this package as node module, you can simply install
-it using npm:
-
-[source,bash]
-npm install fma
+=== Example usage
 
 
-== Documentation
 
-The current documentation can be found here:
+== Project targets
 
-link:./docs/index.adoc[FMA documentation]
+=== Super Nintendo (65816)
 
+xxx
 
-== Targets
+=== Super Nintendo Audio Chip (SPC)
 
-Currently there is only one target supported for FMA, but feel free to implement your own one.
+xxx
 
-* *SNES 65816*:
-  https://github.com/BenjaminSchulte/fma-snes65816[GIT repository],
-  https://github.com/BenjaminSchulte/fma-snes65816/docs/index.adoc[Documentation]
+=== Other
 
+xxx
 
-== Code example
+== Modules
 
-Simple example of macro usage:
-
-[source, ruby]
-----
-module SNES
-  macro set_screen_brightness(brightness, enabled=true)
-    LDA   #brightness | (enabled ? 0 : $80) unless brightness.A?
-    STA   $2100
-  end
-end
-
-def main
-  SNES.set_screen_brightness enabled: false
-
-  do_initialize_stuff
-
-  LDA   #0
-loop:
-  SNES.set_screen_brightness A
-  do_something
-  INA
-  CMP   #16
-  BNE   loop
-
-  do_something_else
-end
-----
-
+* CSV reading
+* PNG reading
+* Memory management
+* 65816 language support
+* NodeJS bindings (WIP)
 
 == License
 
-FMA is licensed with the link:./LICENSE.md[MIT] license. Author: Benjamin Schulte
+MIT
+
+== Special thanks
+* https://wiki.superfamicom.org[SFC Developer Wiki] for the tutorials and references
+* https://github.com/AriaFallah[Aria Fallah] for the CSV parser

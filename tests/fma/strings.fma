@@ -1,0 +1,41 @@
+Compiler.assert "hello".length == 5
+Compiler.assert "hello" == "hello"
+Compiler.assert "hello" != "goodbye"
+
+Compiler.assert "hello".append(" fma") == "hello fma"
+Compiler.assert "fma".prepend("hello ") == "hello fma"
+Compiler.assert "HELLO".downcase == "hello"
+Compiler.assert "hello".upcase == "HELLO"
+Compiler.assert "123".to_n == 123
+Compiler.assert "hello".to_s == "hello"
+
+Compiler.assert "fma"*3 == "fmafmafma"
+Compiler.assert "hello" + " fma" == "hello fma"
+
+Compiler.assert "こんにちは".length == 5
+Compiler.assert "こんに".append("ちは") == "こんにちは"
+
+Compiler.assert 12 == "12"
+Compiler.assert "12" == 12
+
+Compiler.assert "un#{1==1}st" == "untruest"
+
+Compiler.assert "#{42}fma" == "42fma"
+Compiler.assert "fma#{42}" == "fma42"
+
+
+bytes = "hello".bytes
+bytes.each do |value, index|
+  Compiler.assert value == 104 if index == 0
+  Compiler.assert value == 101 if index == 1
+  Compiler.assert value == 108 if index == 2
+  Compiler.assert value == 108 if index == 3
+  Compiler.assert value == 111 if index == 4
+end
+
+bytes = "可愛い".bytes
+bytes.each do |value, index|
+  Compiler.assert value == 21487 if index == 0
+  Compiler.assert value == 24859 if index == 1
+  Compiler.assert value == 12356 if index == 2
+end

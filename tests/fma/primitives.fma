@@ -1,0 +1,65 @@
+Compiler.assert !0
+Compiler.assert 1
+
+Compiler.assert true
+Compiler.assert !false
+
+Compiler.assert 0 == 0
+Compiler.assert 1 == 1
+
+Compiler.assert 0 + 1
+Compiler.assert 1 + 0
+Compiler.assert 1 + 1 == 2
+Compiler.assert 10 * 10 == 100
+Compiler.assert 100 / 10 == 10
+Compiler.assert 13 % 10 == 3
+Compiler.assert 7 == (135 & 15)
+Compiler.assert 1333 == (1300 | 37)
+Compiler.assert 129 == (192 ^ 65)
+Compiler.assert 16 == (1 << 4)
+Compiler.assert 16 == (256 >> 4)
+Compiler.assert (50 + 50) == 100
+
+Compiler.assert 1 != 0
+
+Compiler.assert 1 < 2
+Compiler.assert !(1 < 1)
+Compiler.assert !(2 < 1)
+
+Compiler.assert 1 <= 2
+Compiler.assert 1 <= 1
+Compiler.assert !(2 <= 1)
+
+Compiler.assert !(1 > 2)
+Compiler.assert !(1 > 1)
+Compiler.assert 2 > 1
+
+Compiler.assert !(1 >= 2)
+Compiler.assert 1 >= 1
+Compiler.assert 2 >= 1
+
+Compiler.assert 2 * 2 + 2 == 6
+Compiler.assert 2 + 2 * 2 == 6
+
+Compiler.assert $10 == 16
+Compiler.assert $A == 10
+Compiler.assert 0 == (~$10 & $10)
+
+Compiler.assert 3 == (7/2).floor
+Compiler.assert 4 == (7/2).ceil
+Compiler.assert 3 == 3.floor
+Compiler.assert 3 == 3.ceil
+
+Compiler.assert 22.even?
+Compiler.assert 23.odd?
+Compiler.assert !(22.odd?)
+Compiler.assert !(23.even?)
+
+Compiler.assert nil == nil
+Compiler.assert nil != 123
+Compiler.assert 123 != nil
+Compiler.assert 0 == nil
+
+Compiler.assert !nil
+
+

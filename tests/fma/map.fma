@@ -1,0 +1,34 @@
+map = {
+  hello: 123,
+  test: "string"
+}
+
+Compiler.assert map[:hello] == 123
+Compiler.assert map[:test] == "string"
+
+map[:hello] = 1000
+map[:new] = 2000
+
+Compiler.assert map[:hello] == 1000
+Compiler.assert map[:new] == 2000
+
+map[:map] = {}
+map[:map][:inner] = "INNER"
+Compiler.assert map[:map][:inner] == "INNER"
+
+number = 0
+map[:map][number] = "ZERO"
+Compiler.assert map[:map][number] == "ZERO"
+
+
+macro test_nested_map(map)
+  Compiler.assert map[:hello][:world] == "Hello World"
+  Compiler.assert map[:hello][:you] == "You!"
+  map[:hello][:world]
+end
+
+nested_map = {hello: {world: "Hello World", you: "You!"}}
+test_nested_map nested_map
+
+result = test_nested_map({hello: {world: "Hello World", you: "You!"}})
+Compiler.assert result == "Hello World"

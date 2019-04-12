@@ -1,45 +1,20 @@
 {
   "name": "fma",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "Famicom Macro Assembler",
-  "main": "dist/index.js",
-  "keywords": [
-    "snes",
-    "famicom",
-    "macro",
-    "assembler",
-    "compiler",
-    "nintendo"
-  ],
-  "scripts": {
-    "start": "node_modules/babel-cli/bin/babel-node.js src/index.js",
-    "build-compiler": "pegjs -o src/grammar/grammar.js src/grammar/grammar.pegjs",
-    "prepublish": "npm run build",
-    "build": "node_modules/babel-cli/bin/babel.js src --source-maps --out-dir ./dist"
-  },
+  "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BenjaminSchulte/fma.git"
+    "url": "git@gitlab:Benjamin/fmacpp.git"
   },
-  "bugs": {
-    "url": "https://github.com/BenjaminSchulte/fma/issues"
+  "scripts": {
+    "install": "cmake-js compile"
   },
-  "homepage": "https://github.com/BenjaminSchulte/fma/issues#readme",
-  "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-stage-0": "^6.5.0",
-    "pegjs": "^0.10.0"
-  },
+  "author": "Benjamin Schulte <benj@minschulte.de> (http://www.benjaminschulte.de)",
+  "license": "MIT",
   "dependencies": {
-    "async": "^2.6.0",
-    "babel-runtime": "^6.26.0",
-    "sync": "^0.2.5",
-    "winston": "^3.0.0-rc1"
-  },
-  "author": "Benjamin Schulte <benj@minschulte.de>",
-  "license": "MIT"
+    "bindings": "^1.4.0",
+    "cmake-js": "^5.1.0",
+    "nan": "^2.12.1"
+  }
 }

@@ -1,0 +1,258 @@
+class MyClass
+  macro hello
+    "Hello"
+  end
+
+  macro add(a, b)
+    a + b
+  end
+
+  macro my_name
+    "MyClass"
+  end
+end
+
+class ChildClass < MyClass
+  macro my_name
+    "ChildClass"
+  end
+end
+
+klass = MyClass.new
+klass2 = ChildClass.new
+
+Compiler.assert klass.hello == "Hello"
+Compiler.assert klass2.hello == "Hello"
+
+Compiler.assert klass.add(1,2) == 3
+Compiler.assert klass2.add(1,2) == 3
+
+Compiler.assert klass.my_name == "MyClass"
+Compiler.assert klass2.my_name == "ChildClass"
+
+
+class ClassWithLocals
+  macro initialize(name)
+    @name = name
+  end
+
+  macro message
+    "I love #{@name}"
+  end
+
+  macro to_s
+    "locals:#{@name}"
+  end
+
+  macro is_cake?
+    message == "I love cake"
+  end
+end
+
+class NotClassWithLocals < ClassWithLocals
+  macro message
+    "#{super} not!"
+  end
+end
+
+klass = ClassWithLocals.new("cake")
+klass2 = NotClassWithLocals.new("cake")
+
+Compiler.assert klass.name == "cake"
+Compiler.assert klass.to_s == "locals:cake"
+
+Compiler.assert klass.is_cake?
+
+Compiler.assert klass.message == "I love cake"
+Compiler.assert klass2.message == "I love cake not!"
+
+
+class WithConstructor
+  macro initialize(message=nil)
+    @message = message
+    @call_count = 0
+  end
+end
+
+class WithConstantConstructor < WithConstructor
+  macro initialize
+    super "cake!!"
+  end
+end
+
+klass = WithConstructor.new("hello")
+klass2 = WithConstantConstructor.new
+
+Compiler.assert klass.message == "hello"
+Compiler.assert klass.call_count == 0
+
+Compiler.assert klass2.message == "cake!!"
+Compiler.assert klass2.call_count == 0
+
+
+Compiler.assert (123).is_a?(Number)
+Compiler.assert (123).is_a?(Object)
+Compiler.assert !(123).is_a?(String)
+Compiler.assert !(123).is_a?(ImmediateNumber)
+
+
+class String
+  macro self.get_cool_one
+    "COOL"
+  end
+end
+
+Compiler.assert String.get_cool_one == "COOL"
+
+
+
+class MemberSet
+  CONSTANT = 123
+
+  macro name
+    Compiler.print "This should not be called!"
+    Compiler.assert false
+  end
+
+  macro some_callback
+    name = MemberSet.CONSTANT
+
+    name
+  end
+
+  macro some_callback2
+    some_callback
+  end
+end
+
+class MemberSetSub < MemberSet
+  macro some_callback
+    name = 234
+
+    name
+  end
+end
+
+Compiler.assert MemberSet.CONSTANT == 123
+
+ms = MemberSet.new
+Compiler.assert ms.some_callback2 == 123
+
+ms = MemberSetSub.new
+Compiler.assert ms.some_callback2 == 234
+
+
+
+class StaticCallTest
+  macro self.return_value
+    100
+  end
+  
+  macro self.return_value_2x
+    return_value * 2
+  end
+
+  macro self.return_value_4x
+    return_value_2x * 2
+  end
+
+  macro member_return_value
+    100
+  end
+
+  macro member_return_value_2x
+    member_return_value * 2
+  end
+
+  macro member_return_value_4x
+    member_return_value_2x * 2
+  end
+
+  macro self.to_s
+    "I_AM_A_STRING"
+  end
+
+  macro self.get_self
+    self
+  end
+
+  macro self.get_self_as_string
+    "yes, #{get_self}"
+  end
+end
+
+class StaticCallChildTest < StaticCallTest
+  macro self.return_value
+    200
+  end
+
+  macro member_return_value
+    200
+  end
+end
+
+Compiler.assert StaticCallTest.return_value == 100
+Compiler.assert StaticCallTest.return_value_2x == 200
+Compiler.assert StaticCallTest.return_value_4x == 400
+
+Compiler.assert StaticCallChildTest.return_value == 200
+Compiler.assert StaticCallChildTest.return_value_2x == 400
+Compiler.assert StaticCallChildTest.return_value_4x == 800
+
+static_call_test = StaticCallTest.new
+static_call_child_test = StaticCallChildTest.new
+
+Compiler.assert static_call_test.member_return_value == 100
+Compiler.assert static_call_test.member_return_value_2x == 200
+Compiler.assert static_call_test.member_return_value_4x == 400
+
+Compiler.assert static_call_child_test.member_return_value == 200
+Compiler.assert static_call_child_test.member_return_value_2x == 400
+Compiler.assert static_call_child_test.member_return_value_4x == 800
+
+Compiler.assert StaticCallTest.get_self_as_string == "yes, I_AM_A_STRING"
+
+
+
+class ClassVariables
+  macro self.increment
+    @counter ||= 0
+    @counter += 1
+  end
+  
+  macro self.get
+    @counter ||= 0
+  end
+end
+
+class ClassVariablesBefore < ClassVariables
+end
+
+class ClassVariablesAfter < ClassVariables
+end
+
+Compiler.assert ClassVariablesAfter.get == 0
+
+Compiler.assert ClassVariablesBefore.get == 0
+ClassVariablesBefore.increment
+ClassVariablesBefore.increment
+Compiler.assert ClassVariablesBefore.get == 2
+
+Compiler.assert ClassVariablesAfter.get == 0
+ClassVariablesAfter.increment
+ClassVariablesAfter.increment
+Compiler.assert ClassVariablesAfter.get == 2
+
+
+class InClassContext
+  macro self.number
+    1337
+  end
+
+  macro self.test_number(test)
+    Compiler.assert self.number == test
+  end
+
+  test_number 1337
+end
+

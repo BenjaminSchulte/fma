@@ -1,0 +1,78 @@
+number = 123
+string = "Hello"
+
+Compiler.assert number == 123
+Compiler.assert string == "Hello"
+Compiler.assert !(string == "Hello Test")
+
+combined = string + number
+Compiler.assert combined == "Hello123"
+
+Number.favorite = number
+
+Compiler.assert Number.favorite == number
+Compiler.assert Number.favorite == 123
+
+variable? = true
+variable! = false
+
+Compiler.assert variable?
+Compiler.assert !variable!
+
+number += 321
+Compiler.assert number == 444
+
+number -= 44
+Compiler.assert number == 400
+
+number /= 4
+Compiler.assert number == 100
+
+number *= 13
+Compiler.assert number == 1300
+
+number %= 1000
+Compiler.assert number == 300
+
+number <<= 1
+Compiler.assert number == 600
+
+number >>= 2
+Compiler.assert number == 150
+
+number &= 128
+Compiler.assert number == 128
+
+number |= 64
+Compiler.assert number == 192
+
+number ^= 65
+Compiler.assert number == 129
+
+number &&= 1111
+Compiler.assert number == 1111
+
+number &&= 0
+Compiler.assert number == 0
+
+number &&= 1111
+Compiler.assert number == 0
+
+number ||= 1111
+Compiler.assert number == 1111
+
+number ||= 10
+Compiler.assert number == 1111
+
+macro_ = 123
+_macro = 123
+
+Compiler.assert 123 == (undefined_value || 123)
+
+
+
+nil_value = nil
+
+Compiler.assert nil_value.nil?
+Compiler.assert !number.nil?
+
