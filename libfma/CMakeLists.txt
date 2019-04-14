@@ -28,7 +28,3 @@ add_library(libfma ${LIBFMA_SRC} ${BISON_FmaParser_OUTPUTS} ${FLEX_FmaScanner_OU
 target_include_directories(libfma PRIVATE ${Boost_INCLUDE_DIRS} ${ICU_INCLUDE_DIRS})
 target_include_directories(libfma PUBLIC include)
 target_link_libraries(libfma ${Boost_LIBRARIES} ${FLEX_LIBRARIES} ${ICU_LIBRARIES})
-
-if (${DEBUG_FMA})
-  target_compile_definitions(libfma PRIVATE -DDEBUG_FMA)
-endif()

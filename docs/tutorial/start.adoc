@@ -1,0 +1,34 @@
+= Quick start tutorial
+
+== Getting started
+
+=== Building your first FMA file
+
+In your editor, type the following code in `helloworld.fma`:
+
+[source, ruby]
+----
+macro say_hello(to)
+  Compiler.print "Hello #{to}!"
+end
+
+say_hello "world"
+----
+
+
+=== Compiling your FMA file
+
+At the command line, run the FMA compiler using:
+
+    fma -l 65816 helloworld.fma
+
+The result should be some debug outputs and the message "Hello world!" somewhere in your console.
+
+The parameter `-l 65816` tells the compiler to include the SNES 65816 language
+support. However, the current code does not use any of those features, so any
+other language would also be possible.
+
+
+
+== Build your first SNES project
+

@@ -1,41 +1,101 @@
 = Famicom Macro Assembler
 
-xxx
+FMA (famicom macro assembler) is a new multi platform cross assembler, mainly used for SNES development.
+
+FMA speeds up development by adding lots of macro features, utilities and improved readability to your project. It allows you to write games in a ruby like syntax, but still keep full control over your application.
+
+WARNING: This project is still in the very, very alpha version! Core features might change without any backwards compatibility.
 
 == Overview
 
 === Features
 
+- **Ruby like syntax** for assembler projects
+- Manage code in **modules, macros** and **classes**
+- Auto generated locations for variables
+- Memory ranges can be reused for other variables
+- Automatically keeps track about size of A, X and Y registers
+- Pass numbers, strings or even registers to macros
+- **Other assemblers** can be implemented, even if they have totally different opcodes
+- Basic type hinting used to reference class instances
+
+=== Supported targets
+
+- Super Nintendo (65816)
+- Super Nintendo Audio Chip (SPC)
+- Others can be implemented
 
 === Example usage
 
+Simple example of macro usage:
+
+[source, ruby]
+----
+module SNES
+  macro set_screen_brightness(brightness, enabled=true)
+    LDA   #brightness | (enabled ? 0 : $80) unless brightness.A?
+    STA   $2100
+  end
+end
+
+def main
+  SNES.set_screen_brightness enabled: false
+
+  do_initialize_stuff
+
+  LDA   #0
+loop:
+  SNES.set_screen_brightness A
+  do_something
+  INC   A
+  CMP   #16
+  BNE   loop
+
+  do_something_else
+end
+----
 
 
-== Project targets
+== Compile
 
-=== Super Nintendo (65816)
+Compile this project using the standard cmake routine:
 
-xxx
+[source, bash]
+----
+mkdir build
+cd build
+cmake ..
+make
+----
 
-=== Super Nintendo Audio Chip (SPC)
+This should find and build the dependencies and create a `fma` directory
 
-xxx
 
-=== Other
+== Run
 
-xxx
+From within the `build` directory just issue:
+
+`./fma/fma -l 65816 <inputfile.fma>`
+
 
 == Modules
 
 * CSV reading
 * PNG reading
+* File reading
+* JSON reading
 * Memory management
 * 65816 language support
-* NodeJS bindings (WIP)
+* SPC language support
+
+
+== Documentation
+
+* link:./docs/tutorial/start[Quick tutorial]
 
 == License
 
-MIT
+FMA is licensed with the link:./LICENSE.md[MIT] license. Author: Benjamin Schulte
 
 == Special thanks
 * https://wiki.superfamicom.org[SFC Developer Wiki] for the tutorials and references

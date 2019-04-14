@@ -45,7 +45,7 @@ UsageMapAddressRanges UsageMap::findFreeAddresses(const uint64_t &from, const ui
   }
 
   bool currentIsFree = false;
-  uint64_t currentStart, currentEnd;
+  int64_t currentStart, currentEnd;
   for (; it != map.end() && it->start <= to; it++) {
     if (it->isFree()) {
       if (!currentIsFree) {

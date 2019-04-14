@@ -97,7 +97,9 @@ bool Placer::place() {
       succeeded = true;
 
       project->log().info() << "Successfully placed all nodes using " << routeCounter << " iteration(s)";
-      // ptr->dumpNodes();
+#     ifdef DEBUG_FMA
+        ptr->dumpNodes();
+#     endif
   
       break;
     }

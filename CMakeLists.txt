@@ -17,6 +17,10 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
 
+if (${DEBUG_FMA})
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG_FMA")
+endif()
+
 add_subdirectory(libfma)
 add_subdirectory(fma65816)
 add_subdirectory(fmaspc)
