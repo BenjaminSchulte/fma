@@ -168,7 +168,7 @@ PluginAdapter::PluginAdapter(Project *project)
   immediate (0x89, "BIT(A,#)");
   implicit  (0x8A, "MOV(A,X)");
   implicit  (0x8B, "PUSH(DB)");
-
+  absolute  (0x8C, "MOV([la(#)],Y)");
   absolute  (0x8D, "MOV([la(#)],A)");
   absolute  (0x8E, "MOV([la(#)],X)");
   absLong   (0x8F, "MOV([#],A)");

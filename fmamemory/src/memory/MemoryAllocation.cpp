@@ -86,7 +86,7 @@ void MemoryAllocation::writeSymbolReferences(MemorySymbolMap *symbols) {
     return;
   }
 
-  symbols->resolve(reference, *_placement);
+  symbols->resolve(reference, *_placement, "NUMBER", getSize());
 }
 
 // ----------------------------------------------------------------------------

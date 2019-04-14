@@ -41,7 +41,7 @@ bool OutputPlugin::generate(OutputAdapter *adapter) {
 
     os << std::hex << std::setw(2) << std::setfill('0') << ((address >> 16) & 0xFF) << ":";
     os << std::hex << std::setw(4) << std::setfill('0') << (address & 0xFFFF) << " ";
-    os << name << " ANY 1" << std::endl;
+    os << name << " " << symbols->getSymbolTypeHint(name) << " " << symbols->getSymbolSizeHint(name) << std::endl;
   }
 
   os << std::endl;

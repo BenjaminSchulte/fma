@@ -206,7 +206,12 @@ bool MemoryAdapter::registerLinkerBlockSymbols(LinkerBlock *block) {
 
   for (const auto &symbol : block->getSymbols()) {
     auto item = placement->withOffset(symbol.offset, 0);
-    getSymbols()->resolve(symbol.name, item);
+
+    if (symbol.offset == 0) {
+      getSymbols()->resolve(symbol.name, item, "CODE", block->getSize());
+    } else {
+      getSymbols()->resolve(symbol.name, item, "LABEL");
+    }
   }
 
   return true;

@@ -45,13 +45,15 @@ SymbolReferencePtr MemorySymbolMap::createReference(const std::string &hint) {
 }
 
 // ----------------------------------------------------------------------------
-void MemorySymbolMap::resolve(const SymbolReferencePtr &symbol, const MemoryPlacement &placement) {
-  resolve(symbol->getName(), placement);
+void MemorySymbolMap::resolve(const SymbolReferencePtr &symbol, const MemoryPlacement &placement, const std::string &type, uint32_t size) {
+  resolve(symbol->getName(), placement, type, size);
 }
 
 // ----------------------------------------------------------------------------
-void MemorySymbolMap::resolve(const std::string &symbol, const MemoryPlacement &placement) {
+void MemorySymbolMap::resolve(const std::string &symbol, const MemoryPlacement &placement, const std::string &type, uint32_t size) {
   resolvedSymbols[symbol] = placement;
+  symbolTypes[symbol] = type;
+  symbolSizes[symbol] = size;
 }
 
 // ----------------------------------------------------------------------------
@@ -67,6 +69,26 @@ uint64_t MemorySymbolMap::getResolved(const std::string &name) const {
   }
 
   return it->second.asLongAddress();
+}
+
+// ----------------------------------------------------------------------------
+std::string MemorySymbolMap::getSymbolTypeHint(const std::string &name) const {
+  const auto &it = symbolTypes.find(name);
+  if (it == symbolTypes.end()) {
+    return "ANY";
+  }
+
+  return it->second;
+}
+
+// ----------------------------------------------------------------------------
+uint32_t MemorySymbolMap::getSymbolSizeHint(const std::string &name) const {
+  const auto &it = symbolSizes.find(name);
+  if (it == symbolSizes.end()) {
+    return 1;
+  }
+
+  return it->second;
 }
 
 // ----------------------------------------------------------------------------

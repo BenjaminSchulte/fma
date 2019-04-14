@@ -77,12 +77,13 @@ void MemoryLocationConstraint::overrideBy(const MemoryLocationConstraint &other)
     _banks = other.banks();
   }
 
-  if (other.addresses().size()) {
-    _addresses = other.addresses();
-  }
-
   if (other.ranges().size()) {
     _ranges = other.ranges();
+  }
+
+  if (other.addresses().size()) {
+    _addresses = other.addresses();
+    anyRange();
   }
 }
 

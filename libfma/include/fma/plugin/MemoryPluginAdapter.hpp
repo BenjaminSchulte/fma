@@ -58,6 +58,9 @@ public:
   virtual std::vector<std::string> getSymbolNames() const = 0;
   virtual const std::vector<MemorySymbolMapCommand> &getCommands() const = 0;
 
+  virtual std::string getSymbolTypeHint(const std::string &) const { return "ANY"; }
+  virtual uint32_t getSymbolSizeHint(const std::string &) const { return 1; }
+
   virtual void dump() const {}
 };
 
