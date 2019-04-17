@@ -33,6 +33,7 @@ public:
   static FMA::interpret::ResultPtr number_indirect(const FMA::interpret::ContextPtr &context, const FMA::interpret::GroupedParameterList &parameter);
 
   static FMA::interpret::ResultPtr function_jsr(const FMA::interpret::ContextPtr &context, const FMA::interpret::GroupedParameterList &parameter);
+  static FMA::interpret::ResultPtr auto_insert_rts(const FMA::interpret::ContextPtr &context, const FMA::interpret::GroupedParameterList &parameter);
 
 };
 

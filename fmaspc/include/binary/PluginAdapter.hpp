@@ -47,12 +47,15 @@ protected:
   void rep(uint8_t opcode, const std::string &name);
   void directPage(uint8_t opcode, const std::string &name);
   void dpImm(uint8_t opcode, const std::string &name);
+  void dpImmBit(uint8_t opcode, const std::string &name);
   void dpPcRel(uint8_t opcode, const std::string &name);
   void dpPcRelNoA(uint8_t opcode, const std::string &name);
   void dpCopy(uint8_t opcode, const std::string &name);
   void pcRelative(uint8_t opcode, const std::string &name);
   void mov1CM(uint8_t opcode, const std::string &name);
   void mov1MC(uint8_t opcode, const std::string &name);
+
+  static uint8_t bitToBitIndex(uint64_t value);
 };
 
 }

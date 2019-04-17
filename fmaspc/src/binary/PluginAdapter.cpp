@@ -47,10 +47,11 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   branchBit (0x13, "JBC([dp(#)],[la(#)],#)");
   absolute  (0x15, "OR(A,[la((#+X))])");
   absolute  (0x16, "OR(A,[la((#+Y))])");
-  dpImm     (0x18, "OR([dp(#)],#)");
+  dpImmBit  (0x18, "OR([dp(#)],#)");
   directPage(0x1A, "DECW([dp(#)])");
-  immediate (0x1C, "ASL(A,#)");
+  implicit  (0x1C, "ASL(A,#)");
   implicit  (0x1D, "DEC(X)");
+  absolute  (0x1F, "JMP([la((#+X))])");
   directPage(0x24, "AND(A,[dp(#)])");
   absolute  (0x25, "AND([la(#)],A)");
   implicit  (0x26, "AND(A,[la(X)])");
@@ -84,7 +85,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   absolute  (0x56, "EOR(A,[la((#+Y))])");
   dpImm     (0x58, "EOR([dp(#)],#)");
   directPage(0x5A, "CMPW(YA,[dp(#)])");
-  immediate (0x5C, "LSR(A,#)");
+  implicit  (0x5C, "LSR(A,#)");
   implicit  (0x5D, "MOV(X,A)");
   absolute  (0x5F, "JMP(#)");
   directPage(0x64, "CMP(A,[dp(#)])");
@@ -232,7 +233,7 @@ OPERAND_TYPE(dpPcRel, {
   ReferencePtr relative(new CalculatedNumber(
     label,
     CalculatedNumber::SUB,
-    ReferencePtr(new CalculatedNumber(PC, CalculatedNumber::ADD, ReferencePtr(new ConstantNumber(1))))
+    ReferencePtr(new CalculatedNumber(PC, CalculatedNumber::ADD, ReferencePtr(new ConstantNumber(2))))
   ));
   
   ReferencePtr ref(new SignedAssertRangeReference(relative, -128, 127));
@@ -261,7 +262,7 @@ OPERAND_TYPE(dpPcRelNoA, {
   ReferencePtr relative(new CalculatedNumber(
     label,
     CalculatedNumber::SUB,
-    ReferencePtr(new CalculatedNumber(PC, CalculatedNumber::ADD, ReferencePtr(new ConstantNumber(1))))
+    ReferencePtr(new CalculatedNumber(PC, CalculatedNumber::ADD, ReferencePtr(new ConstantNumber(2))))
   ));
   
   ReferencePtr ref(new SignedAssertRangeReference(relative, -128, 127));
@@ -294,8 +295,8 @@ OPERAND_TYPE(absolute, {
 // ----------------------------------------------------------------------------
 OPERAND_TYPE(dpCopy, {
   scope->getLinkerBlock()->write(&generator.opcode, 1);
-  scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
   scope->getLinkerBlock()->write(instruct->getOperand(1), 1);
+  scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
   return true;
 })
 
@@ -320,24 +321,63 @@ OPERAND_TYPE(mov1MC, {
 // ----------------------------------------------------------------------------
 OPERAND_TYPE(dpImm, {
   scope->getLinkerBlock()->write(&generator.opcode, 1);
-  scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
   scope->getLinkerBlock()->write(instruct->getOperand(1), 1);
+  scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
+  return true;
+})
+
+// ----------------------------------------------------------------------------
+OPERAND_TYPE(dpImmBit, {
+  uint32_t value = instruct->getOperand(1)->asConstant();
+  uint32_t bitIndex = bitToBitIndex(value);
+
+  if ((1u << bitIndex) == value) {
+    uint8_t opcode = 0x02 + bitIndex * 0x20;
+    scope->getLinkerBlock()->write(&opcode, 1);
+    scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
+  } else {
+    scope->getLinkerBlock()->write(&generator.opcode, 1);
+    scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
+    scope->getLinkerBlock()->write(instruct->getOperand(1), 1);
+   }
+
   return true;
 })
 
 // ----------------------------------------------------------------------------
 OPERAND_TYPE(branchBit, {
-  uint8_t opcode = generator.opcode + instruct->getOperand(2)->asConstant() * 0x20;
+  uint8_t opcode = generator.opcode + bitToBitIndex(instruct->getOperand(2)->asConstant()) * 0x20;
+
+  auto PC = scope->getLinkerBlock()->privateSymbol(scope->getProject()->getMemoryAdapter()->getSymbolMap());
+
+  ReferencePtr label;
+  auto labelOperand = instruct->getOperand(1);
+  if (labelOperand->isSymbolReference()) {
+    label = labelOperand->asSymbolReference();
+  } else if (labelOperand->isConstant()) {
+    label = ReferencePtr(new ConstantNumber(labelOperand->asConstant()));
+  } else {
+    return false;
+  }
+
+  ReferencePtr relative(new CalculatedNumber(
+    label,
+    CalculatedNumber::SUB,
+    ReferencePtr(new CalculatedNumber(PC, CalculatedNumber::ADD, ReferencePtr(new ConstantNumber(3))))
+  ));
+  
+  ReferencePtr ref(new SignedAssertRangeReference(relative, -128, 127));
+
 
   scope->getLinkerBlock()->write(&opcode, 1);
   scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
-  scope->getLinkerBlock()->write(instruct->getOperand(1), 1);
+  scope->getLinkerBlock()->write(ref, 1);
   return true;
 })
 
 // ----------------------------------------------------------------------------
 OPERAND_TYPE(clrSetBit, {
-  uint8_t opcode = generator.opcode + instruct->getOperand(1)->asConstant() * 0x20;
+  uint8_t opcode = generator.opcode + bitToBitIndex(instruct->getOperand(1)->asConstant()) * 0x20;
 
   scope->getLinkerBlock()->write(&opcode, 1);
   scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
@@ -384,6 +424,18 @@ OPERAND_TYPE(rep, {
 
   return true;
 })
+
+// ----------------------------------------------------------------------------
+uint8_t SpcPluginAdapter::bitToBitIndex(uint64_t value) {
+  uint8_t index = 0;
+
+  while ((value & 1) == 0) {
+    index++;
+    value >>= 1;
+  }
+
+  return index;
+}
 
 // ----------------------------------------------------------------------------
 bool SpcPluginAdapter::supports(const std::string &name) const {

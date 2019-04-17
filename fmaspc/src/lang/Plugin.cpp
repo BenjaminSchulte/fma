@@ -13,6 +13,8 @@
 #include <lang/Register.hpp>
 #include <fma/plugin/MemoryPluginAdapter.hpp>
 #include <fma/types/ClassPrototype.hpp>
+#include <fma/types/Decorator.hpp>
+#include <fma/types/DecoratorContainer.hpp>
 #include <fma/interpret/Interpreter.hpp>
 #include <fma/interpret/ProjectContext.hpp>
 #include <fma/interpret/InstanceContext.hpp>
@@ -68,15 +70,27 @@ using namespace FMA::interpret;
 using namespace FMASPC::lang;
 using namespace std::placeholders;
 
-#define INSTRUCTION(name) \
+#define INSTRUCTION_START(name) \
   proto->setMember(name, TypePtr(new InternalFunctionValue(name, [](const ContextPtr &context, const GroupedParameterList &params) -> ResultPtr { \
     plugin::MemoryBlock *block = core::DataBlockClass::memoryBlock(context); \
     if (block == NULL) { \
       context->log().error() << "Could not access memory block"; \
       return ResultPtr(new Result()); \
-    } \
+    }
+
+#define INSTRUCTION_START_VARIANTS() \
     InstructionArguments args(context, context->getProject(), params); \
     if (!args.isValid()) {
+
+#define INSTRUCTION(name) \
+  INSTRUCTION_START(name) \
+  block->setLastIsReturn(false); \
+  INSTRUCTION_START_VARIANTS()
+
+#define RET_INSTRUCTION(name) \
+  INSTRUCTION_START(name) \
+  block->setLastIsReturn(true); \
+  INSTRUCTION_START_VARIANTS()
 
 #define CREATE(object) \
       Instruction *__inst = object; \
@@ -238,7 +252,7 @@ bool SpcLanguagePlugin::initialize() {
   INSTRUCTION("BPL");
     VARIANT1(address)         CREATE(new instruct::JNS(new PcRelativeAddressOperand(args.getLeft()->createValueOperand())));
   END_INSTRUCTION("BPL");
-  INSTRUCTION("BRA");
+  RET_INSTRUCTION("BRA");
     VARIANT1(address)         CREATE(new instruct::JMP(new PcRelativeAddressOperand(args.getLeft()->createValueOperand())));
   END_INSTRUCTION("BRA");
   INSTRUCTION("CLR0");
@@ -332,9 +346,9 @@ bool SpcLanguagePlugin::initialize() {
   INSTRUCTION("CALL");
     VARIANT1(address)         CREATE(new instruct::CALL(new LocalAddressOperand(args.getLeft()->createValueOperand())));
   END_INSTRUCTION("CALL");
-  INSTRUCTION("JMP");
+  RET_INSTRUCTION("JMP");
     VARIANT1(address)         CREATE(new instruct::JMP(args.getLeft()->createValueOperand()));
-    VARIANT1(addressX)        CREATE(new instruct::JMP(args.getLeft()->createValueOperand()));
+    VARIANT1(addressX)        CREATE(new instruct::JMP(args.createLeftOperand()));
   END_INSTRUCTION("JMP");
   INSTRUCTION("LSR");
     IMPLICIT()                CREATE(new instruct::LSR(new RegisterOperand("A"), new ConstantNumberOperand(1)))
@@ -409,7 +423,7 @@ bool SpcLanguagePlugin::initialize() {
     VARIANT2(dp, dp)          CREATE(new instruct::OR(args.createLeftOperand(), args.createRightOperand()))
     VARIANT2(dp, immediate)   CREATE(new instruct::OR(args.createLeftOperand(), args.createRightOperand()))
   END_INSTRUCTION("OR");
-  INSTRUCTION("RET");
+  RET_INSTRUCTION("RET");
     IMPLICIT()                CREATE(new instruct::RTS())
   END_INSTRUCTION("RET");
   INSTRUCTION("ROL");
@@ -529,6 +543,14 @@ bool SpcLanguagePlugin::initialize() {
   ClassPrototypePtr functionProto(function->getPrototype());
   functionProto->setMember("!()", TypePtr(new InternalFunctionValue("!()", SpcLanguagePlugin::function_jsr)));
 
+  TypePtr container = root->getMember(FMA_TYPE_DECORATORCONTAINER_MEMBER);
+  if (container->isDecoratorContainer()) {
+    DecoratorContainerPtr containerPtr(std::dynamic_pointer_cast<DecoratorContainer>(container));
+    GroupedParameterList params;
+    DecoratorPtr decorator(new Decorator(TypePtr(new InternalFunctionValue("auto_insert_rts", SpcLanguagePlugin::auto_insert_rts)), params));
+    containerPtr->registerCallback(decorator);
+  }
+
   return true;
 }
 
@@ -617,6 +639,20 @@ ResultPtr SpcLanguagePlugin::function_jsr(const ContextPtr &context, const Group
       jsr->pretendExecuted();
       jsr->get()->call(global, params);
     }
+  }
+
+  return ResultPtr(new Result());
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr SpcLanguagePlugin::auto_insert_rts(const ContextPtr &context, const GroupedParameterList &params) {
+  GroupedParameterList empty;
+  params.only_blocks().front()->call(context, empty);
+
+  TypePtr type = context->getInterpreter()->getGlobalContext()->resolve("::__current_block")->get();
+  plugin::MemoryBlock *block = core::DataBlockClass::memoryBlock(context);
+  if (type->isObjectOfType("Function") && !block->isReturned()) {
+    context->getInterpreter()->getGlobalContext()->resolve("::RET")->get();
   }
 
   return ResultPtr(new Result());

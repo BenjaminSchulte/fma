@@ -172,6 +172,10 @@ ResultPtr NumberClass::foreignOperandCall(const ContextPtr &context, const std::
     return l->callDirect(op, context, params);
   }
 
+  if (op == "==") {
+    return BooleanClass::createInstance(context, false);
+  }
+
   context->log().error() << "Unsupported operand " << op << " for number calculation: " << right->asString();
   return ResultPtr(new Result());
 }

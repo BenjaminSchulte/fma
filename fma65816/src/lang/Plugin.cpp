@@ -82,7 +82,7 @@ LanguagePlugin::LanguagePlugin(Project *project)
     if (block == NULL) { \
       context->log().error() << "Could not access memory block"; \
       return ResultPtr(new Result()); \
-    } \
+    }
 
 #define INSTRUCTION_START_VARIANTS() \
     InstructionArguments args(context, context->getProject(), params); \
