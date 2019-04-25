@@ -152,7 +152,7 @@ PluginAdapter::PluginAdapter(Project *project)
   absolute  (0x79, "ADC(A,[la((#+Y))])");
   implicit  (0x7A, "POP(Y)");
   implicit  (0x7B, "MOV(C,D)");
-
+  absolute  (0x7C, "JMP([(la([dp([la([dp(#)])])])+X)])");
   absolute  (0x7D, "ADC(A,[la((#+X))])");
   absolute  (0x7E, "ROR([la((#+X))],#)");
   absolute  (0x7F, "ADC(A,[(#+X)])");

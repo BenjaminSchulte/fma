@@ -371,6 +371,7 @@ bool LanguagePlugin::initialize() {
   RETURN_INSTRUCTION("JMP");
     VARIANT(absolute)      CREATE(new instruct::JMP(new LocalAddressOperand(args.getLeft()->createValueOperand())));
     VARIANT(longAddress)   CREATE(new instruct::JMP(args.getLeft()->createValueOperand()));
+    VARIANT(indirectX)     CREATE(new instruct::JMP(args.createOperand()))
   END_INSTRUCTION("JMP");
   INSTRUCTION_TYPE_HINT("LDA", "A");
     VARIANT(absolute)      CREATE(new instruct::MOV(new RegisterOperand("A"), args.createOperand()))
