@@ -256,3 +256,62 @@ class InClassContext
   test_number 1337
 end
 
+
+class SuperLevel1
+  macro initialize
+    @level1 = my_level
+  end
+
+  macro self.static_level
+    1
+  end
+
+  macro my_level
+    1
+  end
+end
+
+class SuperLevel2 < SuperLevel1
+  macro initialize
+    super
+    @level2 = my_level
+  end
+
+  macro self.static_level
+    super + 2
+  end
+
+  macro my_level
+    super + 2
+  end
+end
+
+class SuperLevel3 < SuperLevel2
+  macro initialize
+    super
+    @level3 = my_level
+  end
+
+  macro self.static_level
+    super + 3
+  end
+
+  macro my_level
+    super + 3
+  end
+end
+
+item = SuperLevel1.new
+Compiler.assert SuperLevel1.static_level == 1
+Compiler.assert item.level1 == 1
+
+item = SuperLevel2.new
+Compiler.assert SuperLevel2.static_level == 3
+Compiler.assert item.level1 == 3
+Compiler.assert item.level2 == 3
+
+item = SuperLevel3.new
+Compiler.assert SuperLevel3.static_level == 6
+Compiler.assert item.level1 == 6
+Compiler.assert item.level2 == 6
+Compiler.assert item.level3 == 6

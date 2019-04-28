@@ -16,8 +16,17 @@ using namespace FMA::interpret;
 Class::Class(const std::string &name, const std::string &fullName)
   : name(name)
   , fullName(fullName)
-  , prototype(new ClassPrototype())
+  , prototype(NULL)
 {
+}
+
+// ----------------------------------------------------------------------------
+const ClassPrototypePtr &Class::getPrototype() {
+  if (!prototype) {
+    prototype = ClassPrototypePtr(new ClassPrototype(std::dynamic_pointer_cast<Class>(getPointer())));
+  }
+
+  return prototype;
 }
 
 // ----------------------------------------------------------------------------
@@ -52,8 +61,8 @@ bool Class::isInstanceOf(const std::string &other) const {
 }
 
 // ----------------------------------------------------------------------------
-bool Class::hasPrototypeMember(const std::string &name) const {
-  if (prototype->hasMember(name)) {
+bool Class::hasPrototypeMember(const std::string &name) {
+  if (getPrototype()->hasMember(name)) {
     return true;
   }
 
@@ -94,8 +103,8 @@ TypePtr Class::getMember(const std::string &name) const {
 }
 
 // ----------------------------------------------------------------------------
-TypePtr Class::getPrototypeMember(const std::string &name) const {
-  TypePtr result = prototype->getMember(name);
+TypePtr Class::getPrototypeMember(const std::string &name) {
+  TypePtr result = getPrototype()->getMember(name);
 
   if (result->isUndefined() && parent) {
     result = parent->getPrototypeMember(name);

@@ -69,6 +69,15 @@ ResultPtr Identifier::execute(const ContextPtr &context) const {
   ResultPtr result;
   if (root) {
     result = current->getRootLevelContext()->getMember(name);
+  } else if (name == "super") {
+    ResultPtr self = current->resolve("self");
+    result = current->resolve("//super");
+
+    if (result->isUndefined() || self->isUndefined()) {
+      result = current->resolve(name);
+    } else {
+      result->withContextObject(self->get());
+    }
   } else {
     result = current->resolve(name);
   }

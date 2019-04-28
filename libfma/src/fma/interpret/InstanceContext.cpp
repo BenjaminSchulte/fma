@@ -48,7 +48,7 @@ ResultPtr InstanceContext::setMember(const std::string &name, const TypePtr &val
 
 // ----------------------------------------------------------------------------
 ResultPtr InstanceContext::resolve(const std::string &name) {
-  if (name == "super") {
+/*  if (name == "super") {
     ClassPtr parent = object->getClass()->getParent();
 
     if (parent) {
@@ -58,7 +58,7 @@ ResultPtr InstanceContext::resolve(const std::string &name) {
         return result;
       }
     }
-  }
+  }*/
 
   TypePtr member = object->getClass()->getPrototypeMember(name);
   if (!member->isUndefined()) {

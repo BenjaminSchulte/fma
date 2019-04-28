@@ -48,6 +48,7 @@ public:
   const types::TypePtr &get();
 
   bool hasContextObject() const { return !!contextObject; }
+  void withContextObject(const types::TypePtr &object) { contextObject = object; }
   const types::TypePtr &getContextObject() const { return contextObject; }
 
   inline void makeAssignable(const ContextPtr &owner, const std::string &name) { ownerContext = owner; assignName = name; }

@@ -3,6 +3,8 @@
 #include <fma/ast/Statement.hpp>
 #include <fma/ast/Identifier.hpp>
 #include <fma/types/Macro.hpp>
+#include <fma/types/ClassPrototype.hpp>
+#include <fma/types/Class.hpp>
 #include <fma/interpret/Result.hpp>
 #include <fma/interpret/BaseContext.hpp>
 
@@ -31,6 +33,32 @@ ResultPtr MacroDeclarationStatement::execute(const ContextPtr &context) const {
   Macro *macroObj = new Macro(name, current, parameters, children);
   MacroPtr macro(macroObj);
   member->assign(macro);
+
+  TypePtr target = current->getDeclareLevelObject();
+  if (target->isClassPrototype()) {
+    ClassPrototypePtr klassPtr = target->asClassPrototype();
+    ClassPtr klass = klassPtr->getClass();
+
+    if (klass) {
+      klass = klass->getParent();
+
+      if (klass && klass->hasPrototypeMember(name)) {
+        TypePtr superCall = klass->getPrototypeMember(name);
+        if (superCall->isMacro()) {
+          macro->setSuper(superCall->asMacro());
+        }
+      }
+    }
+  } else if (target->isClass()) {
+    ClassPtr klass = target->asClass()->getParent();
+
+    if (klass && klass->hasMember(name)) {
+      TypePtr superCall = klass->getMember(name);
+      if (superCall->isMacro()) {
+        macro->setSuper(superCall->asMacro());
+      }
+    }
+  }
 
   if (isDecorator) {
     macro->setIsDecorator();

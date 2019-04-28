@@ -30,13 +30,13 @@ public:
 
   const std::string &getName() const { return name; }
   const std::string &getFullName() const { return fullName; }
-  const ClassPrototypePtr &getPrototype() { return prototype; };
+  const ClassPrototypePtr &getPrototype();
 
   virtual bool hasMember(const std::string &name) const;
   virtual TypePtr getMember(const std::string &name) const;
 
-  virtual bool hasPrototypeMember(const std::string &name) const;
-  virtual TypePtr getPrototypeMember(const std::string &name) const;
+  virtual bool hasPrototypeMember(const std::string &name);
+  virtual TypePtr getPrototypeMember(const std::string &name);
 
   bool isInstanceOf(const ClassPtr &other) const;
   bool isInstanceOf(const std::string &other) const;
@@ -47,7 +47,7 @@ public:
 protected:
   std::string name;
   std::string fullName;
-  ClassPrototypePtr prototype;
+  mutable ClassPrototypePtr prototype;
   ClassPtr parent;
 };
 

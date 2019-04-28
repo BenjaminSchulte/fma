@@ -24,6 +24,7 @@ Macro::Macro(const std::string &name, const ContextPtr &context, const MacroPara
   , context(context)
   , children(children)
   , parameters(parameters)
+  , macroSuper(NULL)
   , isDecorator(false)
 {
 }
@@ -118,6 +119,10 @@ ResultPtr Macro::callInDecorator(const ContextPtr &callContext, const interpret:
   auto _stack = callContext->getInterpreter()->stack().enter(children->getLocation());
   block->setMembersFromParameter(callContext, runContext, parameters, params);
   LabelStatement::registerLabels(runContext, runContext->getNameHint(), children);
+
+  if (macroSuper) {
+    block->setMember("//super", macroSuper);
+  }
   
   ResultPtr result = runContext->execute(children);
   result->noEarlyReturn();

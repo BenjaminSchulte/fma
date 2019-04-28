@@ -67,6 +67,9 @@ public:
   virtual bool isClass() const { return false; }
   virtual ClassPtr asClass() { return NULL; }
 
+  virtual bool isClassPrototype() const { return false; }
+  virtual ClassPrototypePtr asClassPrototype() { return NULL; }
+
   virtual bool isMacro() const { return false; }
   virtual MacroPtr asMacro() { return NULL; }
   

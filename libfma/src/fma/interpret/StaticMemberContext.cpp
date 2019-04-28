@@ -48,7 +48,7 @@ ResultPtr StaticMemberContext::setMember(const std::string &name, const TypePtr 
 
 // ----------------------------------------------------------------------------
 ResultPtr StaticMemberContext::resolve(const std::string &name) {
-  if (name == "super") {
+  /*if (name == "super") {
     ClassPtr parent = object->getParent();
 
     if (parent) {
@@ -58,7 +58,7 @@ ResultPtr StaticMemberContext::resolve(const std::string &name) {
         return result;
       }
     }
-  }
+  }*/
 
   TypePtr member = object->getMember(name);
   if (!member->isUndefined()) {

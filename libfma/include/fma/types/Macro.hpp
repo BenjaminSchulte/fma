@@ -19,6 +19,9 @@ namespace types {
 class Macro : public Decoratable {
 public:
   Macro(const std::string &name, const interpret::ContextPtr &context, const ast::MacroParameterList &parameters, const ast::StatementPtr &children);
+
+  void setSuper(const MacroPtr &macro) { macroSuper = macro; };
+  const MacroPtr &getSuper() const { return macroSuper; }
   
   virtual bool isMacro() const { return true; }
   virtual MacroPtr asMacro() { return std::dynamic_pointer_cast<Macro>(getPointer()); }
@@ -35,6 +38,7 @@ protected:
   interpret::ContextPtr context;
   ast::StatementPtr children;
   ast::MacroParameterList parameters;
+  MacroPtr macroSuper;
   bool isDecorator;
 };
 
