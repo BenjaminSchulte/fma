@@ -53,6 +53,7 @@ ClassPtr DataBlockClass::create(const RootModulePtr &root, const ClassPtr &Class
   proto->setMember("db", TypePtr(new InternalFunctionValue("db", DataBlockClass::db)));
   proto->setMember("dw", TypePtr(new InternalFunctionValue("dw", DataBlockClass::dw)));
   proto->setMember("dd", TypePtr(new InternalFunctionValue("dd", DataBlockClass::dd)));
+  proto->setMember("create_label", TypePtr(new InternalFunctionValue("create_label", DataBlockClass::create_label)));
   proto->setMember("label", TypePtr(new InternalFunctionValue("label", DataBlockClass::label)));
   proto->setMember("to_n", TypePtr(new InternalFunctionValue("to_n", DataBlockClass::to_n)));
   proto->setMember("to_s", TypePtr(new InternalFunctionValue("to_s", DataBlockClass::to_s)));
@@ -258,6 +259,23 @@ ResultPtr DataBlockClass::to_n(const ContextPtr &context, const GroupedParameter
   }
 
   return SymbolReferenceClass::createInstance(context, block->createReference());
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr DataBlockClass::create_label(const ContextPtr &context, const GroupedParameterList &parameter) {
+  MemoryBlock *block = memoryBlock(context);
+  if (!block) {
+    context->log().error() << "Unable to access memory block to store label";
+    return ResultPtr(new Result());
+  }
+
+  const TypeList &args = parameter.only_args();
+  if (!args.size()) {
+    context->log().error() << "Missing name for label";
+    return ResultPtr(new Result());
+  }
+
+  return SymbolReferenceClass::createInstance(context, context->getProject()->getMemoryAdapter()->createReference(args.front()->convertToString(context)));
 }
 
 // ----------------------------------------------------------------------------

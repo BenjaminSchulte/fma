@@ -283,6 +283,20 @@ bool LanguagePlugin::initialize() {
     VARIANT(absoluteY)     CREATE(new instruct::CMP(new RegisterOperand("A"), args.createOperand()))
     VARIANT(absoluteLongX) CREATE(new instruct::CMP(new RegisterOperand("A"), args.createOperand()))
   END_INSTRUCTION("CMP");
+  INSTRUCTION("CMP8");
+    VARIANT(immediate)
+      Instruction *__inst = new instruct::CMP(new RegisterOperand("A"), args.createOperand());
+      __inst->setAttribute("immediateSize", (uint8_t)8);
+      block->write(__inst);
+      return ResultPtr(new Result());
+  END_INSTRUCTION("CMP8");
+  INSTRUCTION("CMP16");
+    VARIANT(immediate)
+      Instruction *__inst = new instruct::CMP(new RegisterOperand("A"), args.createOperand());
+      __inst->setAttribute("immediateSize", (uint8_t)16);
+      block->write(__inst);
+      return ResultPtr(new Result());
+  END_INSTRUCTION("CMP16");
   INSTRUCTION("CPX");
     VARIANT(immediate)
       Instruction *__inst = new instruct::CMP(new RegisterOperand("X"), args.createOperand());
@@ -394,6 +408,20 @@ bool LanguagePlugin::initialize() {
     VARIANT(absoluteY)     CREATE(new instruct::MOV(new RegisterOperand("A"), args.createOperand()))
     VARIANT(absoluteLongX) CREATE(new instruct::MOV(new RegisterOperand("A"), args.createOperand()))
   END_INSTRUCTION("LDA");
+  INSTRUCTION_TYPE_HINT("LDA8", "A");
+    VARIANT(immediate)
+      Instruction *__inst = new instruct::MOV(new RegisterOperand("A"), args.createOperand());
+      __inst->setAttribute("immediateSize", (uint8_t)8);
+      block->write(__inst);
+      return ResultPtr(new Result());
+  END_INSTRUCTION("LDA8");
+  INSTRUCTION_TYPE_HINT("LDA16", "A");
+    VARIANT(immediate)
+      Instruction *__inst = new instruct::MOV(new RegisterOperand("A"), args.createOperand());
+      __inst->setAttribute("immediateSize", (uint8_t)16);
+      block->write(__inst);
+      return ResultPtr(new Result());
+  END_INSTRUCTION("LDA16");
   INSTRUCTION_TYPE_HINT("LDX", "X");
     VARIANT(immediate)
       Instruction *__inst = new instruct::MOV(new RegisterOperand("X"), args.createOperand());
@@ -406,6 +434,20 @@ bool LanguagePlugin::initialize() {
     VARIANT(directPageY)   CREATE(new instruct::MOV(new RegisterOperand("X"), args.createOperand()))
     VARIANT(absoluteY)     CREATE(new instruct::MOV(new RegisterOperand("X"), args.createOperand()))
   END_INSTRUCTION("LDX");
+  INSTRUCTION_TYPE_HINT("LDX8", "X");
+    VARIANT(immediate)
+      Instruction *__inst = new instruct::MOV(new RegisterOperand("X"), args.createOperand());
+      __inst->setAttribute("immediateSize", (uint8_t)8);
+      block->write(__inst);
+      return ResultPtr(new Result());
+  END_INSTRUCTION("LDX8");
+  INSTRUCTION_TYPE_HINT("LDX16", "X");
+    VARIANT(immediate)
+      Instruction *__inst = new instruct::MOV(new RegisterOperand("X"), args.createOperand());
+      __inst->setAttribute("immediateSize", (uint8_t)16);
+      block->write(__inst);
+      return ResultPtr(new Result());
+  END_INSTRUCTION("LDX16");
   INSTRUCTION_TYPE_HINT("LDY", "Y");
     VARIANT(immediate)
       Instruction *__inst = new instruct::MOV(new RegisterOperand("Y"), args.createOperand());
@@ -418,6 +460,20 @@ bool LanguagePlugin::initialize() {
     VARIANT(directPageX)   CREATE(new instruct::MOV(new RegisterOperand("Y"), args.createOperand()))
     VARIANT(absoluteX)     CREATE(new instruct::MOV(new RegisterOperand("Y"), args.createOperand()))
   END_INSTRUCTION("LDY");
+  INSTRUCTION_TYPE_HINT("LDY8", "Y");
+    VARIANT(immediate)
+      Instruction *__inst = new instruct::MOV(new RegisterOperand("Y"), args.createOperand());
+      __inst->setAttribute("immediateSize", (uint8_t)8);
+      block->write(__inst);
+      return ResultPtr(new Result());
+  END_INSTRUCTION("LDY8");
+  INSTRUCTION_TYPE_HINT("LDY16", "Y");
+    VARIANT(immediate)
+      Instruction *__inst = new instruct::MOV(new RegisterOperand("Y"), args.createOperand());
+      __inst->setAttribute("immediateSize", (uint8_t)16);
+      block->write(__inst);
+      return ResultPtr(new Result());
+  END_INSTRUCTION("LDY16");
   INSTRUCTION("LSR");
     VARIANT(implicit)      CREATE(new instruct::LSR(new RegisterOperand("A"), new ConstantNumberOperand(1)))
     VARIANT(directPage)    CREATE(new instruct::LSR(args.createOperand(), new ConstantNumberOperand(1)))

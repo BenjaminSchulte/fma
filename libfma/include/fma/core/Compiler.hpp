@@ -19,6 +19,7 @@ public:
   static interpret::ResultPtr dump(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr print(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr command(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr with_global_context(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
 
   static interpret::ResultPtr trace(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr debug(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);

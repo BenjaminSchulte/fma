@@ -38,6 +38,7 @@ ClassPtr MapClass::create(const RootModulePtr &root, const ClassPtr &ClassObject
   proto->setMember("initialize", TypePtr(new InternalFunctionValue("initialize", MapClass::initialize)));
   proto->setMember("key?", TypePtr(new InternalFunctionValue("key?", MapClass::key_qm)));
   proto->setMember("keys", TypePtr(new InternalFunctionValue("keys", MapClass::keys)));
+  proto->setMember("values", TypePtr(new InternalFunctionValue("values", MapClass::values_call)));
   proto->setMember("to_s", TypePtr(new InternalFunctionValue("to_s", MapClass::to_s)));
   
   proto->setMember("[]", TypePtr(new InternalFunctionValue("[]", MapClass::op_index)));
@@ -104,6 +105,15 @@ ResultPtr MapClass::keys(const ContextPtr &context, const GroupedParameterList &
   TypeList list;
   for (auto &pair : values(context)) {
     list.push_back(StringClass::createInstance(context, pair.first)->get());
+  }
+  return ArrayClass::createInstance(context, list);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr MapClass::values_call(const ContextPtr &context, const GroupedParameterList &) {
+  TypeList list;
+  for (auto &pair : values(context)) {
+    list.push_back(pair.second);
   }
   return ArrayClass::createInstance(context, list);
 }

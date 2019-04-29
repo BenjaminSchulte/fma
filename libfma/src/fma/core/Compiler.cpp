@@ -7,7 +7,9 @@
 #include <fma/interpret/Result.hpp>
 #include <fma/interpret/Parameter.hpp>
 #include <fma/interpret/ParameterList.hpp>
+#include <fma/interpret/Interpreter.hpp>
 #include <fma/interpret/BaseContext.hpp>
+#include <fma/interpret/InstanceContext.hpp>
 #include <fma/plugin/MemoryPluginAdapter.hpp>
 #include <fma/Project.hpp>
 
@@ -30,6 +32,7 @@ ClassPtr CompilerClass::create(const RootModulePtr &root, const ClassPtr &ClassO
   klass->setMember("dump", TypePtr(new InternalFunctionValue("dump", CompilerClass::dump)));
   klass->setMember("print", TypePtr(new InternalFunctionValue("print", CompilerClass::print)));
   klass->setMember("command", TypePtr(new InternalFunctionValue("command", CompilerClass::command)));
+  klass->setMember("with_global_context", TypePtr(new InternalFunctionValue("with_global_context", CompilerClass::with_global_context)));
 
   klass->setMember("trace", TypePtr(new InternalFunctionValue("trace", CompilerClass::trace)));
   klass->setMember("debug", TypePtr(new InternalFunctionValue("debug", CompilerClass::debug)));
@@ -46,6 +49,27 @@ ClassPtr CompilerClass::create(const RootModulePtr &root, const ClassPtr &ClassO
 // ----------------------------------------------------------------------------
 ResultPtr CompilerClass::PROJECT_DIR(const ContextPtr &context, const GroupedParameterList &) {
   return StringClass::createInstance(context, boost::filesystem::current_path().string());
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr CompilerClass::with_global_context(const ContextPtr &context, const GroupedParameterList &parameter) {
+  const TypeList &args = parameter.only_args();
+  const TypeList &blocks = parameter.only_blocks();
+  if (!args.size() || !blocks.size()) {
+    return ResultPtr(new Result());
+  }
+
+  Interpreter *interpreter = context->getInterpreter();
+  ContextPtr oldContext = interpreter->getGlobalContext();
+
+  ContextPtr newContext(new InstanceContext(interpreter, args.front()->asObject(), ""));
+  interpreter->setGlobalContext(newContext);
+
+  GroupedParameterList empty;
+  ResultPtr result = blocks.front()->call(context, empty);
+
+  interpreter->setGlobalContext(oldContext);
+  return result;
 }
 
 // ----------------------------------------------------------------------------

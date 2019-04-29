@@ -42,9 +42,11 @@ ClassPtr ArrayClass::create(const RootModulePtr &root, const ClassPtr &ClassObje
   proto->setMember("empty?", TypePtr(new InternalFunctionValue("empty?", ArrayClass::empty_qm)));
   proto->setMember("first", TypePtr(new InternalFunctionValue("first", ArrayClass::first)));
   proto->setMember("include?", TypePtr(new InternalFunctionValue("include?", ArrayClass::include_qm)));
+  proto->setMember("index", TypePtr(new InternalFunctionValue("index", ArrayClass::index)));
   proto->setMember("initialize", TypePtr(new InternalFunctionValue("initialize", ArrayClass::initialize)));
   proto->setMember("last", TypePtr(new InternalFunctionValue("last", ArrayClass::last)));
   proto->setMember("length", TypePtr(new InternalFunctionValue("length", ArrayClass::count)));
+  proto->setMember("pop", TypePtr(new InternalFunctionValue("pop", ArrayClass::count)));
   proto->setMember("size", TypePtr(new InternalFunctionValue("size", ArrayClass::count)));
   proto->setMember("map", TypePtr(new InternalFunctionValue("map", ArrayClass::map)));
   proto->setMember("to_s", TypePtr(new InternalFunctionValue("to_s", ArrayClass::to_s)));
@@ -84,6 +86,19 @@ ResultPtr ArrayClass::count(const ContextPtr &context, const GroupedParameterLis
 ResultPtr ArrayClass::dup(const ContextPtr &context, const GroupedParameterList&) {
   const TypeList &items = values(context);
   return ArrayClass::createInstance(context, items);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr ArrayClass::pop(const ContextPtr &context, const GroupedParameterList&) {
+  TypeList &items = values(context);
+  if (!items.size()) {
+    return NilClass::createInstance(context);
+  }
+
+  TypePtr last = items.back();
+  items.pop_back();
+
+  return Result::executed(context, last);
 }
 
 // ----------------------------------------------------------------------------
@@ -168,6 +183,34 @@ ResultPtr ArrayClass::include_qm(const ContextPtr &context, const GroupedParamet
   }
 
   return BooleanClass::createInstance(context, false);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr ArrayClass::index(const ContextPtr &context, const GroupedParameterList &parameter) {
+  const TypeList &args = parameter.only_args();
+  if (args.size() < 1) {
+    return BooleanClass::createInstance(context, false);
+  }
+
+  const TypePtr &self = args.front();
+  ContextPtr callContext(new ObjectContext(context->getInterpreter(), self));
+  const TypePtr &eq = self->getMember("==");
+  
+  const TypeList &items = values(context);
+  uint32_t index = 0;
+  for (auto &item : items) {
+    GroupedParameterList params;
+    params.push_back(item);
+    
+    ResultPtr testResult = eq->call(callContext, params);
+    if (testResult->get()->convertToBoolean(context)) {
+      return NumberClass::createInstance(context, index);
+    }
+
+    index++;
+  }
+
+  return NilClass::createInstance(context);
 }
 
 // ----------------------------------------------------------------------------

@@ -53,6 +53,15 @@ ResultPtr BooleanClass::createInstance(const ContextPtr &context, bool value) {
 }
 
 // ----------------------------------------------------------------------------
+TypePtr BooleanClass::macroFor(bool value) {
+  if (value) {
+    return TypePtr(new InternalFunctionValue("false", BooleanClass::return_true));
+  } else {
+    return TypePtr(new InternalFunctionValue("false", BooleanClass::return_false));
+  }
+}
+
+// ----------------------------------------------------------------------------
 ResultPtr BooleanClass::initialize(const ContextPtr &context, const GroupedParameterList &parameter) {
   const TypeList &args = parameter.only_args();
   
@@ -68,6 +77,16 @@ ResultPtr BooleanClass::initialize(const ContextPtr &context, const GroupedParam
   }
 
   return Result::executed(context, context->self());
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr BooleanClass::return_true(const ContextPtr &context, const GroupedParameterList&) {
+  return BooleanClass::createInstance(context, true);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr BooleanClass::return_false(const ContextPtr &context, const GroupedParameterList&) {
+  return BooleanClass::createInstance(context, false);
 }
 
 // ----------------------------------------------------------------------------

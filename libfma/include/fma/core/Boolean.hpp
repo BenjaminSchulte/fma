@@ -14,8 +14,12 @@ public:
   static types::ClassPtr create(const types::RootModulePtr &root, const types::ClassPtr &Class);
   static interpret::ResultPtr createInstance(const interpret::ContextPtr &context, bool value);
 
+  static types::TypePtr macroFor(bool value);
+
   // PROTOTYPE
   static interpret::ResultPtr initialize(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr return_true(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr return_false(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
 
   static interpret::ResultPtr op_eq(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
 
