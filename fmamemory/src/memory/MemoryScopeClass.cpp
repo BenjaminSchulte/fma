@@ -84,7 +84,11 @@ ResultPtr MemoryScopeClass::initialize(const ContextPtr &context, const GroupedP
     scope->setNameHint(args.front()->convertToString(context));
   }
 
-  if ((it = kwargs.find("length")) != kwargs.end()) {
+  it = kwargs.find("size");
+  if (it == kwargs.end()) {
+    it = kwargs.find("length");
+  }
+  if (it != kwargs.end()) {
     scope->setSize(it->second->convertToNumber(context));
   }
 

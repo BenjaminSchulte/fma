@@ -733,30 +733,30 @@ bool LanguagePlugin::initialize() {
   root->setMember("returns", TypePtr(new InternalFunctionValue("returns", LanguagePlugin::returns, DECORATORCALL_OUTER)));
 
   ClassPrototypePtr memoryVariableProto(memoryVariable->getPrototype());
-  memoryVariableProto->setMember("dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
-  memoryVariableProto->setMember("long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
-  memoryVariableProto->setMember("long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
-  memoryVariableProto->setMember("indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
+  memoryVariableProto->setMember(".dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
+  memoryVariableProto->setMember(".long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
+  memoryVariableProto->setMember(".long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
+  memoryVariableProto->setMember(".indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
 
   ClassPrototypePtr numberProto(number->getPrototype());
-  numberProto->setMember("dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
-  numberProto->setMember("long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
-  numberProto->setMember("long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
-  numberProto->setMember("indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
+  numberProto->setMember(".dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
+  numberProto->setMember(".long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
+  numberProto->setMember(".long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
+  numberProto->setMember(".indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
 
   ClassPrototypePtr typedNumberProto(typedNumber->getPrototype());
-  typedNumberProto->setMember("dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
-  typedNumberProto->setMember("long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
-  typedNumberProto->setMember("long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
-  typedNumberProto->setMember("indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
+  typedNumberProto->setMember(".dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
+  typedNumberProto->setMember(".long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
+  typedNumberProto->setMember(".long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
+  typedNumberProto->setMember(".indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
 
   ClassPrototypePtr symbolRefProto(symbolRef->getPrototype());
-  symbolRefProto->setMember("dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
-  symbolRefProto->setMember("long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
-  symbolRefProto->setMember("long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
-  symbolRefProto->setMember("indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
-  symbolRefProto->setMember("bank", TypePtr(new InternalFunctionValue("bank", LanguagePlugin::bank)));
-  symbolRefProto->setMember("bank_address", TypePtr(new InternalFunctionValue("bank_address", LanguagePlugin::bank_address)));
+  symbolRefProto->setMember(".dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
+  symbolRefProto->setMember(".long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
+  symbolRefProto->setMember(".long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
+  symbolRefProto->setMember(".indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
+  symbolRefProto->setMember(".bank", TypePtr(new InternalFunctionValue("bank", LanguagePlugin::bank)));
+  symbolRefProto->setMember(".bank_address", TypePtr(new InternalFunctionValue("bank_address", LanguagePlugin::bank_address)));
 
   ClassPrototypePtr functionProto(function->getPrototype());
   functionProto->setMember("!()", TypePtr(new InternalFunctionValue("!()", LanguagePlugin::function_jsr)));

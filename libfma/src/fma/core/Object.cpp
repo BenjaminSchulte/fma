@@ -35,6 +35,8 @@ ClassPtr ObjectClass::create(const RootModulePtr &root) {
   proto->setMember("to_b", TypePtr(new InternalFunctionValue("to_b", ObjectClass::to_b)));
   proto->setMember("class", TypePtr(new InternalFunctionValue("class", ObjectClass::get_class)));
 
+  proto->setMember("==", TypePtr(new InternalFunctionValue("==", ObjectClass::op_eq)));
+
   root->setMember("Object", klass);
   return klass;
 }
@@ -107,6 +109,16 @@ ResultPtr ObjectClass::to_b(const ContextPtr &context, const GroupedParameterLis
 ResultPtr ObjectClass::get_class(const ContextPtr &context, const GroupedParameterList&) {
   ClassPtr klass = context->self()->asObject()->getClass();
   return ResultPtr(new Result(context, klass));
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr ObjectClass::op_eq(const ContextPtr &context, const GroupedParameterList &params) {
+  const TypeList &args = params.only_args();
+  if (!args.size()) {
+    return BooleanClass::createInstance(context, false);
+  }
+
+  return BooleanClass::createInstance(context, args.front().get() == context->self().get());
 }
 
 // ----------------------------------------------------------------------------
