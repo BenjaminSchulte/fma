@@ -72,7 +72,7 @@ PluginAdapter::PluginAdapter(Project *project)
   immediate (0x29, "AND(A,#)");
   implicit  (0x2A, "ROL(A,#)");
   implicit  (0x2B, "POP(D)");
-  
+  absolute  (0x2C, "BIT(A,[la(#)])");
   absolute  (0x2D, "AND(A,[la(#)])");
   absolute  (0x2E, "ROL([la(#)],#)");
   absLong   (0x2F, "AND(A,[#])");

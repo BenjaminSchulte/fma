@@ -237,6 +237,10 @@ InstructionArgument *InstructionArguments::analyzeTypedNumber(const ObjectPtr &v
     numArgs = 2;
     right = new InstructionArgument(InstructionArgument::REG_X);
     return inner;
+  } else if (typeName == "register_member_Y") {
+    numArgs = 2;
+    right = new InstructionArgument(InstructionArgument::REG_Y);
+    return inner;
   }
 
   valid = false;
