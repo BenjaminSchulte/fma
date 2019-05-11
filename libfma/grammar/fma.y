@@ -504,9 +504,9 @@ PrimaryExpression:
   | T_NIL { $$ = WL(new NilExpression()); }
   | String { $$ = $1; }
   | FullIdentifier { $$ = WL(new IdentifierExpression($1)); }
-  | T_LCB T_RCB { $$ = WL(new MapExpression(ParameterList())); }
+  | T_LCB _ T_RCB { $$ = WL(new MapExpression(ParameterList())); }
   | T_LCB _ NamedExpressionList _ T_RCB { $$ = WL(new MapExpression(*$3)); delete $3; }
-  | T_UNARY T_LSB T_RSB { $$ = WL(new ArrayExpression(ParameterList())); }
+  | T_UNARY T_LSB _ T_RSB { $$ = WL(new ArrayExpression(ParameterList())); }
   | T_UNARY T_LSB ExpressionList T_RSB { $$ = WL(new ArrayExpression(*$3)); delete $3; }
   ;
 

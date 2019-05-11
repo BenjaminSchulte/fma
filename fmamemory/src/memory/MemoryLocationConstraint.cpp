@@ -69,6 +69,33 @@ void MemoryLocationConstraint::configure(const ContextPtr &context, const Groupe
       address(value->convertToNumber(context));
     }
   }
+
+  if ((it = kwargs.find("align")) != kwargs.end()) {
+    alignedTo(it->second->convertToNumber(context));
+  }
+}
+
+// ----------------------------------------------------------------------------
+MemoryLocationConstraint &MemoryLocationConstraint::anyAlignment() {
+  _alignment = 0;
+  _alignmentOffset = 0;
+  return *this;
+}
+
+// ----------------------------------------------------------------------------
+MemoryLocationConstraint &MemoryLocationConstraint::alignedTo(uint32_t alignment, uint32_t offset) {
+  _alignment = alignment;
+  _alignmentOffset = offset;
+  return *this;
+}
+
+// ----------------------------------------------------------------------------
+bool MemoryLocationConstraint::alignmentMatches(uint64_t address) const {
+  if (_alignment == 0) {
+    return true;
+  }
+
+  return ((address - _alignmentOffset) % _alignment) == 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -84,6 +111,11 @@ void MemoryLocationConstraint::overrideBy(const MemoryLocationConstraint &other)
   if (other.addresses().size()) {
     _addresses = other.addresses();
     anyRange();
+  }
+
+  if (other._alignment) {
+    _alignment = other._alignment;
+    _alignmentOffset = other._alignmentOffset;
   }
 }
 
@@ -182,14 +214,30 @@ void MemoryLocationConstraint::mergeRemoveAddressesForRange(const MemoryLocation
 }
 
 // ----------------------------------------------------------------------------
+void MemoryLocationConstraint::mergeAlign(const MemoryLocationConstraint &other, std::vector<MemoryLocationConstraint> &result) const {
+  if (!other.hasAlignment()) {
+    mergeRemoveAddressesForRange(other, result);
+    return;
+  } else if (!hasAlignment()) {
+    MemoryLocationConstraint copy(*this);
+    copy._alignment = other._alignment;
+    copy._alignmentOffset = other._alignmentOffset;
+    copy.mergeRemoveAddressesForRange(other, result);
+    return;
+  }
+
+  std::cout << "TODO: BOTH ALIGN: " << asString() << " AND " << other.asString() << std::endl;
+}
+
+// ----------------------------------------------------------------------------
 void MemoryLocationConstraint::mergeRanges(const MemoryLocationConstraint &other, std::vector<MemoryLocationConstraint> &result) const {
   if (!other.ranges().size()) {
-    mergeRemoveAddressesForRange(other, result);
+    mergeAlign(other, result);
     return;
   } else if (!_ranges.size() && other.ranges().size()) {
     MemoryLocationConstraint copy(*this);
     copy._ranges = other.ranges();
-    copy.mergeRemoveAddressesForRange(other, result);
+    copy.mergeAlign(other, result);
     return;
   }
 
@@ -213,7 +261,7 @@ void MemoryLocationConstraint::mergeRanges(const MemoryLocationConstraint &other
     return;
   }
 
-  copy.mergeRemoveAddressesForRange(other, result);
+  copy.mergeAlign(other, result);
 }
 
 // ----------------------------------------------------------------------------

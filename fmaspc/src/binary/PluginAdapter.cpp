@@ -2,6 +2,7 @@
 #include <fma/assem/Instruction.hpp>
 #include <fma/assem/LabelInstruction.hpp>
 #include <fma/assem/Operand.hpp>
+#include <fma/assem/BitMaskOperand.hpp>
 #include <fma/symbol/SignedAssertRangeReference.hpp>
 #include <fma/symbol/CalculatedNumber.hpp>
 #include <fma/symbol/ConstantNumber.hpp>
@@ -60,7 +61,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   dpCopy    (0x29, "AND([dp(#)],[dp(#)])");
   directPage(0x2B, "ROL([dp(#)],#)");
   absolute  (0x2C, "ROL(la(#),#)");
-  immediate (0x2D, "PUSH(A)");
+  implicit  (0x2D, "PUSH(A)");
   dpPcRel   (0x2E, "CMPJNE(A,[dp(#)],[la(#)])");
   pcRelative(0x2F, "JMP(pcrel(#))");
   pcRelative(0x30, "JS(pcrel(#))");
@@ -80,7 +81,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   dpCopy    (0x49, "EOR([dp(#)],[dp(#)])");
   directPage(0x4B, "LSR([dp(#)],#)");
   absolute  (0x4C, "LSR(la(#),#)");
-  immediate (0x4D, "PUSH(A)");
+  implicit  (0x4D, "PUSH(X)");
   absolute  (0x55, "EOR(A,[la((#+X))])");
   absolute  (0x56, "EOR(A,[la((#+Y))])");
   dpImm     (0x58, "EOR([dp(#)],#)");
@@ -94,7 +95,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   dpCopy    (0x69, "CMP([dp(#)],[dp(#)])");
   directPage(0x6B, "ROR([dp(#)],#)");
   absolute  (0x6C, "ROR(la(#),#)");
-  immediate (0x6D, "PUSH(Y)");
+  implicit  (0x6D, "PUSH(Y)");
   dpPcRelNoA(0x6E, "DECJNZ([dp(#)],[la(#)])");
   implicit  (0x6F, "RTS");
   directPage(0x7A, "ADDW(YA,[dp(#)])");
@@ -130,7 +131,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   directPage(0xAB, "INC([dp(#)])");
   absolute  (0xAC, "INC([la(#)])");
   immediate (0xAD, "CMP(Y,#)");
-  immediate (0xAE, "POP(A)");
+  implicit  (0xAE, "POP(A)");
   implicit  (0xAF, "MOVI([la(X)],A)");
   pcRelative(0xB0, "JC(pcrel(#))");
   absolute  (0xB5, "SBC(A,[la((#+X))])");
@@ -149,7 +150,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   directPage(0xCB, "MOV([dp(#)],Y)");
   absolute  (0xCC, "MOV([la(#)],Y)");
   immediate (0xCD, "MOV(X,#)");
-  immediate (0xCE, "POP(X)");
+  implicit  (0xCE, "POP(X)");
   implicit  (0xCF, "MUL(Y,A)");
   pcRelative(0xD0, "JNZ(pcrel(#))");
   absolute  (0xD5, "MOV([la((#+X))],A)");
@@ -164,7 +165,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   immediate (0xE8, "MOV(A,#)");
   mov1MC    (0xEA, "NOT(([la(#)]&#),#)");
   directPage(0xEB, "MOV(Y,[dp(#)])");
-  immediate (0xEE, "POP(Y)");
+  implicit  (0xEE, "POP(Y)");
   pcRelative(0xF0, "JZ(pcrel(#))");
   absolute  (0xF5, "MOV(A,[la((#+X))])");
   absolute  (0xF6, "MOV(A,[la((#+Y))])");
@@ -301,21 +302,53 @@ OPERAND_TYPE(dpCopy, {
 })
 
 // ----------------------------------------------------------------------------
-OPERAND_TYPE(mov1CM, {
-  std::cout << "TODO MOV1" << std::endl;
-  scope->getLinkerBlock()->write(&generator.opcode, 1);
-  scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
-  //scope->getLinkerBlock()->write(instruct->getOperand(2), 1);
+bool SpcPluginAdapter::writeMov(FMA::assem::BinaryCodeGeneratorScope *scope, FMA::assem::Operand *address, uint32_t bit) {
+  ReferencePtr addressReference;
+  if (address->isSymbolReference()) {
+    addressReference = address->asSymbolReference();
+  } else {
+    return false;
+  }
+
+  ReferencePtr addressRef(new CalculatedNumber(
+    addressReference,
+    CalculatedNumber::AND,
+    ReferencePtr(new ConstantNumber(0x1FFF))
+  ));
+  ReferencePtr bitRef(new CalculatedNumber(
+    ReferencePtr(new ConstantNumber(bit)),
+    CalculatedNumber::LSHIFT,
+    ReferencePtr(new ConstantNumber(13))
+  ));
+  ReferencePtr param(new CalculatedNumber(addressRef, CalculatedNumber::OR, bitRef));
+
+  scope->getLinkerBlock()->write(param, 2);
+
   return true;
+}
+
+// ----------------------------------------------------------------------------
+OPERAND_TYPE(mov1CM, {
+  if (instruct->getOperand(1)->getTypeName() != "BitMask") {
+    return false;
+  }
+
+  BitMaskOperand *op = dynamic_cast<BitMaskOperand*>(instruct->getOperand(1));
+
+  scope->getLinkerBlock()->write(&generator.opcode, 1);
+  return writeMov(scope, op->getAddress(), op->getRsh()->asResolvedAddress());
 })
 
 // ----------------------------------------------------------------------------
 OPERAND_TYPE(mov1MC, {
-  std::cout << "TODO MOV1" << std::endl;
+  if (instruct->getOperand(0)->getTypeName() != "BitMask") {
+    return false;
+  }
+
+  BitMaskOperand *op = dynamic_cast<BitMaskOperand*>(instruct->getOperand(0));
+
   scope->getLinkerBlock()->write(&generator.opcode, 1);
-  scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
-  //scope->getLinkerBlock()->write(instruct->getOperand(1), 1);
-  return true;
+  return writeMov(scope, op->getAddress(), op->getRsh()->asResolvedAddress());
 })
 
 // ----------------------------------------------------------------------------

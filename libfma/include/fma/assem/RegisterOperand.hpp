@@ -14,6 +14,8 @@ public:
   virtual std::string asString() const { return name; }
   virtual std::string getIdentifier() { return name; }
 
+  virtual std::string getTypeName() const { return "Register"; }
+
   virtual bool isWriteable() { return true; }
   virtual bool isReadable() { return true; }
 

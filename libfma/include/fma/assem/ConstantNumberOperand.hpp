@@ -14,6 +14,8 @@ public:
   virtual std::string asString() const;
   virtual std::string getIdentifier() { return "#"; }
 
+  virtual std::string getTypeName() const { return "ConstantNumber"; }
+
   virtual bool isConstant() const { return true; }
   virtual uint64_t asConstant() const { return number; }
 

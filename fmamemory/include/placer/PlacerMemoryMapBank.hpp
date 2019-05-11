@@ -33,8 +33,10 @@ protected:
   bool valid;
 
   UsageMap *usageMap;
-  
+
   void addCleanedUpLocations(const memory::MemoryLocationConstraint &constraint, memory::MemoryLocationList &result);
+  void addAlignedRangeItem(const memory::MemoryLocationRange &range, const memory::MemoryLocationConstraint &constraint, memory::MemoryLocationList &result);
+  void addDefaultRangeItem(const memory::MemoryLocationRange &range, const memory::MemoryLocationConstraint &constraint, memory::MemoryLocationList &result);
 };
 
 }

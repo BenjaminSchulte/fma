@@ -124,6 +124,10 @@ void PlacerMemoryMapBank::filterValidLocations(const MemoryLocationConstraint &c
 void PlacerMemoryMapBank::addCleanedUpLocations(const MemoryLocationConstraint &constraint, MemoryLocationList &result) {
   if (constraint.addresses().size()) {
     for (const auto &address : constraint.addresses()) {
+      if (!constraint.alignmentMatches(address)) {
+        continue;
+      }
+
       MemoryLocationConstraint item(constraint.isAllow());
       item.bank(index).address(address);
       result.add(item);
@@ -133,31 +137,64 @@ void PlacerMemoryMapBank::addCleanedUpLocations(const MemoryLocationConstraint &
 
   if (constraint.ranges().size()) {
     for (const auto &range : constraint.ranges()) {
-      uint64_t left = range.from;
 
-      MemoryLocationConstraint leftItem(constraint.isAllow());
-      leftItem.bank(index).address(left);
-      result.add(leftItem);
-
-      if (range.from != range.to) {
-        MemoryLocationConstraint rightItem(constraint.isAllow());
-        rightItem.bank(index).address(range.to);
-        result.add(rightItem);
+      if (constraint.hasAlignment()) {
+        addAlignedRangeItem(range, constraint, result);
+      } else {
+        addDefaultRangeItem(range, constraint, result);
       }
-/*
-      left += 0x800;
-      for (; left < range.to; left += 0x800) {
-        MemoryLocationConstraint midItem(constraint.isAllow());
-        midItem.bank(index).address(left);
-        result.add(midItem);
-      }
-*/
     }
 
     return;
   }
 
   std::cout << "NO RANGE, NO ADDRESSES, JUST: " << constraint.asString() << std::endl;
+}
+
+// ----------------------------------------------------------------------------
+void PlacerMemoryMapBank::addAlignedRangeItem(const memory::MemoryLocationRange &range, const MemoryLocationConstraint &constraint, MemoryLocationList &result) {
+  if (constraint.alignmentOffset() > 0) {
+    std::cerr << "Alignment offset is not yet supported" << std::endl;
+    return;
+  }
+
+  uint64_t align = constraint.alignment();
+  uint64_t left = range.from;
+  uint64_t right = range.to;
+
+  uint64_t firstOffset = ((left + align - 1) / align);
+  firstOffset *= align;
+  if (firstOffset > right) {
+    return;
+  }
+
+  uint64_t lastOffset = (right / align);
+  lastOffset *= align;
+
+  MemoryLocationConstraint leftItem(constraint.isAllow());
+  leftItem.bank(index).address(firstOffset);
+  result.add(leftItem);
+
+  if (firstOffset != lastOffset) {
+    MemoryLocationConstraint rightItem(constraint.isAllow());
+    rightItem.bank(index).address(lastOffset);
+    result.add(rightItem);
+  }
+}
+
+// ----------------------------------------------------------------------------
+void PlacerMemoryMapBank::addDefaultRangeItem(const memory::MemoryLocationRange &range, const MemoryLocationConstraint &constraint, MemoryLocationList &result) {
+  uint64_t left = range.from;
+
+  MemoryLocationConstraint leftItem(constraint.isAllow());
+  leftItem.bank(index).address(left);
+  result.add(leftItem);
+
+  if (range.from != range.to) {
+    MemoryLocationConstraint rightItem(constraint.isAllow());
+    rightItem.bank(index).address(range.to);
+    result.add(rightItem);
+  }
 }
 
 // ----------------------------------------------------------------------------

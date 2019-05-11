@@ -32,3 +32,5 @@ test_nested_map nested_map
 
 result = test_nested_map({hello: {world: "Hello World", you: "You!"}})
 Compiler.assert result == "Hello World"
+
+nested_map = {hello: [123], empty: [], moreempty: [ ]}

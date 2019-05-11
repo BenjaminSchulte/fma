@@ -28,6 +28,8 @@ public:
 
   MemoryLocationConstraint &anyAlignment();
   MemoryLocationConstraint &alignedTo(uint32_t alignment, uint32_t offset=0);
+  inline bool hasAlignment() const { return !!_alignment; }
+  bool alignmentMatches(uint64_t address) const;
 
   MemoryLocationConstraint &anyBank();
   MemoryLocationConstraint &bank(MemoryBankIndex bank);
@@ -50,6 +52,7 @@ public:
   void mergeBanks(const MemoryLocationConstraint &other, std::vector<MemoryLocationConstraint> &result) const;
   void mergeAddresses(const MemoryLocationConstraint &other, std::vector<MemoryLocationConstraint> &result) const;
   void mergeRanges(const MemoryLocationConstraint &other, std::vector<MemoryLocationConstraint> &result) const;
+  void mergeAlign(const MemoryLocationConstraint &other, std::vector<MemoryLocationConstraint> &result) const;
   void mergeRemoveAddressesForRange(const MemoryLocationConstraint &other, std::vector<MemoryLocationConstraint> &result) const;
 
   inline bool isAllow() const { return _isAllow; }

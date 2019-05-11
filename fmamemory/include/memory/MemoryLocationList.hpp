@@ -16,6 +16,8 @@ public:
   virtual void allow(const interpret::ContextPtr &, const interpret::GroupedParameterList &);
   virtual void deny(const interpret::ContextPtr &, const interpret::GroupedParameterList &);
 
+  inline void clearAllowed() { allowed.clear(); }
+
   inline const MemoryLocationConstraints &getAllowed() const { return allowed; }
   inline const MemoryLocationConstraints &getDenied() const { return denied; }
 

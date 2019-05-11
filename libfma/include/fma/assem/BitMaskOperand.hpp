@@ -15,11 +15,17 @@ public:
   virtual std::string asString() const;
   virtual std::string getIdentifier() { return "(" + address->getIdentifier() + "&#)"; }
 
+  virtual std::string getTypeName() const { return "BitMask"; }
+
   virtual bool isResolvedAddress() const { return address->isResolvedAddress(); }
   virtual uint64_t asResolvedAddress() const { return address->asResolvedAddress(); }
 
   bool isSymbolReference() const { return address->isSymbolReference(); }
   symbol::ReferencePtr asSymbolReference() const { return address->asSymbolReference(); }
+
+  inline Operand *getAddress() const { return address; }
+  inline Operand *getLsh() const { return lsh; }
+  inline Operand *getRsh() const { return rsh; }
 
   virtual bool isWriteable() { return address->isWriteable(); }
   virtual bool isReadable() { return address->isReadable(); }

@@ -14,6 +14,8 @@ public:
   virtual std::string asString() const;
   virtual std::string getIdentifier() { return "sp(" + address->getIdentifier() + ")"; }
 
+  virtual std::string getTypeName() const { return "StackAddress"; }
+
   virtual bool isResolvedAddress() const { return address->isResolvedAddress(); }
   virtual uint64_t asResolvedAddress() const { return address->asResolvedAddress(); }
 

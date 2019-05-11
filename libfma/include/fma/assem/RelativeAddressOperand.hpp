@@ -14,6 +14,8 @@ public:
   virtual std::string asString() const;
   virtual std::string getIdentifier() { return "(" + left->getIdentifier() + "+" + right->getIdentifier() + ")"; }
 
+  virtual std::string getTypeName() const { return "RelativeAddress"; }
+
   virtual bool isResolvedAddress() const;
   virtual uint64_t asResolvedAddress() const;
 

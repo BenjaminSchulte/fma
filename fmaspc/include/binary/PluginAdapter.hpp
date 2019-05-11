@@ -3,6 +3,7 @@
 
 #include <map>
 #include <fma/plugin/Plugin.hpp>
+#include <fma/assem/Operand.hpp>
 #include <fma/plugin/BinaryGeneratorPluginAdapter.hpp>
 
 namespace FMASPC {
@@ -54,6 +55,8 @@ protected:
   void pcRelative(uint8_t opcode, const std::string &name);
   void mov1CM(uint8_t opcode, const std::string &name);
   void mov1MC(uint8_t opcode, const std::string &name);
+
+  static bool writeMov(FMA::assem::BinaryCodeGeneratorScope *scope, FMA::assem::Operand *address, uint32_t bit);
 
   static uint8_t bitToBitIndex(uint64_t value);
 };

@@ -18,6 +18,8 @@ public:
   virtual std::string asString() const = 0;
   virtual std::string getIdentifier() = 0;
 
+  virtual std::string getTypeName() const = 0;
+
   virtual bool isConstant() const { return false; }
   virtual uint64_t asConstant() const { return 0; }
 
