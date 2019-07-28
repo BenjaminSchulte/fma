@@ -52,6 +52,9 @@ Operand *InstructionArgument::createOperand(InstructionArgument *other) const {
   case DIRECT_PAGE:
     return new MemoryAddressOperand(new DirectPageOperand(createValueOperand(other)));
 
+  case DP_X:
+    return new MemoryAddressOperand(new DirectPageOperand(new RelativeAddressOperand(createValueOperand(other), new RegisterOperand("X"))));
+
   case FLAG_C:
     return new RegisterOperand("C");
 
@@ -281,9 +284,24 @@ InstructionArgument *InstructionArguments::analyzeTypedNumber(const ObjectPtr &v
 
   std::string typeName = dynamic_cast<InternalStringValue*>(valueObject.get())->getValue();
   if (typeName == "dp") {
-    if (inner->type == InstructionArgument::ADDRESS) {
-      inner->type = InstructionArgument::DIRECT_PAGE;
-      return inner;
+    TypePtr relativeTo = value->getMember("relative_to");
+    if (relativeTo->isUndefined()) {
+      if (inner->type == InstructionArgument::ADDRESS) {
+        inner->type = InstructionArgument::DIRECT_PAGE;
+        return inner;
+      }
+    } else {
+      InstructionArgument *outer = analyzeArgs(relativeTo);
+      if (outer != NULL) {
+        if (outer->type == InstructionArgument::REG_X) {
+          // right = outer;
+          delete outer;
+          inner->type = InstructionArgument::DP_X;
+          return inner;
+        }
+
+        delete outer;
+      }
     }
   } else if (typeName == "addr") {
     TypePtr relativeTo = value->getMember("relative_to");

@@ -18,6 +18,7 @@ struct InstructionArgument {
     INDIRECT_X,
     INDIRECT_Y,
     DIRECT_PAGE,
+    DP_X,
     ADDRESS,
     ADDRESS_X,
     ADDRESS_Y,
@@ -63,6 +64,7 @@ struct InstructionArgument {
   inline bool dataFromX() const { return type == DATA_FROM_X; }
   inline bool indirectY() const { return type == INDIRECT_Y; }
   inline bool dp() const { return type == DIRECT_PAGE; }
+  inline bool dpX() const { return type == DP_X; }
 
   FMA::assem::Operand *createOperand(InstructionArgument *other=NULL) const;
   FMA::assem::Operand *createValueOperand(InstructionArgument *other) const;

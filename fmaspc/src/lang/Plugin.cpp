@@ -308,6 +308,7 @@ bool SpcLanguagePlugin::initialize() {
   INSTRUCTION("DEC");
     IMPLICIT()                CREATE(new instruct::DEC(new RegisterOperand("A")))
     VARIANT1(address)         CREATE(new instruct::DEC(args.createOperand()))
+    VARIANT1(dpX)             CREATE(new instruct::DEC(args.createOperand()))
     VARIANT1(dp)              CREATE(new instruct::DEC(args.createOperand()))
     VARIANT1(regA)            CREATE(new instruct::DEC(args.createOperand()))
     VARIANT1(regX)            CREATE(new instruct::DEC(args.createOperand()))
@@ -388,7 +389,7 @@ bool SpcLanguagePlugin::initialize() {
     VARIANT2(dp, regA)        CREATE(new instruct::MOV(args.createLeftOperand(), args.createRightOperand()))
     VARIANT2(dp, regX)        CREATE(new instruct::MOV(args.createLeftOperand(), args.createRightOperand()))
     VARIANT2(dp, regY)        CREATE(new instruct::MOV(args.createLeftOperand(), args.createRightOperand()))
-    VARIANT2(indirectX, regA) CREATE(new instruct::MOV(args.createLeftOperand(), args.createRightOperand()))
+    VARIANT2(dpX, regA)       CREATE(new instruct::MOV(args.createLeftOperand(), args.createRightOperand()))
     VARIANT2(indirectY, regA) CREATE(new instruct::MOV(args.createLeftOperand(), args.createRightOperand()))
     VARIANT2(dataFromX, regA) CREATE(new instruct::MOV(args.createLeftOperand(), args.createRightOperand()))
     VARIANT2(regS, regX)      CREATE(new instruct::MOV(args.createLeftOperand(), args.createRightOperand()))
@@ -555,8 +556,15 @@ bool SpcLanguagePlugin::initialize() {
 }
 
 // ----------------------------------------------------------------------------
-ResultPtr SpcLanguagePlugin::number_dp(const ContextPtr &context, const GroupedParameterList &) {
-  return core::TypedNumberClass::createInstance(context, context->self(), "dp");
+ResultPtr SpcLanguagePlugin::number_dp(const ContextPtr &context, const GroupedParameterList &parameter) {
+  const TypeList &args = parameter.only_args();
+  ResultPtr result = core::TypedNumberClass::createInstance(context, context->self(), "dp");
+
+  if (args.size()) {
+    result->get()->setMember("relative_to", args.front());
+  }
+
+  return result;
 }
 
 // ----------------------------------------------------------------------------
@@ -624,6 +632,10 @@ ResultPtr SpcLanguagePlugin::dp(const ContextPtr &context, const GroupedParamete
 
   ContextPtr callContext(new InstanceContext(context->getInterpreter(), args.front()->asObject(), "dp"));
   GroupedParameterList empty;
+  if (args.size() == 2) {
+    empty.push_back(args.back());
+  }
+
   return args.front()->getDirectMember("dp")->call(callContext, empty);
 }
 

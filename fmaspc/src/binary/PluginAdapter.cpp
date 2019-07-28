@@ -117,6 +117,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   absolute  (0x96, "ADC(A,[la((#+Y))])");
   dpImm     (0x98, "ADC([dp(#)],#)");
   directPage(0x9A, "SUBW(YA,[dp(#)])");
+  directPage(0x9B, "DEC([dp((#+X))])");
   implicit  (0x9C, "DEC(A)");
   implicit  (0x9D, "MOV(X,S)");
   implicit  (0x9E, "DIV(YA,X)");
@@ -153,6 +154,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   implicit  (0xCE, "POP(X)");
   implicit  (0xCF, "MUL(Y,A)");
   pcRelative(0xD0, "JNZ(pcrel(#))");
+  directPage(0xD4, "MOV([dp((#+X))],A)");
   absolute  (0xD5, "MOV([la((#+X))],A)");
   absolute  (0xD6, "MOV([la((#+Y))],A)");
   immediate (0xD7, "MOV([la(([dp(#)]+Y))],A)");
