@@ -22,16 +22,24 @@ Interpreter::~Interpreter() {
 
 // ----------------------------------------------------------------------------
 ResultPtr Interpreter::execute(const ast::NodePtr &node) {
+  ResultPtr result = executeWithoutPostProcess(node);
+  postProcess();
+  return result;
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr Interpreter::executeWithoutPostProcess(const ast::NodePtr &node) {
   std::shared_ptr<ProjectContext> context(new ProjectContext(this));
   
-  ResultPtr result = context->execute(node);
+  return context->execute(node);
+}
 
+// ----------------------------------------------------------------------------
+void Interpreter::postProcess() {
   project->log().debug() << "Processing queued tasks.";
   while (queue->more()) {
     queue->execute();
   }
-
-  return result;
 }
 
 // ----------------------------------------------------------------------------

@@ -24,6 +24,8 @@ public:
   virtual ~Interpreter();
 
   ResultPtr execute(const ast::NodePtr &node);
+  ResultPtr executeWithoutPostProcess(const ast::NodePtr &node);
+  void postProcess();
 
   inline Project *getProject() const { return project; }
   inline class InterpreterQueue *getQueue() const { return queue; }
