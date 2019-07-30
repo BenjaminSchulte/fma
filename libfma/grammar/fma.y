@@ -1,14 +1,16 @@
+%define api.pure full
+%lex-param   { yyscan_t scanner }
+%parse-param { yyscan_t scanner }
+%locations
+
 %code requires{
+typedef void *yyscan_t;
 
 #include <fma/parser/ParserHeading.hpp>
 #include <fma/Parser.hpp>
 #include <fma/ast/Expression.hpp>
 #include <fma/ast/Statement.hpp>
 #include <fma/ast/Identifier.hpp>
-
-int yyerror(const char *error);
-int yylex(void);
-extern int yylineno;
 
 using namespace FMA;
 using namespace FMA::ast;
@@ -22,8 +24,13 @@ template<class Node> Node *_WITHLOC(unsigned int line, unsigned int col, Node *n
 }
 
 #define WL(type) \
-  _WITHLOC(yylineno, 1, type)
+  _WITHLOC(yylloc.first_line, yylloc.first_column, type)
 
+}
+
+%code {
+  int yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *error);
+  int yylex(YYSTYPE * yylval_param,YYLTYPE * yylloc_param, yyscan_t scanner);
 }
 
 %define parse.error verbose
@@ -536,7 +543,7 @@ StringContent:
 
 %%
 
-int yyerror(const char *error) {
-  yyCurrentParser->error(yylineno, yylloc.first_column, error);
+int yyerror(YYLTYPE *yylloc, yyscan_t, const char *error) {
+  yyCurrentParser->error(1, yylloc->first_column, error);
   return 0;
 }

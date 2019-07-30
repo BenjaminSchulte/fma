@@ -53,6 +53,19 @@ struct LogMessage : public std::shared_ptr<BaseLogMessage> {
   }
 };
 
+class LogAdapter {
+public:
+  LogAdapter() = default;
+  virtual ~LogAdapter() = default;
+
+  virtual void write(LogLevel level, const std::string &message) = 0;
+};
+
+class ConsoleLog : public LogAdapter {
+public:
+  void write(LogLevel level, const std::string &message) override;
+};
+
 class Log {
 public:
 
@@ -91,9 +104,13 @@ public:
   }
 
   void write(LogLevel level, const std::string &message);
+  inline void setLogAdapter(LogAdapter *adapter) {
+    logAdapter = adapter;
+  }
 
 private:
   uint32_t numErrors;
+  LogAdapter *logAdapter;
 };
 
 }

@@ -21,11 +21,29 @@ OriginalLogMessage::~OriginalLogMessage() {
 // ----------------------------------------------------------------------------
 Log::Log()
   : numErrors(0)
+  , logAdapter(nullptr)
 {
 }
 
 // ----------------------------------------------------------------------------
 void Log::write(LogLevel level, const std::string &message) {
+  switch (level) {
+  case FMA_LOG_ERROR:
+  case FMA_LOG_FATAL:
+    numErrors++;
+    break;
+
+  default:
+    break;
+  }
+
+  if (logAdapter) {
+    logAdapter->write(level, message);
+  }
+}
+
+// ----------------------------------------------------------------------------
+void ConsoleLog::write(LogLevel level, const std::string &message) {
   std::string levelName;
   std::string colorName("");
   std::string resetColorName("\x1b[m");
@@ -37,8 +55,8 @@ void Log::write(LogLevel level, const std::string &message) {
     case FMA_LOG_INFO: levelName="INFO "; break;
     case FMA_LOG_NOTICE: levelName="NOTIC"; colorName=color::yellowBright(); break;
     case FMA_LOG_WARN: levelName="WARN "; colorName=color::yellowBright(); break;
-    case FMA_LOG_ERROR: levelName="ERROR"; numErrors++; colorName=color::redBright(); break;
-    case FMA_LOG_FATAL: levelName="FATAL"; numErrors++; colorName=color::redBright(); break;
+    case FMA_LOG_ERROR: levelName="ERROR"; colorName=color::redBright(); break;
+    case FMA_LOG_FATAL: levelName="FATAL"; colorName=color::redBright(); break;
   }
 
   if (level >= FMA_LOG_WARN) {

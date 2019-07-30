@@ -45,6 +45,7 @@ protected:
   plugin::MemoryPluginAdapter *memoryAdapter;
   BinaryGeneratorAdapterList binaryAdapters;
   Log *_log;
+  ConsoleLog *_defaultLogAdapter;
   serialize::SerializerRegistry *_serializer;
   std::shared_ptr<types::RootModule> _root;
 };

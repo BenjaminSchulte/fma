@@ -8,12 +8,14 @@
 using namespace FMA;
 
 typedef struct yy_buffer_state * YY_BUFFER_STATE;
+typedef void *yyscan_t;
+int yylex_init(yyscan_t*);
+int yylex_destroy(yyscan_t);
+int yyparse(yyscan_t);
+void yyset_in(FILE *_in_str, yyscan_t yyscanner);
+YY_BUFFER_STATE yy_scan_string (const char *yy_str, yyscan_t yyscanner);
+void yy_delete_buffer(YY_BUFFER_STATE buffer, yyscan_t yyscanner);
 
-int yyparse();
-extern YY_BUFFER_STATE yy_scan_string(const char * str);
-extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
-extern FILE *yyin;
-extern int yylineno;
 ast::Node *parsedRootNode;
 Parser *yyCurrentParser;
 
@@ -36,9 +38,12 @@ bool Parser::parseString(const char *string) {
   currentFile = NULL;
   parsedRootNode = NULL;
 
-  YY_BUFFER_STATE buffer = yy_scan_string(string);
-  yyparse();
-  yy_delete_buffer(buffer);
+  yyscan_t scanner;
+  yylex_init(&scanner);
+  YY_BUFFER_STATE buffer = yy_scan_string(string, scanner);
+  yyparse(scanner);
+  yy_delete_buffer(buffer, scanner);
+  yylex_destroy(scanner);
 
   result = ast::NodePtr(parsedRootNode);
 
@@ -55,17 +60,21 @@ bool Parser::parseFile(const char *fileName, const FilePtr &relativeTo) {
     return false;
   }
 
-  yyin = fopen(file->absoluteFileName().c_str(), "rb");
-  if (yyin == NULL) {
+  FILE *fh = fopen(file->absoluteFileName().c_str(), "rb");
+  if (fh == NULL) {
     return false;
   }
 
+  yyscan_t scanner;
+  yylex_init(&scanner);
+  yyset_in(fh, scanner);
   yyCurrentParser = this;
   currentFile = file;
-  yylineno = 1;
-  yyparse();
-  yyin = NULL;
+  // yylineno = 1;
+  yyparse(scanner);
+  // yyin = NULL;
   currentFile = NULL;
+  yylex_destroy(scanner);
 
   if (errors.size() > 0) {
     return false;
