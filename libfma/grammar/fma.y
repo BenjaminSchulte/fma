@@ -544,6 +544,6 @@ StringContent:
 %%
 
 int yyerror(YYLTYPE *yylloc, yyscan_t, const char *error) {
-  yyCurrentParser->error(1, yylloc->first_column, error);
+  yyCurrentParser->error(yylloc->first_line, yylloc->first_column, error);
   return 0;
 }
