@@ -128,7 +128,7 @@ bool LinkerBlock::calculateSymbols(Project *project, const plugin::MemorySymbolM
   for (const auto &reference : references) {
     uint64_t number = reference.reference->resolve(map, valid);
     if (!valid) {
-      project->log().error() << "Unable to resolve symbol: " << reference.reference->asString();
+      project->log().error() << "Unable to resolve symbol: " << reference.reference->asString() << " (in " << getNameHint() << ")";
       success = false;
     }
 

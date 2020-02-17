@@ -196,9 +196,8 @@ plugin::MemorySymbolMap *MemoryAdapter::getSymbolMap() const {
 bool MemoryAdapter::registerLinkerBlockSymbols(LinkerBlock *block) {
   const MemoryPlacement *placement = dynamic_cast<const MemoryPlacement*>(block->getPlacement());
   if (!placement->isValid()) {
-    if (block->getSymbols().size()) {
-      project->log().error() << "Could not resolve all symbols: " << block->getSymbols().front().name;
-      return false;
+    for (const auto &symbol : block->getSymbols()) {
+      project->log().warn() << "Skipping invalid symbol: " << symbol.name;
     }
 
     return true;

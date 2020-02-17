@@ -42,7 +42,7 @@ ALL .
 <CALL_OR_IDENT>.|\n { yyless(0); yy_pop_state(yyscanner); }
 
 <UNARYTEST>{ANYUNARY}/{WHITESPACE} { yyless(0); yy_pop_state(yyscanner); }
-<UNARYTEST>{ANYUNARY}/[\$\"a-zA-Z0-9_\(\[\{] { yyless(0); yy_pop_state(yyscanner); return T_UNARY; }
+<UNARYTEST>{ANYUNARY}/[\$\"\:a-zA-Z0-9_\(\[\{] { yyless(0); yy_pop_state(yyscanner); return T_UNARY; }
 <UNARYTEST>[\[]/{WHITESPACE}*[\]] { yyless(0); yy_pop_state(yyscanner); return T_UNARY; }
 <UNARYTEST>{WHITESPACE} { ; }
 <UNARYTEST>.|\n { yyless(0); yy_pop_state(yyscanner); }

@@ -2,6 +2,7 @@
 #define __FMA_TYPES_INTERNALVALUE_H__
 
 #include <string>
+#include <functional>
 #include <sstream>
 #include <vector>
 #include <map>

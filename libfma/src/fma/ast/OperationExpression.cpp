@@ -137,7 +137,7 @@ ResultPtr OperationExpression::execute(const ContextPtr &context) const {
     if (result->get()->convertToBoolean(context)) {
       break;
     }
-    // !!! NO BREAK !!!
+    __attribute__ ((fallthrough));
   case LESSTHAN:
     if (leftResult->get()->hasMember("<")) {
       result = calculate(context, leftResult, context->execute(right), "<");
@@ -157,7 +157,7 @@ ResultPtr OperationExpression::execute(const ContextPtr &context) const {
     if (result->get()->convertToBoolean(context)) {
       break;
     }
-    // !!! NO BREAK !!!
+    __attribute__ ((fallthrough));
   case GREATERTHAN:
     if (leftResult->get()->hasMember(">")) {
       result = calculate(context, leftResult, context->execute(right), ">");
@@ -201,7 +201,7 @@ ResultPtr OperationExpression::execute(const ContextPtr &context) const {
       result = calculate(context, leftResult, context->execute(right), "[]");
       break;
     }
-    // no break !!
+    __attribute__ ((fallthrough));
   case MEMBER:
     {
       TypePtr owner = leftResult->get();
