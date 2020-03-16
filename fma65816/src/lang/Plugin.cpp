@@ -52,6 +52,8 @@
 #include <fma/instruct/Push.hpp>
 #include <fma/instruct/Pop.hpp>
 #include <fma/instruct/Stp.hpp>
+#include <fma/instruct/Trb.hpp>
+#include <fma/instruct/Tsb.hpp>
 #include <fma/instruct/Rti.hpp>
 #include <fma/instruct/Xchg.hpp>
 #include <fma/instruct/Wai.hpp>
@@ -531,6 +533,14 @@ bool LanguagePlugin::initialize() {
   RETURN_INSTRUCTION("RTL");
     VARIANT(implicit)      CREATE(new instruct::RTL());
   END_INSTRUCTION("RTL");
+  RETURN_INSTRUCTION("TSB");
+    VARIANT(directPage)    CREATE(new instruct::TSB(args.createOperand(), new RegisterOperand("A")));
+    VARIANT(absolute)      CREATE(new instruct::TSB(args.createOperand(), new RegisterOperand("A")));
+  END_INSTRUCTION("TSB");
+  RETURN_INSTRUCTION("TRB");
+    VARIANT(directPage)    CREATE(new instruct::TRB(args.createOperand(), new RegisterOperand("A")));
+    VARIANT(absolute)      CREATE(new instruct::TRB(args.createOperand(), new RegisterOperand("A")));
+  END_INSTRUCTION("TRB");
   INSTRUCTION("ORA");
     VARIANT(absolute)      CREATE(new instruct::OR(new RegisterOperand("A"), args.createOperand()))
     VARIANT(immediate)

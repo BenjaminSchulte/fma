@@ -32,7 +32,7 @@ PluginAdapter::PluginAdapter(Project *project)
   directPage(0x01, "OR(A,[la([dp((#+X))])])");
   // COP
   srRelative(0x03, "OR(A,[sp((#+S))])");
-
+  directPage(0x04, "TSB([dp(#)],A)");
   directPage(0x05, "OR(A,[dp(#)])");
   directPage(0x06, "ASL([dp(#)],#)");
   directPage(0x07, "OR(A,[[dp(#)]])");
@@ -40,7 +40,7 @@ PluginAdapter::PluginAdapter(Project *project)
   immediate (0x09, "OR(A,#)");
   implicit  (0x0A, "ASL(A,#)");
   implicit  (0x0B, "PUSH(D)");
-
+  absolute  (0x0C, "TSB(la(#),A)");
   absolute  (0x0D, "OR(A,[la(#)])");
   absolute  (0x0E, "ASL([la(#)],#)");
   absLong   (0x0F, "OR(A,[#])");
@@ -48,7 +48,7 @@ PluginAdapter::PluginAdapter(Project *project)
   directPage(0x11, "OR(A,[(la([dp([la([dp(#)])])])+Y)])");
   directPage(0x12, "OR(A,[la([dp(#)])])");
   // ORA
-
+  directPage(0x14, "TRB([dp(#)],A)");
   directPage(0x15, "OR(A,[(la([dp([la([dp(#)])])])+X)])");
   directPage(0x16, "ASL([dp((#+X))],#)");
   directPage(0x17, "OR(A,[([dp([[dp(#)]])]+Y)])");
@@ -56,7 +56,7 @@ PluginAdapter::PluginAdapter(Project *project)
   absolute  (0x19, "OR(A,[la((#+Y))])");
   implicit  (0x1A, "INC(A)");
   implicit  (0x1B, "MOV(S,C)");
-
+  absolute  (0x1C, "TRB(la(#),A)");
   absolute  (0x1D, "OR(A,[la((#+X))])");
   absolute  (0x1E, "ASL([la((#+X))],#)");
   absolute  (0x1F, "OR(A,[(#+X)])");
