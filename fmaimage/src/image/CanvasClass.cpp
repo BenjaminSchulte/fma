@@ -20,6 +20,10 @@ namespace types {
 }
 }
 
+namespace {
+  CanvasPtr nullCanvas;
+}
+
 // ----------------------------------------------------------------------------
 ClassPtr CanvasClass::create(const ModulePtr &root, const ClassPtr &ClassObject) {
   ClassPtr klass = ClassPtr(new Class("Canvas", "fmaImage::Canvas"));
@@ -127,7 +131,7 @@ const CanvasPtr &CanvasClass::canvas(Project *project, const types::TypePtr &val
   const TypePtr &obj = value->getMember("__canvas");
   if (!obj || !obj->isInternalObjectOfType("fmaImageCanvas")) {
     project->log().error() << "Unable to access canvas";
-    return NULL;
+    return nullCanvas;
   }
 
   return std::dynamic_pointer_cast<InternalCanvasValue>(obj)->getValue();

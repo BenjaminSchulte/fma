@@ -22,6 +22,10 @@ namespace types {
 }
 }
 
+namespace {
+  ImageCollectionPtr emptyImageCollection;
+}
+
 // ----------------------------------------------------------------------------
 ClassPtr ImageCollectionClass::create(const ModulePtr &root, const ClassPtr &ClassObject) {
   ClassPtr klass = ClassPtr(new Class("ImageCollection", "fmaImage::ImageCollection"));
@@ -78,7 +82,7 @@ const ImageCollectionPtr &ImageCollectionClass::imageCollection(Project *project
   const TypePtr &obj = value->getMember("__image_collection");
   if (!obj || !obj->isInternalObjectOfType("fmaImageCollection")) {
     project->log().error() << "Unable to access image collection";
-    return NULL;
+    return emptyImageCollection;
   }
 
   return std::dynamic_pointer_cast<InternalImageCollectionValue>(obj)->getValue();

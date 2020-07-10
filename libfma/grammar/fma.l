@@ -5,7 +5,9 @@
 %{
 #include <fma/parser/ParserHeading.hpp>
 #include "fma.y.hpp"
+#define YY_NO_INPUT
 #define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno;
+extern "C" int yylex(YYSTYPE * yylval_param,YYLTYPE * yylloc_param, yyscan_t scanner);
 %}
 %option yylineno
 

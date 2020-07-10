@@ -4,6 +4,10 @@
 
 using namespace FMA::assem;
 
+namespace {
+  boost::any boostNullPtr(nullptr);
+}
+
 // ----------------------------------------------------------------------------
 Instruction::Instruction()
   : attributes(NULL)
@@ -66,12 +70,12 @@ std::string Instruction::getIdentifier() {
 // ----------------------------------------------------------------------------
 const boost::any &Instruction::getAttribute(const std::string &name) {
   if (!attributes) {
-    return NULL;
+    return boostNullPtr;
   }
 
   InstructionAttributes::const_iterator it = attributes->find(name);
   if (it == attributes->end()) {
-    return NULL;
+    return boostNullPtr;
   }
 
   return it->second;

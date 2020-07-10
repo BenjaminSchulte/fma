@@ -27,6 +27,10 @@ namespace types {
 }
 }
 
+namespace {
+  MemoryScopePtr emptyMemoryScope;
+}
+
 // ----------------------------------------------------------------------------
 ClassPtr MemoryScopeClass::create(const RootModulePtr &root, const ClassPtr &ClassObject) {
   ClassPtr klass = ClassPtr(new Class("MemoryScope", "MemoryScope"));
@@ -151,7 +155,7 @@ const MemoryScopePtr &MemoryScopeClass::asMemoryScope(Project *project, const ty
   const TypePtr &obj = value->getMember("__memory_scope");
   if (!obj || !obj->isInternalObjectOfType("MemoryScope")) {
     project->log().error() << "Unable to access internal memory scope";
-    return NULL;
+    return emptyMemoryScope;
   }
 
   return std::dynamic_pointer_cast<InternalMemoryScopeValue>(obj)->getValue();

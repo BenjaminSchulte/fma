@@ -7,11 +7,11 @@ namespace FMA {
 namespace serialize {
 
 struct __attribute__((packed, aligned(1))) SerializeHeader {
-  SerializeHeader() : identifier(*((const uint32_t*)"FMAO")), version(1) {
+  SerializeHeader() : identifier(*(reinterpret_cast<const uint32_t*>("FMAO"))), version(1) {
   }
 
   inline bool isValid() const {
-    return identifier == *((const uint32_t*)"FMAO") && version == 1;
+    return identifier == *(reinterpret_cast<const uint32_t*>("FMAO")) && version == 1;
   }
 
   uint32_t identifier;

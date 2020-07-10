@@ -3,7 +3,7 @@ project(fma VERSION 1.0.0 DESCRIPTION "famicom macro assembler")
 
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wunused-result -Winit-self -Wno-strict-aliasing -Wcast-align -Wcast-qual -Wuninitialized -Wmissing-declarations -Wnon-virtual-dtor -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wunused-result -Winit-self -Wno-strict-aliasing -Wcast-align -Wcast-qual -Wuninitialized -Wmissing-declarations -Wnon-virtual-dtor -Werror -Wno-c++17-extensions -Wno-misleading-indentation")
 
 set(default_build_type "Release")
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

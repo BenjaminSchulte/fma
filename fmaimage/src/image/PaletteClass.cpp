@@ -21,6 +21,10 @@ using namespace FMA::interpret;
 using namespace FMA::image;
 using namespace FMA::core;
 
+namespace {
+  PalettePtr emptyPalette;
+}
+
 namespace FMA {
 namespace types {
   template<> const char *getInternalObjectName<PalettePtr>() { return "fmaImagePalette"; }
@@ -210,7 +214,7 @@ const PalettePtr &PaletteClass::palette(Project *project, const types::TypePtr &
   const TypePtr &obj = value->getMember("__palette");
   if (!obj || !obj->isInternalObjectOfType("fmaImagePalette")) {
     project->log().error() << "Unable to access palette";
-    return NULL;
+    return emptyPalette;
   }
 
   return std::dynamic_pointer_cast<InternalPaletteValue>(obj)->getValue();
