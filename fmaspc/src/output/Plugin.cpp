@@ -52,7 +52,7 @@ bool SpcOutputPlugin::generateOutputFile(const DynamicBufferPtr &buffer, OutputA
 bool SpcOutputPlugin::generate(OutputAdapter *adapter) {
   project->log().info() << "Building SPC ROM output binary.";
 
-  DynamicBufferPtr buffer(new DynamicBuffer());
+  DynamicBufferPtr buffer(new FMA::output::DynamicBuffer());
   writeByteCode(buffer, adapter);
   
   return generateOutputFile(buffer, adapter);

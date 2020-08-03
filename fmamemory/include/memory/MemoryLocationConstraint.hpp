@@ -62,6 +62,8 @@ public:
   void applyMemoryShadows(class MemoryMap *, class MemoryLocationList &) const;
   void applySingleBankMemoryShadow(MemoryBankIndex index, class MemoryMap *map, class MemoryLocationList &newList);
 
+  bool serialize(FMA::output::DynamicBuffer &) const;
+
 protected:
   std::vector<MemoryBankIndex> _banks;
   std::vector<MemoryBankSize> _addresses;

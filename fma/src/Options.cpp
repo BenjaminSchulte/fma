@@ -16,6 +16,7 @@ bool Options::parse(int argc, char **argv) {
   desc.add_options()
     ("help,h", "shows this help")
     ("language,l", po::value<std::string>(), "the assembler language to use")
+    ("include-symbol,S", po::value<std::vector<std::string>>(), "add symbol files")
     ("input-files", po::value<std::vector<std::string>>(), "the input files")
     ("cwd", po::value<std::string>(), "change the current working directory")
     ("include-dir,I", po::value<std::vector<std::string>>(), "add include directories")

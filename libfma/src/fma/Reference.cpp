@@ -37,3 +37,4 @@ const char *CodeReference::asString() {
   cachedName = strdup(os.str().c_str());
   return cachedName;
 }
+

@@ -64,6 +64,9 @@ public:
   inline void setPlacement(const plugin::MemoryBlockPlacement *_placement) { placement = _placement; }
   inline const plugin::MemoryBlockPlacement *getPlacement() const { return placement; }
 
+  inline void addSymbol(const LinkerBlockSymbol &symbol) { symbols.push_back(symbol); }
+  inline void addReference(const LinkerBlockReference &reference) { references.push_back(reference); }
+
 protected:
   void allocate(uint32_t size);
 

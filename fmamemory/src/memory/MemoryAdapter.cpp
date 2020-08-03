@@ -226,7 +226,10 @@ const plugin::MemoryBlockPlacement *MemoryAdapter::requireStaticBlockPlacement(L
   MemoryScopePtr scope = map->createMemoryScope();
   scope->setNameHint(block->getNameHint());
   scope->setSize(block->getSize());
-  scope->copyLocationFrom(*std::dynamic_pointer_cast<MemoryLocationList>(block->location()).get());
+
+  if (block->hasLocation()) {
+    scope->copyLocationFrom(*std::dynamic_pointer_cast<MemoryLocationList>(block->location()).get());
+  }
 
   return scope->placement();
 }

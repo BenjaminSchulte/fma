@@ -32,6 +32,7 @@ protected:
   void unloadPlugins();
   
   bool parseAndInterpretFiles();
+  bool linkExternObjectFiles(FMA::linker::LinkerObject *object);
   bool generateRom(FMA::linker::LinkerObject *object);
   FMA::linker::LinkerObject *buildBinaryCode();
   bool link(FMA::linker::LinkerObject *object);

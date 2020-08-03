@@ -2,7 +2,9 @@
 #include <memory/MemoryLocationList.hpp>
 #include <memory/MemoryMap.hpp>
 #include <memory/MemoryMapBank.hpp>
+#include <fma/output/DynamicBuffer.hpp>
 #include <fma/types/Object.hpp>
+#include <fma/symbol/ConstantNumber.hpp>
 #include <fma/interpret/BaseContext.hpp>
 #include <fma/interpret/ParameterList.hpp>
 #include <iostream>
@@ -345,6 +347,33 @@ void MemoryLocationConstraint::applyMemoryShadows(MemoryMap *map, MemoryLocation
     copy.anyBank();
     copy.applySingleBankMemoryShadow(bank, map, newList);
   }
+}
+
+// ----------------------------------------------------------------------------
+bool MemoryLocationConstraint::serialize(FMA::output::DynamicBuffer &buffer) const {
+  uint16_t numBanks = _banks.size();
+  buffer.write(&numBanks, 2);
+  for (const auto bank : _banks) {
+    buffer.write(&bank, sizeof(bank));
+  }
+
+  uint16_t numAddresses = _addresses.size();
+  buffer.write(&numAddresses, 2);
+  for (const auto address : _addresses) {
+    buffer.write(&address, sizeof(address));
+  }
+
+  uint16_t numRanges = _ranges.size();
+  buffer.write(&numRanges, 2);
+  for (const auto range : _ranges) {
+    buffer.write(&range.from, sizeof(range.from));
+    buffer.write(&range.to, sizeof(range.to));
+  }
+
+  FMA::symbol::ConstantNumber(_alignment).serialize(buffer);
+  FMA::symbol::ConstantNumber(_alignmentOffset).serialize(buffer);
+
+  return true;
 }
 
 // ----------------------------------------------------------------------------

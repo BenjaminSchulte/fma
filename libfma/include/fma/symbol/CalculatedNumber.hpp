@@ -32,6 +32,8 @@ public:
 
   virtual uint64_t resolve(const plugin::MemorySymbolMap *map, bool &valid) const;
 
+  bool serialize(FMA::output::DynamicBuffer &) const override;
+
 protected:
   ReferencePtr left;
   Operand op;

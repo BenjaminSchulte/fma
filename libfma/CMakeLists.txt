@@ -103,12 +103,15 @@ set(LIBFMA_SRC
   ./src/fma/symbol/ConstantNumber.cpp
   ./src/fma/symbol/SignedAssertRangeReference.cpp
   ./src/fma/symbol/SymbolReference.cpp
+  ./src/fma/symbol/Reference.cpp
   ./src/fma/symbol/CalculatedNumber.cpp
   ./src/fma/Project.cpp
   ./src/fma/main.cpp
   ./src/fma/linker/Linker.cpp
   ./src/fma/linker/LinkerBlock.cpp
   ./src/fma/linker/LinkerObject.cpp
+  ./src/fma/linker/LinkerObjectSerializer.cpp
+  ./src/fma/linker/LinkerObjectDeserializer.cpp
   ./src/fma/Parser.cpp
   ./src/fma/instruct/DynamicBinaryData.cpp
   ./src/fma/instruct/BinaryData.cpp
@@ -208,6 +211,8 @@ set(LIBFMA_HEADERS
   ./include/fma/parser/ParserHeading.hpp
   ./include/fma/Error.hpp
   ./include/fma/linker/LinkerObject.hpp
+  ./include/fma/linker/LinkerObjectSerializer.hpp
+  ./include/fma/linker/LinkerObjectDeserializer.hpp
   ./include/fma/linker/LinkerBlock.hpp
   ./include/fma/linker/Linker.hpp
   ./include/fma/Project.hpp
@@ -289,7 +294,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(ICU_DEBUG ON)
 
-add_definitions(-DFMA_VERSION=\"1.0.0\")
+add_definitions(-DFMA_VERSION=\"1.0.1\")
 
 find_package(Boost REQUIRED COMPONENTS program_options filesystem locale thread)
 find_package(BISON REQUIRED)

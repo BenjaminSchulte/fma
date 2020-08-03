@@ -4,6 +4,7 @@
 #include <fma/output/FileOutputAdapter.hpp>
 #include <fma/interpret/Interpreter.hpp>
 #include <fma/linker/Linker.hpp>
+#include <fma/linker/LinkerObjectDeserializer.hpp>
 #include <fma/assem/BinaryCodeGenerator.hpp>
 #include <fma/Parser.hpp>
 #include <fma/FileMap.hpp>
@@ -217,6 +218,23 @@ FMA::linker::LinkerObject *Application::buildBinaryCode() {
 }
 
 // ----------------------------------------------------------------------------
+bool Application::linkExternObjectFiles(FMA::linker::LinkerObject *object) {
+  if (options.args()["include-symbol"].empty()) {
+    return true;
+  }
+
+  project.log().info() << "Linking additional symbol files.";
+  for (const std::string &file : options.args()["include-symbol"].as<std::vector<std::string>>()) {
+    FMA::linker::LinkerObjectDeserializer deserializer(&project.log(), object);
+    if (!deserializer.deserialize(file.c_str())) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// ----------------------------------------------------------------------------
 bool Application::link(FMA::linker::LinkerObject *object) {
   project.log().info() << "Linking project.";
 
@@ -262,6 +280,11 @@ int Application::runAfterInitialize() {
   if (!options.args()["no-output"].as<bool>()) {
     FMA::linker::LinkerObject *object = buildBinaryCode();
     if (!object) {
+      return 1;
+    }
+
+    if (!linkExternObjectFiles(object)) {
+      delete object;
       return 1;
     }
 

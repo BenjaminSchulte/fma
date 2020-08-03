@@ -1,4 +1,6 @@
 #include <fma/symbol/SignedAssertRangeReference.hpp>
+#include <fma/symbol/ConstantNumber.hpp>
+#include <fma/output/DynamicBuffer.hpp>
 #include <sstream>
 
 using namespace FMA::symbol;
@@ -22,4 +24,15 @@ uint64_t SignedAssertRangeReference::resolve(const plugin::MemorySymbolMap *map,
   }
 
   return number;
+}
+
+// ----------------------------------------------------------------------------
+bool SignedAssertRangeReference::serialize(FMA::output::DynamicBuffer &buffer) const {
+  uint16_t id = (uint16_t)SerializeReferenceId::SIGNED_ASSET_RANGE_REFERENCE;
+  buffer.write(&id, 2);
+
+  ConstantNumber(min).serialize(buffer);
+  ConstantNumber(max).serialize(buffer);
+
+  return true;
 }

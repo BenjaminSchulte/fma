@@ -17,6 +17,10 @@ public:
   virtual bool isSymbolReference() const { return true; }
 
   virtual uint64_t resolve(const plugin::MemorySymbolMap *map, bool &valid) const;
+
+  bool serialize(FMA::output::DynamicBuffer &) const override;
+
+  static std::shared_ptr<SymbolReference> deserialize(Log *, FMA::output::DynamicBuffer &);
   
 protected:
   std::string name;

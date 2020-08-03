@@ -7,6 +7,9 @@
 
 namespace FMA {
 class Project;
+namespace output {
+  class DynamicBuffer;
+}
 namespace linker {
   class LinkerBlock;
 }
@@ -72,6 +75,8 @@ public:
   virtual void overrideAllow(const interpret::ContextPtr &, const interpret::GroupedParameterList &) = 0;
   virtual void allow(const interpret::ContextPtr &, const interpret::GroupedParameterList &) = 0;
   virtual void deny(const interpret::ContextPtr &, const interpret::GroupedParameterList &) = 0;
+
+  virtual bool serialize(output::DynamicBuffer &) const = 0;
 };
 
 typedef std::shared_ptr<MemoryLocation> MemoryLocationPtr;

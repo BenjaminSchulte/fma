@@ -1,5 +1,6 @@
 #include <memory/MemoryLocationList.hpp>
 #include <memory/MemoryLocationConstraint.hpp>
+#include <fma/output/DynamicBuffer.hpp>
 #include <fma/interpret/BaseContext.hpp>
 #include <fma/interpret/ParameterList.hpp>
 #include <iostream>
@@ -128,4 +129,28 @@ void MemoryLocationList::dump() const {
   for (auto &deny : denied) {
     std::cout << "-- " << deny.asString() << std::endl;
   }
+}
+
+// ----------------------------------------------------------------------------
+bool MemoryLocationList::serialize(FMA::output::DynamicBuffer &buffer) const {
+  uint16_t identifier = 0xF8AE;
+  buffer.write(&identifier, 2);
+
+  uint16_t numAllowed = allowed.size();
+  buffer.write(&numAllowed, 2);
+  for (const MemoryLocationConstraint &c : allowed) {
+    if (!c.serialize(buffer)) {
+      return false;
+    }
+  }
+
+  uint16_t numDenied = denied.size();
+  buffer.write(&numDenied, 2);
+  for (const MemoryLocationConstraint &c : denied) {
+    if (!c.serialize(buffer)) {
+      return false;
+    }
+  }
+
+  return true;
 }

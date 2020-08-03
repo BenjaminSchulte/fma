@@ -19,10 +19,15 @@ public:
   void seek(uint32_t offset);
   inline uint32_t tell() const { return offset; }
   void write(const void *data, uint32_t size);
+  void writeString(const std::string &);
   uint32_t read(void *data, uint32_t size);
   uint32_t read(uint32_t offset, void *data, uint32_t size);
   void write(const DynamicBufferPtr &buffer);
   void forceSize(uint32_t size);
+
+  uint64_t readUnsigned(uint8_t size);
+  int64_t readSigned(uint8_t size);
+  std::string readString();
 
   inline void *getData() const { return data; }
   inline uint32_t getSize() const { return size; }

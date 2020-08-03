@@ -31,6 +31,7 @@ public:
   MemoryLocationConstraints merge(const MemoryLocationConstraints &left, const MemoryLocationConstraints &right) const;
 
   void dump() const;
+  bool serialize(FMA::output::DynamicBuffer &) const override;
 
 protected:
   MemoryLocationConstraints allowed;

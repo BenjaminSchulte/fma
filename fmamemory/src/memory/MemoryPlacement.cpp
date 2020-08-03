@@ -1,5 +1,6 @@
 #include <memory/MemoryPlacement.hpp>
 #include <memory/MemoryMap.hpp>
+#include <fma/output/DynamicBuffer.hpp>
 #include <iostream>
 
 using namespace FMA::memory;

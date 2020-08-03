@@ -122,7 +122,7 @@ void OutputPlugin::calculateChecksum(const DynamicBufferPtr &buffer, OutputAdapt
 bool OutputPlugin::generate(OutputAdapter *adapter) {
   project->log().info() << "Building SNES ROM output binary.";
 
-  DynamicBufferPtr buffer(new DynamicBuffer());
+  DynamicBufferPtr buffer(new FMA::output::DynamicBuffer());
   writeByteCode(buffer, adapter);
   setMinimumBufferSize(buffer, adapter);
   calculateChecksum(buffer, adapter);

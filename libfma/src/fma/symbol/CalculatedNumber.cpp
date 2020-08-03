@@ -1,4 +1,5 @@
 #include <fma/symbol/CalculatedNumber.hpp>
+#include <fma/output/DynamicBuffer.hpp>
 #include <sstream>
 
 using namespace FMA::symbol;
@@ -62,4 +63,21 @@ uint64_t CalculatedNumber::resolve(const plugin::MemorySymbolMap *map, bool &val
   }
 
   return asConstant(leftValue, rightValue);
+}
+
+// ----------------------------------------------------------------------------
+bool CalculatedNumber::serialize(FMA::output::DynamicBuffer &buffer) const {
+  uint16_t id = (uint16_t)SerializeReferenceId::CALCULATE_REFERENCE;
+  uint8_t opId = op;
+
+  buffer.write(&id, 2);
+  buffer.write(&opId, 1);
+
+  if (!left->serialize(buffer)
+    || !right->serialize(buffer)
+  ) {
+    return false;
+  }
+
+  return true;
 }

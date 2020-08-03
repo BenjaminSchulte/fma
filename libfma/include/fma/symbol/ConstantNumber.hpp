@@ -16,6 +16,8 @@ public:
   virtual uint64_t asConstant() const { return number; }
 
   virtual uint64_t resolve(const plugin::MemorySymbolMap *map, bool &valid) const;
+
+  bool serialize(FMA::output::DynamicBuffer &) const override;
   
 protected:
   uint64_t number;

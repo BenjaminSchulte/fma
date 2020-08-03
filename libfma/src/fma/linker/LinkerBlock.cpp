@@ -37,6 +37,10 @@ void LinkerBlock::allocate(uint32_t _size) {
 
 // ----------------------------------------------------------------------------
 void LinkerBlock::write(const void *_data, uint32_t _size) {
+  if (!_size) {
+    return;
+  }
+
   allocate(_size);
 
   memcpy((char*)data + size, _data, _size);

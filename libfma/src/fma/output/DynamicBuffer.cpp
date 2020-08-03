@@ -44,11 +44,7 @@ void DynamicBuffer::allocate(uint32_t _size) {
 
   memorySize = newSize + 256;
 
-  void *newData = malloc(memorySize);
-  memcpy((char*)newData, data, size);
-  memset((char*)newData + size, 0, memorySize - size);
-  free(data);
-  data = newData;
+  data = realloc(data, memorySize);
   size = newSize > size ? newSize : size;
 }
 
@@ -78,8 +74,11 @@ uint32_t DynamicBuffer::read(uint32_t _offset, void *_data, uint32_t _size) {
 
 // ----------------------------------------------------------------------------
 void DynamicBuffer::write(const void *_data, uint32_t _size) {
-  allocate(_size);
+  if (!_size) {
+    return;
+  }
 
+  allocate(_size);
   memcpy((char*)data + offset, _data, _size);
   offset += _size;
 }
@@ -87,4 +86,40 @@ void DynamicBuffer::write(const void *_data, uint32_t _size) {
 // ----------------------------------------------------------------------------
 void DynamicBuffer::write(const DynamicBufferPtr &buffer) {
   write(buffer->getData(), buffer->getSize());
+}
+
+// ----------------------------------------------------------------------------
+void DynamicBuffer::writeString(const std::string &str) {
+  uint16_t strSize = str.size();
+  write(&strSize, 2);
+  write(str.c_str(), strSize);
+}
+
+// ----------------------------------------------------------------------------
+uint64_t DynamicBuffer::readUnsigned(uint8_t size) {
+  uint64_t number = 0;
+  read(&number, size);
+  return number;
+}
+
+// ----------------------------------------------------------------------------
+int64_t DynamicBuffer::readSigned(uint8_t size) {
+  int64_t number = 0;
+  read(&number, size);
+  return number;
+}
+
+// ----------------------------------------------------------------------------
+std::string DynamicBuffer::readString() {
+  uint16_t size = readUnsigned(2);
+  char *buffer = (char*)malloc(size + 1);
+  buffer[size] = 0;
+  if (read(buffer, size) < size) {
+    free(buffer);
+    return "";
+  }
+
+  std::string result(buffer);
+  free(buffer);
+  return result;
 }

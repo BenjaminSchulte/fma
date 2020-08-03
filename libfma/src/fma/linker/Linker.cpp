@@ -29,7 +29,8 @@ bool Linker::link() {
   
   project->log().info() << "Linking ROM.";
   for (auto &block : object->getBlocks()) {
-    block->setPlacement(project->getMemoryAdapter()->requireStaticBlockPlacement(block));
+    auto *placement = project->getMemoryAdapter()->requireStaticBlockPlacement(block);
+    block->setPlacement(placement);
   }
 
   if (!project->getMemoryAdapter()->placeStaticBlocks()) {
