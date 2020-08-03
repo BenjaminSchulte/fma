@@ -30,7 +30,7 @@ template<class Node> Node *_WITHLOC(unsigned int line, unsigned int col, Node *n
 
 %code {
   int yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *error);
-  int yylex(YYSTYPE * yylval_param,YYLTYPE * yylloc_param, yyscan_t scanner);
+  extern "C" int yylex(YYSTYPE * yylval_param,YYLTYPE * yylloc_param, yyscan_t scanner);
 }
 
 %define parse.error verbose

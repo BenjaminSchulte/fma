@@ -14,6 +14,10 @@ using namespace FMA::interpret;
 using namespace FMA::image;
 using namespace FMA::core;
 
+namespace {
+  CanvasViewPtr emptyCanvasView;
+}
+
 namespace FMA {
 namespace types {
   template<> const char *getInternalObjectName<CanvasViewPtr>() { return "fmaImageCanvasView"; }
@@ -93,7 +97,7 @@ const CanvasViewPtr &CanvasViewClass::canvasView(Project *project, const types::
   const TypePtr &obj = value->getMember("__canvas_view");
   if (!obj || !obj->isInternalObjectOfType("fmaImageCanvasView")) {
     project->log().error() << "Unable to access canvas view";
-    return NULL;
+    return emptyCanvasView;
   }
 
   return std::dynamic_pointer_cast<InternalCanvasViewValue>(obj)->getValue();

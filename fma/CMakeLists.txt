@@ -15,4 +15,4 @@ if(WITH_FMAIMAGE)
 endif()
 
 target_link_libraries(fma libfma)
-install(TARGETS fma DESTINATION bin)
+install(TARGETS fma RUNTIME DESTINATION bin)

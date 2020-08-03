@@ -2,6 +2,7 @@
 #include <image/Canvas.hpp>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <iostream>
 #include <png.h>
 
@@ -266,9 +267,9 @@ void Canvas::flipX() {
       
     case 4:
       while (right > left) {
-        *((uint32_t*)data) = *((uint32_t*)left);
-        *((uint32_t*)left) = *((uint32_t*)right);
-        *((uint32_t*)right) = *((uint32_t*)data);
+        *(reinterpret_cast<uint32_t*>(data)) = *(reinterpret_cast<uint32_t*>(left));
+        *(reinterpret_cast<uint32_t*>(left)) = *(reinterpret_cast<uint32_t*>(right));
+        *(reinterpret_cast<uint32_t*>(right)) = *(reinterpret_cast<uint32_t*>(data));
         right -= 4;
         left += 4;
       }
@@ -333,7 +334,7 @@ bool Canvas::loadFromPng(const char *fileName) {
     return false;
   }
 
-  if (setjmp(pngPtr->jmpbuf))   {
+  if (setjmp(png_jmpbuf(pngPtr)))   {
     std::cerr << "Error during input IO" << std::endl;
     png_destroy_read_struct(&pngPtr, &infoPtr, NULL);
     return false;
@@ -350,7 +351,7 @@ bool Canvas::loadFromPng(const char *fileName) {
 
   png_get_IHDR(pngPtr, infoPtr, &pngWidth, &pngHeight, &bitDepth, &colorType, NULL, NULL, NULL);
 
-  if (setjmp(pngPtr->jmpbuf)) {
+  if (setjmp(png_jmpbuf(pngPtr))) {
     std::cerr << "Error reading image data" << std::endl;
     png_destroy_read_struct(&pngPtr, &infoPtr, NULL);
     fclose(fh);

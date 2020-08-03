@@ -7,7 +7,7 @@
 
 namespace FMA {
 namespace ast{
-struct Parameter;
+class Parameter;
 typedef std::shared_ptr<Parameter> ParameterPtr;
 }
 namespace interpret {
