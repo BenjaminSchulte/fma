@@ -18,12 +18,15 @@ struct CodeReference {
   {}
   
   CodeReference(const CodeReference &copy);
+  CodeReference &operator=(const CodeReference &copy);
 
   CodeReference(const FilePtr &file, unsigned int line, unsigned int col)
     : file(file), line(line), col(col), cachedName(NULL)
   {}
 
   ~CodeReference();
+
+  
 
   inline bool isValid() const {
     return line > 0 || col > 0;

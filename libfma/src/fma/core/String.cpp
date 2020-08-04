@@ -130,7 +130,7 @@ ResultPtr StringClass::to_n(const ContextPtr &context, const GroupedParameterLis
     } else {
       return NumberClass::createInstance(context, std::stol(old, NULL, base));
     }
-  } catch (std::invalid_argument) {
+  } catch (const std::invalid_argument &) {
     context->log().error() << "Could not convert string '" << old << "' to number";
   }
 

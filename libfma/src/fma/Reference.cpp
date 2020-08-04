@@ -10,8 +10,20 @@ CodeReference::CodeReference(const CodeReference &copy) {
   file = copy.file;
   line = copy.line;
   col = copy.col;
-
   cachedName = NULL;
+}
+
+// ----------------------------------------------------------------------------
+CodeReference &CodeReference::operator=(const CodeReference &copy) {
+  file = copy.file;
+  line = copy.line;
+  col = copy.col;
+
+  if (cachedName) {
+    free(cachedName);
+  }
+  cachedName = NULL;
+  return *this;
 }
 
 // ----------------------------------------------------------------------------

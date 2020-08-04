@@ -58,7 +58,7 @@ public:
 
   inline void noEarlyReturn() { type = STANDARD; }
 
-  inline void resolvedAt(const CodeReference &ref) { location=ref; }
+  inline void resolvedAt(const CodeReference &ref) { location=CodeReference(ref); }
 
   void pretendExecuted();
   void requireExecuted();
