@@ -60,11 +60,11 @@ template<class Node> Node *_WITHLOC(unsigned int line, unsigned int col, Node *n
 %token T_ASSIGN_LOG_AND T_NOT_EQUALITY_OP T_LESSTHAN_EQUAL T_GREATERTHAL_EQUAL T_LESSTHAN
 %token T_GREATERTHAN T_MACRO T_COL T_DO T_RETURN T_LRB_CALL T_UNARY T_KWARGS T_DECORATOR
 %token T_DEF T_CASE T_WHEN T_NIL T_DOTDOT T_LCB T_RCB T_DATABLOCK T_CLASS T_WITHCONTEXT
-%token T_COLCOLROOT T_SELF T_RAISE T_CLASS_ACCESSOR T_EXPORT T_IMPORT
+%token T_COLCOLROOT T_SELF T_RAISE T_CLASS_ACCESSOR T_EXPORT T_IMPORT T_EXTERN
 
 %locations
 
-%type <statement> RootStatementList RootStatement ModuleDeclarationStatement ExpressionStatement RequireStatement ImportStatement
+%type <statement> RootStatementList RootStatement ModuleDeclarationStatement ExpressionStatement RequireStatement ImportStatement ExternStatement
 %type <statement> ModuleBody PostfixStatement Statement PostfixStatementItem IfStatement ElseStatement UnlessStatement
 %type <statement> MacroDeclarationStatement MacroBody ReturnStatement FunctionDeclarationStatement CaseStatement CaseItemStatements
 %type <statement> DataBlockDeclarationStatement ClassDeclarationStatement LabelStatement RaiseStatement InlineMacroBody
@@ -144,8 +144,13 @@ RootStatement:
   | DecoratorDeclarationStatement { $$ = $1; }
   | DataBlockDeclarationStatement { $$ = $1; }
   | LabelStatement { $$ = $1; }
+  | ExternStatement { $$ = $1; }
   | ImportStatement { $$ = $1; }
   | Statement { $$ = $1; }
+  ;
+
+ExternStatement:
+    T_EXTERN Identifier { $$ = WL(new ExternStatement($2)); }
   ;
 
 ImportStatement:

@@ -65,6 +65,6 @@ uint64_t MemoryClassMemberItem::size() {
   if (!initialized) {
     initialize();
   }
-
+  
   return itemSize * numItems;
 }

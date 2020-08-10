@@ -61,6 +61,7 @@ ALL .
 (module) { return T_MODULE; }
 (require) { return T_REQUIRE; }
 (import) { return T_IMPORT; }
+(extern) { return T_EXTERN; }
 (end) { return T_END; }
 (if) { yy_push_state(UNARYTEST, yyscanner); return T_IF; }
 (else) { return T_ELSE; }

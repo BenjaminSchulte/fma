@@ -86,6 +86,7 @@ set(LIBFMA_SRC
   ./src/fma/ast/ExpressionStatement.cpp
   ./src/fma/ast/IfStatement.cpp
   ./src/fma/ast/OperationExpression.cpp
+  ./src/fma/ast/ExternStatement.cpp
   ./src/fma/ast/ClassDeclarationStatement.cpp
   ./src/fma/ast/LabelStatement.cpp
   ./src/fma/ast/MapExpression.cpp
