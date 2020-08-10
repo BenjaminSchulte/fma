@@ -25,7 +25,8 @@ public:
   MemoryClassMemberItem* getMember(const std::string &);
   types::TypePtr getTypeHintOf(const std::string &);
   static interpret::ResultPtr size(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
-  static interpret::ResultPtr offset_of(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr offset_of_optional(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr offset_of_force(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
 
   void declare(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter, const std::string &name);
 

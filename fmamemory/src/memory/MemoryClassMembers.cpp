@@ -57,7 +57,8 @@ MemoryClassMembersPtr MemoryClassMembers::getClassMembers(const ClassPtr &klass)
   klass->setMember("@__memory_class_members", member);
 
   klass->setMember("size", TypePtr(new InternalFunctionValue("size", MemoryClassMembers::size)));
-  klass->setMember("offset_of", TypePtr(new InternalFunctionValue("offset_of", MemoryClassMembers::offset_of)));
+  klass->setMember("offset_of?", TypePtr(new InternalFunctionValue("offset_of?", MemoryClassMembers::offset_of_optional)));
+  klass->setMember("offset_of", TypePtr(new InternalFunctionValue("offset_of", MemoryClassMembers::offset_of_force)));
 
   return dynamic_cast<InternalMemoryClassMembersValue*>(member.get())->getValue();
 }
@@ -115,7 +116,7 @@ ResultPtr MemoryClassMembers::size(const ContextPtr &context, const GroupedParam
 }
 
 // ----------------------------------------------------------------------------
-ResultPtr MemoryClassMembers::offset_of(const ContextPtr &context, const GroupedParameterList &params) {
+ResultPtr MemoryClassMembers::offset_of_optional(const ContextPtr &context, const GroupedParameterList &params) {
   const TypeList &args = params.only_args();
   if (!args.size()) {
     return ResultPtr(new Result());
@@ -123,6 +124,23 @@ ResultPtr MemoryClassMembers::offset_of(const ContextPtr &context, const Grouped
 
   MemoryClassMembersPtr members = getClassMembers(context->self()->asClass());
   std::string name = args.front()->convertToString(context);
+
+  return NumberClass::createInstance(context, members->getOffsetOf(name));
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr MemoryClassMembers::offset_of_force(const ContextPtr &context, const GroupedParameterList &params) {
+  const TypeList &args = params.only_args();
+  if (!args.size()) {
+    return ResultPtr(new Result());
+  }
+
+  MemoryClassMembersPtr members = getClassMembers(context->self()->asClass());
+  std::string name = args.front()->convertToString(context);
+  if (members->getMember(name) == NULL) {
+    context->log().error() << "Member '" << name << "' does not exist on " << context->self()->asClass()->getName();
+    return ResultPtr(new Result());
+  }
 
   return NumberClass::createInstance(context, members->getOffsetOf(name));
 }

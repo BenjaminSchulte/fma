@@ -104,14 +104,9 @@ ResultPtr TypedNumberClass::childOpCall(const std::string &op, const ContextPtr 
   }
 
   GroupedParameterList parameters;
-std::cout << "DIRECT MEMBER IS " << context->self()->getDirectMember("number")->convertToNumber(context) << std::endl;
-std::cout << "+++ OPCODE " << op << std::endl;
-
   auto result(context->self()->getDirectMember("number")->callDirect(op, context, params)->get());
-  std::cout << "+++ RESULT " << result->convertToNumber(context) << std::endl;
   parameters.push_back(result);
   parameters.push_back(context->self()->getDirectMember("type"));
-  std::cout << "+++ TYPE " << context->self()->getDirectMember("type")->asString() << std::endl;
   return Result::executed(context, number->createInstance(context, parameters));
 }
 
