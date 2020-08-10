@@ -30,9 +30,89 @@ ClassPtr TypedNumberClass::create(const RootModulePtr &root, const ClassPtr &Cla
 
   ClassPrototypePtr proto(klass->getPrototype());
   proto->setMember("initialize", TypePtr(new InternalFunctionValue("initialize", TypedNumberClass::initialize)));
+  proto->setMember("+", TypePtr(new InternalFunctionValue("+", TypedNumberClass::op_add)));
+  proto->setMember("-", TypePtr(new InternalFunctionValue("-", TypedNumberClass::op_sub)));
+  proto->setMember("/", TypePtr(new InternalFunctionValue("/", TypedNumberClass::op_div)));
+  proto->setMember("*", TypePtr(new InternalFunctionValue("*", TypedNumberClass::op_mul)));
+  proto->setMember("%", TypePtr(new InternalFunctionValue("%", TypedNumberClass::op_rem)));
+  proto->setMember("&", TypePtr(new InternalFunctionValue("&", TypedNumberClass::op_and)));
+  proto->setMember("|", TypePtr(new InternalFunctionValue("|", TypedNumberClass::op_or)));
+  proto->setMember("^", TypePtr(new InternalFunctionValue("^", TypedNumberClass::op_xor)));
+  proto->setMember("<<", TypePtr(new InternalFunctionValue("<<", TypedNumberClass::op_lshift)));
+  proto->setMember(">>", TypePtr(new InternalFunctionValue(">>", TypedNumberClass::op_rshift)));
 
   root->setMember("TypedNumber", klass);
   return klass;
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_add(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall("+", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_sub(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall("-", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_div(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall("/", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_mul(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall("*", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_rem(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall("%", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_and(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall("&", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_or(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall("|", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_xor(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall("^", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_lshift(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall("<<", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::op_rshift(const ContextPtr &context, const GroupedParameterList &parameter) {
+  return childOpCall(">>", context, parameter);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr TypedNumberClass::childOpCall(const std::string &op, const ContextPtr &context, const GroupedParameterList &params) {
+  // Resolve a 
+  ClassPtr number = context->getRootLevelContext()->resolve("TypedNumber")->asClass();
+  if (!number) {
+    return ResultPtr(new Result());
+  }
+
+  GroupedParameterList parameters;
+std::cout << "DIRECT MEMBER IS " << context->self()->getDirectMember("number")->convertToNumber(context) << std::endl;
+std::cout << "+++ OPCODE " << op << std::endl;
+
+  auto result(context->self()->getDirectMember("number")->callDirect(op, context, params)->get());
+  std::cout << "+++ RESULT " << result->convertToNumber(context) << std::endl;
+  parameters.push_back(result);
+  parameters.push_back(context->self()->getDirectMember("type"));
+  std::cout << "+++ TYPE " << context->self()->getDirectMember("type")->asString() << std::endl;
+  return Result::executed(context, number->createInstance(context, parameters));
 }
 
 // ----------------------------------------------------------------------------
