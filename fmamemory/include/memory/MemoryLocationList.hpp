@@ -32,6 +32,7 @@ public:
 
   void dump() const;
   bool serialize(FMA::output::DynamicBuffer &) const override;
+  bool deserialize(Log *log, FMA::output::DynamicBuffer &);
 
 protected:
   MemoryLocationConstraints allowed;

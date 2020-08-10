@@ -1,5 +1,6 @@
 #include <fma/symbol/Reference.hpp>
 #include <fma/symbol/SymbolReference.hpp>
+#include <fma/symbol/ConstantNumber.hpp>
 #include <fma/Log.hpp>
 #include <fma/output/DynamicBuffer.hpp>
 
@@ -13,13 +14,20 @@ ReferencePtr Reference::deserialize(Log *log, FMA::output::DynamicBuffer &buffer
   case SerializeReferenceId::SYMBOL_REFERENCE:
     return SymbolReference::deserialize(log, buffer);
 
-  case SerializeReferenceId::CALCULATE_REFERENCE:
   case SerializeReferenceId::CONST8_REFERENCE:
-  case SerializeReferenceId::CONST16_REFERENCE:
-  case SerializeReferenceId::CONST32_REFERENCE:
-  case SerializeReferenceId::CONST64_REFERENCE:
-  case SerializeReferenceId::SIGNED_ASSET_RANGE_REFERENCE:
+    return ConstantNumber::deserialize(log, buffer, 1);
 
+  case SerializeReferenceId::CONST16_REFERENCE:
+    return ConstantNumber::deserialize(log, buffer, 2);
+
+  case SerializeReferenceId::CONST32_REFERENCE:
+    return ConstantNumber::deserialize(log, buffer, 4);
+
+  case SerializeReferenceId::CONST64_REFERENCE:
+    return ConstantNumber::deserialize(log, buffer, 8);
+
+  case SerializeReferenceId::CALCULATE_REFERENCE:
+  case SerializeReferenceId::SIGNED_ASSET_RANGE_REFERENCE:
   default:
     log->error() << "Invalid reference type ID " << type;
     break;

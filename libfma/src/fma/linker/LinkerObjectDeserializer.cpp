@@ -78,8 +78,13 @@ bool LinkerObjectDeserializer::deserializeBlock(output::DynamicBuffer &buffer) c
 
   uint8_t hasLocation = buffer.readUnsigned(1);
   if (hasLocation) {
-    mLog->error() << "TODO: hasLocation";
-    return false;
+    plugin::MemoryLocationPtr location = mMemoryPlugin->deserializeLocation(mLog, buffer);
+    if (!location) {
+      mLog->error() << "Unable to deserialize memory location.";
+      return false;
+    }
+
+    block->setLocation(location);
   }
 
   uint32_t numSymbols = buffer.readUnsigned(4);

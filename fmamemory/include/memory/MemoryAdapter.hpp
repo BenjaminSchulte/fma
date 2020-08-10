@@ -24,6 +24,7 @@ public:
   const plugin::MemoryBlockList &getBlocks();
   
   symbol::SymbolReferencePtr createReference(const std::string &name);
+  plugin::MemoryLocationPtr deserializeLocation(Log *, output::DynamicBuffer &) const override;
 
   interpret::ResultPtr createScope(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   interpret::ResultPtr createDeclaration(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);

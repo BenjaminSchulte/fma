@@ -5,6 +5,10 @@
 #include <fma/interpret/ParameterList.hpp>
 #include <iostream>
 
+namespace {
+  const uint16_t SERIALIZE_IDENTIFIER = 0xF8AE;
+}
+
 using namespace FMA::memory;
 using namespace FMA::interpret;
 
@@ -133,8 +137,7 @@ void MemoryLocationList::dump() const {
 
 // ----------------------------------------------------------------------------
 bool MemoryLocationList::serialize(FMA::output::DynamicBuffer &buffer) const {
-  uint16_t identifier = 0xF8AE;
-  buffer.write(&identifier, 2);
+  buffer.write(&SERIALIZE_IDENTIFIER, sizeof(SERIALIZE_IDENTIFIER));
 
   uint16_t numAllowed = allowed.size();
   buffer.write(&numAllowed, 2);
@@ -150,6 +153,42 @@ bool MemoryLocationList::serialize(FMA::output::DynamicBuffer &buffer) const {
     if (!c.serialize(buffer)) {
       return false;
     }
+  }
+
+  return true;
+}
+
+// ----------------------------------------------------------------------------
+bool MemoryLocationList::deserialize(Log *log, FMA::output::DynamicBuffer &buffer) {
+  uint16_t header;
+  if (!buffer.read(&header, sizeof(header)) || header != SERIALIZE_IDENTIFIER) {
+    log->error() << "Invalid header for serialized memory location.";
+    return false;
+  }
+
+  uint16_t numAllowed;
+  if (!buffer.read(&numAllowed, sizeof(numAllowed))) {
+    return false;
+  }
+  for (uint16_t i=0; i<numAllowed; i++) {
+    MemoryLocationConstraint c(true);
+    if (!c.deserialize(log, buffer)) {
+      return false;
+    }
+    add(c);
+  }
+  
+  uint16_t numDenied;
+  if (!buffer.read(&numDenied, sizeof(numDenied))) {
+    return false;
+  }
+  for (uint16_t i=0; i<numDenied; i++) {
+    MemoryLocationConstraint c(false);
+    if (!c.deserialize(log, buffer)) {
+      return false;
+    }
+    add(c);
+    return false;
   }
 
   return true;

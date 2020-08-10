@@ -240,3 +240,15 @@ uint64_t MemoryAdapter::translateAddress(uint64_t address) {
 }
 
 // ----------------------------------------------------------------------------
+plugin::MemoryLocationPtr MemoryAdapter::deserializeLocation(Log *log, output::DynamicBuffer &buffer) const {
+  MemoryLocationList *record = new MemoryLocationList();
+  plugin::MemoryLocationPtr list(record);
+
+  if (!record->deserialize(log, buffer)) {
+    return plugin::MemoryLocationPtr();
+  }
+
+  return list;
+}
+
+// ----------------------------------------------------------------------------

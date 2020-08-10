@@ -43,3 +43,10 @@ bool ConstantNumber::serialize(FMA::output::DynamicBuffer &buffer) const {
 
   return true;
 }
+
+// ----------------------------------------------------------------------------
+ReferencePtr ConstantNumber::deserialize(Log *, FMA::output::DynamicBuffer &buffer, uint8_t byteSize) {
+  uint64_t number = 0;
+  buffer.read(&number, byteSize);
+  return ReferencePtr(new ConstantNumber(number));
+}

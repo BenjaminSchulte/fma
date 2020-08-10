@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../output/DynamicBuffer.hpp"
+#include "../plugin/MemoryPluginAdapter.hpp"
 
 namespace FMA {
 class Log;  
@@ -11,9 +12,11 @@ class LinkerBlock;
 class LinkerObjectDeserializer {
 public:
   //! Constructor
-  LinkerObjectDeserializer(Log *log, LinkerObject *object)
+  LinkerObjectDeserializer(Log *log, plugin::MemoryPluginAdapter *plugin, LinkerObject *object)
     : mLog(log)
-    , mObject(object) {}
+    , mMemoryPlugin(plugin)
+    , mObject(object)
+  {}
 
   //! Deserializes the object
   bool deserialize(output::DynamicBuffer &buffer) const;
@@ -30,6 +33,9 @@ private:
 
   //! The log
   Log *mLog;
+
+  //! The memory plugin
+  plugin::MemoryPluginAdapter *mMemoryPlugin;
 
   //! The linker object to serialize
   LinkerObject *mObject;

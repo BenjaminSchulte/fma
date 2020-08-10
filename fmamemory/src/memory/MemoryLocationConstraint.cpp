@@ -377,6 +377,39 @@ bool MemoryLocationConstraint::serialize(FMA::output::DynamicBuffer &buffer) con
 }
 
 // ----------------------------------------------------------------------------
+bool MemoryLocationConstraint::deserialize(Log *log, FMA::output::DynamicBuffer &buffer) {
+  uint16_t numBanks;
+  if (!buffer.read(&numBanks, 2)) { return false; }
+  for (uint16_t i=0; i<numBanks; i++) {
+    MemoryBankIndex addBank;
+    if (!buffer.read(&addBank, sizeof(addBank))) { return false; }
+    bank(addBank);
+  }
+
+  uint16_t numAddresses;
+  if (!buffer.read(&numAddresses, 2)) { return false; }
+  for (uint16_t i=0; i<numAddresses; i++) {
+    MemoryBankSize addAddress;
+    if (!buffer.read(&addAddress, sizeof(addAddress))) { return false; }
+    address(addAddress);
+  }
+
+  uint16_t numRanges;
+  if (!buffer.read(&numRanges, 2)) { return false; }
+  for (uint16_t i=0; i<numRanges; i++) {
+    MemoryLocationRange addRange;
+    if (!buffer.read(&addRange.from, sizeof(addRange.from))) { return false; }
+    if (!buffer.read(&addRange.to, sizeof(addRange.to))) { return false; }
+    range(addRange.from, addRange.to);
+  }
+
+  _alignment = FMA::symbol::Reference::deserialize(log, buffer)->asConstant();
+  _alignmentOffset = FMA::symbol::Reference::deserialize(log, buffer)->asConstant();
+
+  return true;
+}
+
+// ----------------------------------------------------------------------------
 std::string MemoryLocationConstraint::asString() const {
   std::ostringstream os;
   os << "{";

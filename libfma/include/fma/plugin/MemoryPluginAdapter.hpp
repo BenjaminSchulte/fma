@@ -6,6 +6,7 @@
 #include "../types/InternalValue.hpp"
 
 namespace FMA {
+class Log;
 class Project;
 namespace output {
   class DynamicBuffer;
@@ -132,6 +133,10 @@ public:
 
   virtual MemoryBlock *allocateBlock(MemoryBlock::Usage usage, const std::string &name) = 0;
   virtual const MemoryBlockList &getBlocks() = 0;  
+
+  virtual MemoryLocationPtr deserializeLocation(Log *, output::DynamicBuffer &) const {
+    return MemoryLocationPtr();
+  }
 
   virtual symbol::SymbolReferencePtr createReference(const std::string &name) = 0;
 

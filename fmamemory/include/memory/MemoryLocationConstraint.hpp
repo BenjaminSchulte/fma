@@ -63,6 +63,7 @@ public:
   void applySingleBankMemoryShadow(MemoryBankIndex index, class MemoryMap *map, class MemoryLocationList &newList);
 
   bool serialize(FMA::output::DynamicBuffer &) const;
+  bool deserialize(Log *log, FMA::output::DynamicBuffer &);
 
 protected:
   std::vector<MemoryBankIndex> _banks;

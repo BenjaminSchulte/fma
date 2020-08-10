@@ -225,7 +225,7 @@ bool Application::linkExternObjectFiles(FMA::linker::LinkerObject *object) {
 
   project.log().info() << "Linking additional symbol files.";
   for (const std::string &file : options.args()["include-symbol"].as<std::vector<std::string>>()) {
-    FMA::linker::LinkerObjectDeserializer deserializer(&project.log(), object);
+    FMA::linker::LinkerObjectDeserializer deserializer(&project.log(), project.getMemoryAdapter(), object);
     if (!deserializer.deserialize(file.c_str())) {
       return false;
     }
