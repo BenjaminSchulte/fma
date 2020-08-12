@@ -14,6 +14,6 @@ target_include_directories(fmamemory PRIVATE ../libfma/include)
 
 configure_file(fmamemory.pc.in fmamemory.pc @ONLY)
 install(TARGETS fmamemory LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/memory DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}fma/)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/memory DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fma)
 install(FILES ${CMAKE_BINARY_DIR}/fmamemory/fmamemory.pc DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 
