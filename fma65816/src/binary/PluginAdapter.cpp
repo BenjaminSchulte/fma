@@ -250,7 +250,7 @@ PluginAdapter::PluginAdapter(Project *project)
   implicit  (0xDB, "STP");
 
   absolute  (0xDD, "CMP(A,[la((#+X))])");
-
+  absolute  (0xDE, "DEC([la((#+X))])");
   absolute  (0xDF, "CMP(A,[(#+X)])");
   immediate (0xE0, "CMP(X,#)");
   directPage(0xE1, "SBC(A,[la([dp((#+X))])])");
@@ -282,7 +282,7 @@ PluginAdapter::PluginAdapter(Project *project)
   implicit  (0xFB, "XCHG(E,C)");
 
   absolute  (0xFD, "SBC(A,[la((#+X))])");
-
+  absolute  (0xFE, "INC([la((#+X))])");
   absolute  (0xFF, "SBC(A,[(#+X)])");
 }
 
