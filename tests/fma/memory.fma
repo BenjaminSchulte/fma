@@ -1,0 +1,48 @@
+Map = MemoryMap.new
+scope :RAM, in: Map
+
+class ContentClass
+  declare :var1, as: :uint16
+  declare :var2, as: :uint16
+  declare :var3, as: :uint16
+end
+
+class OtherContentClass
+  declare :other1, as: :uint16
+end
+
+class NestedContentClass < ContentClass
+  declare :nested1, as: :uint16
+end
+
+class IncludedClass
+  include ContentClass
+  include OtherContentClass
+
+  declare :own1, as: :uint16
+end
+
+class ComplexIncludedClass < IncludedClass
+end
+
+Compiler.assert ContentClass.size == 6
+Compiler.assert ContentClass.offset_of(:var1) == 0
+Compiler.assert ContentClass.offset_of(:var2) == 2
+Compiler.assert ContentClass.offset_of(:var3) == 4
+
+Compiler.assert OtherContentClass.size == 2
+
+Compiler.assert NestedContentClass.size == 8
+Compiler.assert NestedContentClass.offset_of(:var2) == 2
+Compiler.assert NestedContentClass.offset_of(:nested1) == 6
+
+Compiler.assert IncludedClass.size == 10
+Compiler.assert IncludedClass.offset_of(:var2) == 2
+Compiler.assert IncludedClass.offset_of(:other1) == 6
+Compiler.assert IncludedClass.offset_of(:own1) == 8
+
+Compiler.assert ComplexIncludedClass.size == 10
+Compiler.assert ComplexIncludedClass.offset_of(:var2) == 2
+Compiler.assert ComplexIncludedClass.offset_of(:other1) == 6
+Compiler.assert ComplexIncludedClass.offset_of(:own1) == 8
+

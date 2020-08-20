@@ -88,6 +88,19 @@ protected:
   IdentifierPtr identifier;
 };
 
+class IncludeStatement : public Statement {
+public:
+  IncludeStatement(class Identifier *identifier);
+  virtual ~IncludeStatement();
+
+  virtual interpret::ResultPtr execute(const interpret::ContextPtr &context) const;
+  virtual std::string getNodeName() const { return "IncludeStatement"; }
+  std::string asString(const std::string &prefix) const;
+
+protected:
+  IdentifierPtr identifier;
+};
+
 class ExternStatement : public Statement {
 public:
   ExternStatement(class Identifier *identifier);

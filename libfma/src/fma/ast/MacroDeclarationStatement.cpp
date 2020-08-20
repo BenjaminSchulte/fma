@@ -40,23 +40,30 @@ ResultPtr MacroDeclarationStatement::execute(const ContextPtr &context) const {
     ClassPtr klass = klassPtr->getClass();
 
     if (klass) {
-      klass = klass->getParent();
+      for (const ClassPtr &parent : klass->getParents()) {
+        if (!parent->hasPrototypeMember(name)) {
+          continue;
+        }
 
-      if (klass && klass->hasPrototypeMember(name)) {
-        TypePtr superCall = klass->getPrototypeMember(name);
+        TypePtr superCall = parent->getPrototypeMember(name);
         if (superCall->isMacro()) {
           macro->setSuper(superCall->asMacro());
         }
+        break;
       }
     }
   } else if (target->isClass()) {
-    ClassPtr klass = target->asClass()->getParent();
+    for (const ClassPtr &parent : target->asClass()->getParents()) {
+      if (!parent->hasMember(name)) {
+        continue;
+      }
 
-    if (klass && klass->hasMember(name)) {
-      TypePtr superCall = klass->getMember(name);
+      TypePtr superCall = parent->getMember(name);
       if (superCall->isMacro()) {
         macro->setSuper(superCall->asMacro());
       }
+
+      break;
     }
   }
 

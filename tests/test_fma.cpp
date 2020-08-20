@@ -5,6 +5,8 @@
 #include <fma/types/RootModule.hpp>
 #include <iostream>
 
+FMA::plugin::PluginList fmamemory_fmaGetPlugins(FMA::Project *project);
+
 int main(int argc, char **argv) {
   if (argc < 2) {
     return 1;
@@ -17,6 +19,22 @@ int main(int argc, char **argv) {
   if (!plugin.initialize()) {
     project.log().error() << "Could not initialize core plugin";
     return 1;
+  }
+
+  std::shared_ptr<FMA::plugin::MemoryManagerPlugin> memoryManagerPlugin;
+  for (const auto &plugin : fmamemory_fmaGetPlugins(&project)) {
+    if (!plugin->initialize()) {
+      project.log().error() << "Unable to initialize " << plugin->getName();
+      return 1;
+    }
+
+    if (plugin->getPluginType() == FMA::plugin::TYPE_MEMORY_MANAGER) {
+      memoryManagerPlugin = std::dynamic_pointer_cast<FMA::plugin::MemoryManagerPlugin>(plugin);
+    }
+  }
+
+  if (memoryManagerPlugin) {
+    project.setMemoryAdapter(memoryManagerPlugin->createAdapter());
   }
 
   if (!parser.parseFile(argv[1])) {

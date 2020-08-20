@@ -73,6 +73,7 @@ ALL .
 (return) { yy_push_state(UNARYTEST, yyscanner); return T_RETURN; }
 (case) { return T_CASE; }
 (when) { return T_WHEN; }
+(include) { return T_INCLUDE; }
 (nil) { return T_NIL; }
 (with_context) { return T_WITHCONTEXT; }
 

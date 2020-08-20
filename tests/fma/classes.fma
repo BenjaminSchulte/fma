@@ -315,3 +315,44 @@ Compiler.assert SuperLevel3.static_level == 6
 Compiler.assert item.level1 == 6
 Compiler.assert item.level2 == 6
 Compiler.assert item.level3 == 6
+
+
+
+class BaseA
+  macro local_a
+    "LA"
+  end
+
+  macro self.global_a
+    "GA"
+  end
+
+  macro from_b
+    local_b
+  end
+end
+
+class BaseB
+  macro local_b
+    "LB"
+  end
+
+  macro self.global_b
+    "GB"
+  end
+
+  macro from_a
+    local_a
+  end
+end
+
+class MergedAB < BaseA
+  include BaseB
+end
+
+Compiler.assert MergedAB.global_a == "GA"
+Compiler.assert MergedAB.new.local_a == "LA"
+Compiler.assert MergedAB.new.from_a == "LA"
+Compiler.assert MergedAB.global_b == "GB"
+Compiler.assert MergedAB.new.local_b == "LB"
+Compiler.assert MergedAB.new.from_b == "LB"

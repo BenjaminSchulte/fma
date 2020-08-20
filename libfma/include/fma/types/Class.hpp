@@ -35,6 +35,9 @@ public:
   virtual bool hasMember(const std::string &name) const;
   virtual TypePtr getMember(const std::string &name) const;
 
+  bool hasOwnMember(const std::string &name) const;
+  TypePtr getOwnMember(const std::string &name) const;
+
   virtual bool hasPrototypeMember(const std::string &name);
   virtual TypePtr getPrototypeMember(const std::string &name);
 
@@ -42,13 +45,13 @@ public:
   bool isInstanceOf(const std::string &other) const;
 
   virtual interpret::ResultPtr callWithoutDecoratorTest(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter); 
-  inline const ClassPtr &getParent() const { return parent; };
+  inline const std::vector<ClassPtr> &getParents() const { return parents; };
 
 protected:
   std::string name;
   std::string fullName;
   mutable ClassPrototypePtr prototype;
-  ClassPtr parent;
+  std::vector<ClassPtr> parents;
 };
 
 }

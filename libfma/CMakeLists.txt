@@ -82,6 +82,7 @@ set(LIBFMA_SRC
   ./src/fma/ast/FunctionDeclarationStatement.cpp
   ./src/fma/ast/ArrayExpression.cpp
   ./src/fma/ast/Identifier.cpp
+  ./src/fma/ast/IncludeStatement.cpp
   ./src/fma/ast/DecoratorCallStatement.cpp
   ./src/fma/ast/ExpressionStatement.cpp
   ./src/fma/ast/IfStatement.cpp

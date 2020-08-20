@@ -9,6 +9,7 @@
 #include <fma/interpret/ObjectContext.hpp>
 #include <fma/interpret/Result.hpp>
 #include <fma/interpret/ParameterList.hpp>
+#include <fma/Project.hpp>
 
 #include <iostream>
 

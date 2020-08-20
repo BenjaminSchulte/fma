@@ -31,7 +31,7 @@ const ClassPrototypePtr &Class::getPrototype() {
 
 // ----------------------------------------------------------------------------
 void Class::extends(const ClassPtr &other) {
-  parent = other;
+  parents.push_back(other);
 }
 
 // ----------------------------------------------------------------------------
@@ -40,8 +40,10 @@ bool Class::isInstanceOf(const ClassPtr &other) const {
     return true;
   }
 
-  if (parent) {
-    return parent->isInstanceOf(other);
+  for (const ClassPtr &parent : parents) {
+    if (parent->isInstanceOf(other)) {
+      return true;
+    }
   }
 
   return false;
@@ -53,8 +55,10 @@ bool Class::isInstanceOf(const std::string &other) const {
     return true;
   }
 
-  if (parent) {
-    return parent->isInstanceOf(other);
+  for (const ClassPtr &parent : parents) {
+    if (parent->isInstanceOf(other)) {
+      return true;
+    }
   }
 
   return false;
@@ -66,21 +70,35 @@ bool Class::hasPrototypeMember(const std::string &name) {
     return true;
   }
 
-  if (parent) {
-    return parent->hasPrototypeMember(name);
+  for (const ClassPtr &parent : parents) {
+    if (parent->hasPrototypeMember(name)) {
+      return true;
+    }
   }
 
   return false;
 }
 
 // ----------------------------------------------------------------------------
+bool Class::hasOwnMember(const std::string &name) const {
+  return Base::hasMember(name);
+}
+
+// ----------------------------------------------------------------------------
+TypePtr Class::getOwnMember(const std::string &name) const {
+  return Base::getMember(name);
+}
+
+// ----------------------------------------------------------------------------
 bool Class::hasMember(const std::string &name) const {
-  if (Base::hasMember(name)) {
+  if (hasOwnMember(name)) {
     return true;
   }
 
-  if (parent) {
-    return parent->hasMember(name);
+  for (const ClassPtr &parent : parents) {
+    if (parent->hasMember(name)) {
+      return true;
+    }
   }
 
   return false;
@@ -93,10 +111,15 @@ ResultPtr Class::callWithoutDecoratorTest(const ContextPtr &context, const Group
 
 // ----------------------------------------------------------------------------
 TypePtr Class::getMember(const std::string &name) const {
-  TypePtr result = Base::getMember(name);
+  TypePtr result = getOwnMember(name);
 
-  if (result->isUndefined() && parent) {
-    result = parent->getMember(name);
+  if (result->isUndefined()) {
+    for (const ClassPtr &parent : parents) {
+      result = parent->getMember(name);
+      if (!result->isUndefined()) {
+        break;
+      }
+    }
   }
 
   return result;
@@ -106,8 +129,13 @@ TypePtr Class::getMember(const std::string &name) const {
 TypePtr Class::getPrototypeMember(const std::string &name) {
   TypePtr result = getPrototype()->getMember(name);
 
-  if (result->isUndefined() && parent) {
-    result = parent->getPrototypeMember(name);
+  if (result->isUndefined()) {
+    for (const ClassPtr &parent : parents) {
+      result = parent->getPrototypeMember(name);
+      if (!result->isUndefined()) {
+        break;
+      }
+    }
   }
 
   return result;

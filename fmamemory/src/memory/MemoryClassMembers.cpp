@@ -48,7 +48,7 @@ void MemoryClassMembers::declare(const interpret::ContextPtr &context, const int
 
 // ----------------------------------------------------------------------------
 MemoryClassMembersPtr MemoryClassMembers::getClassMembers(const ClassPtr &klass) {
-  TypePtr member = klass->getMember("@__memory_class_members");
+  TypePtr member = klass->getOwnMember("@__memory_class_members");
   if (member->isInternalObjectOfType("MemoryClassMembers")) {
     return dynamic_cast<InternalMemoryClassMembersValue*>(member.get())->getValue();
   }
@@ -64,28 +64,79 @@ MemoryClassMembersPtr MemoryClassMembers::getClassMembers(const ClassPtr &klass)
 }
 
 // ----------------------------------------------------------------------------
-uint64_t MemoryClassMembers::getSize() {
+uint64_t MemoryClassMembers::getLocalSizeOnly() {
   uint64_t size = 0;
   for (auto &item : memberList) {
     size += item->size();
   }
+
   return size;
 }
 
 // ----------------------------------------------------------------------------
-MemoryClassMemberItem* MemoryClassMembers::getMember(const std::string &name) {
+uint64_t MemoryClassMembers::getSize() {
+  return getSizeOfClass(klass);
+}
+
+// ----------------------------------------------------------------------------
+uint64_t MemoryClassMembers::getSizeOfClass(const types::ClassPtr &klass) {
+  uint64_t size = 0;
+
+  if (klass->hasOwnMember("@__memory_class_members")) {
+    size += getClassMembers(klass)->getLocalSizeOnly();
+  }
+
+  for (const ClassPtr &parent : klass->getParents()) {
+    size += getSizeOfClass(parent);
+  }
+
+  return size;
+}
+
+// ----------------------------------------------------------------------------
+MemoryClassMemberItem* MemoryClassMembers::getLocalMember(const std::string &name) {
   for (auto &item : memberList) {
     if (item->getName() == name) {
       return item;
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 // ----------------------------------------------------------------------------
-uint64_t MemoryClassMembers::getOffsetOf(const std::string &name) {
-  uint64_t size = 0;
+MemoryClassMemberItem* MemoryClassMembers::getMember(const std::string &name) {
+  return getMemberInClass(klass, name);
+}
+
+// ----------------------------------------------------------------------------
+MemoryClassMemberItem* MemoryClassMembers::getMemberInClass(const types::ClassPtr &klass, const std::string &name) {
+  if (klass->hasOwnMember("@__memory_class_members")) {
+    MemoryClassMemberItem *result = getClassMembers(klass)->getLocalMember(name);
+    
+    if (result) {
+      return result;
+    }
+  }
+
+  for (const ClassPtr &parent : klass->getParents()) {
+    MemoryClassMemberItem *result = getMemberInClass(parent, name);
+    if (result) {
+      return result;
+    }
+  }
+
+  return nullptr;
+}
+
+// ----------------------------------------------------------------------------
+int64_t MemoryClassMembers::getOffsetOf(const std::string &name) {
+  return getOffsetOfInClass(klass, name);
+}
+
+// ----------------------------------------------------------------------------
+int64_t MemoryClassMembers::getLocalOffsetOf(const std::string &name) {
+  int64_t size = 0;
   for (auto &item : memberList) {
     if (item->getName() == name) {
       return size;
@@ -94,18 +145,42 @@ uint64_t MemoryClassMembers::getOffsetOf(const std::string &name) {
     size += item->size();
   }
 
-  return 0;
+  return -1;
+}
+
+// ----------------------------------------------------------------------------
+int64_t MemoryClassMembers::getOffsetOfInClass(const types::ClassPtr &klass, const std::string &name) {
+  int64_t size=0, offset;
+
+  for (const ClassPtr &parent : klass->getParents()) {
+    offset = getOffsetOfInClass(parent, name);
+    
+    if (offset == -1) {
+      size += getSizeOfClass(parent);
+    } else {
+      return offset + size;
+    }
+  }
+  
+  if (klass->hasOwnMember("@__memory_class_members")) {
+    offset = getClassMembers(klass)->getLocalOffsetOf(name);
+
+    if (offset != -1) {
+      return size + offset;
+    }
+  }
+  
+  return -1;
 }
 
 // ----------------------------------------------------------------------------
 TypePtr MemoryClassMembers::getTypeHintOf(const std::string &name) {
-  for (auto &item : memberList) {
-    if (item->getName() == name) {
-      return item->getTypeHint();
-    }
+  auto *result = getMember(name);
+  if (!result) {
+    return TypePtr();
   }
 
-  return TypePtr();
+  return result->getTypeHint();
 }
 
 // ----------------------------------------------------------------------------
