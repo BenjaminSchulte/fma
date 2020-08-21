@@ -160,7 +160,7 @@ ImportStatement:
   ;
 
 IncludeStatement:
-    T_INCLUDE Identifier { $$ = WL(new IncludeStatement($2)); }
+    T_INCLUDE FullIdentifier { $$ = WL(new IncludeStatement($2)); }
   ;
 
 LabelStatement:
