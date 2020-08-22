@@ -63,6 +63,10 @@ uint8_t MemoryVariableClass::getInternalTypeSize(const std::string &str) {
   else if (str == "uint16") { return 2; }
   else if (str == "uint24") { return 3; }
   else if (str == "uint32") { return 4; }
+  else if (str == "int8") { return 1; }
+  else if (str == "int16") { return 2; }
+  else if (str == "int24") { return 3; }
+  else if (str == "int32") { return 4; }
 
   return 0;
 }
