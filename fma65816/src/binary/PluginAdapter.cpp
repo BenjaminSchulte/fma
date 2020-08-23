@@ -232,14 +232,14 @@ PluginAdapter::PluginAdapter(Project *project)
   immediate (0xC9, "CMP(A,#)");
   implicit  (0xCA, "DEC(X)");
   implicit  (0xCB, "WAI");
-
+  absolute  (0xCC, "CMP(Y,[la(#)])");
   absolute  (0xCD, "CMP(A,[la(#)])");
   absolute  (0xCE, "DEC([la(#)])");
   absLong   (0xCF, "CMP(A,[#])");
   pcRelative(0xD0, "JNZ(pcrel(#))");
   directPage(0xD1, "CMP(A,[(la([dp([la([dp(#)])])])+Y)])");
   directPage(0xD2, "CMP(A,[la([dp(#)])])");
-  // CMP
+  // CMP (sr,S),Y	
   directPage(0xD4, "PUSH([dp(#)])");
   directPage(0xD5, "CMP(A,[(la([dp([la([dp(#)])])])+X)])");
 
@@ -264,7 +264,7 @@ PluginAdapter::PluginAdapter(Project *project)
   immediate (0xE9, "SBC(A,#)");
   implicit  (0xEA, "NOP");
   implicit  (0xEB, "XCHG(B,A)");
-
+  absolute  (0xEC, "CMP(X,[la(#)])");
   absolute  (0xED, "SBC(A,[la(#)])");
   absolute  (0xEE, "INC([la(#)])");
   absLong   (0xEF, "SBC(A,[#])");
