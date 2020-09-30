@@ -379,6 +379,7 @@ bool LanguagePlugin::initialize() {
   INSTRUCTION_TYPE_HINT_ANY("JSR");
     VARIANT(absolute)      CREATE(new instruct::CALL(new LocalAddressOperand(args.getLeft()->createValueOperand())));
     VARIANT(longAddress)   CREATE(new instruct::CALL(args.getLeft()->createValueOperand()));
+    VARIANT(indirectX)     CREATE(new instruct::CALL(args.createOperand()))
   END_INSTRUCTION("JSR");
   INSTRUCTION_TYPE_HINT_ANY("JSL");
     VARIANT(absolute)      CREATE(new instruct::CALL(args.getLeft()->createValueOperand()));

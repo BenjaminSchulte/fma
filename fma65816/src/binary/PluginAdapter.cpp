@@ -280,7 +280,7 @@ PluginAdapter::PluginAdapter(Project *project)
   absolute  (0xF9, "SBC(A,[la((#+Y))])");
   implicit  (0xFA, "POP(X)");
   implicit  (0xFB, "XCHG(E,C)");
-
+  absolute  (0xFC, "CALL([(la([dp([la([dp(#)])])])+X)])");
   absolute  (0xFD, "SBC(A,[la((#+X))])");
   absolute  (0xFE, "INC([la((#+X))])");
   absolute  (0xFF, "SBC(A,[(#+X)])");
