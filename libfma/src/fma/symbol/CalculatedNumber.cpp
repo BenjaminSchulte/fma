@@ -81,3 +81,14 @@ bool CalculatedNumber::serialize(FMA::output::DynamicBuffer &buffer) const {
 
   return true;
 }
+
+// ----------------------------------------------------------------------------
+ReferencePtr CalculatedNumber::deserialize(Log *log, FMA::output::DynamicBuffer &buffer) {
+  uint8_t opId;
+
+  buffer.read(&opId, 1);
+  ReferencePtr left(Reference::deserialize(log, buffer));
+  ReferencePtr right(Reference::deserialize(log, buffer));
+
+  return ReferencePtr(new CalculatedNumber(left, (Operand)opId, right));
+}
