@@ -64,7 +64,7 @@ PluginAdapter::PluginAdapter(Project *project)
   directPage(0x21, "AND(A,[la([dp((#+X))])])");
   absLong   (0x22, "CALL(#)");
   srRelative(0x23, "AND(A,[sp((#+S))])");
-  
+  directPage(0x24, "BIT(A,[dp(#)])");
   directPage(0x25, "AND(A,[dp(#)])");
   directPage(0x26, "ROL([dp(#)],#)");
   directPage(0x27, "AND(A,[[dp(#)]])");
