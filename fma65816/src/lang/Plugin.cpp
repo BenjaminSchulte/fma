@@ -138,12 +138,13 @@ bool LanguagePlugin::initialize() {
   const RootModulePtr &root = project->root();
   const ClassPtr &klass = root->getMember("Class")->asClass();
   const ClassPtr &dataBlock = root->getMember("DataBlock")->asClass();
+  const ClassPtr &compiler = root->getMember("Compiler")->asClass();
   const ClassPtr &number = root->getMember("Number")->asClass();
   const ClassPtr &typedNumber = root->getMember("TypedNumber")->asClass();
   const ClassPtr &memoryVariable = root->getMember("MemoryVariable")->asClass();
   const ClassPtr &function = root->getMember("Function")->asClass();
   const ClassPtr &symbolRef = root->getMember("SymbolReference")->asClass();
-  if (!dataBlock || !klass || !number || !typedNumber || !function || !memoryVariable || !symbolRef) {
+  if (!dataBlock || !klass || !number || !typedNumber || !compiler || !function || !memoryVariable || !symbolRef) {
     project->log().error() << "Could not find DataBlock class";
     return false;
   }
@@ -743,6 +744,8 @@ bool LanguagePlugin::initialize() {
   root->setMember("param", TypePtr(new InternalFunctionValue("param", LanguagePlugin::param)));
   root->setMember("returns", TypePtr(new InternalFunctionValue("returns", LanguagePlugin::returns, DECORATORCALL_OUTER)));
 
+  compiler->setMember("brk", TypePtr(new InternalFunctionValue("brk", LanguagePlugin::compiler_break)));
+
   ClassPrototypePtr memoryVariableProto(memoryVariable->getPrototype());
   memoryVariableProto->setMember(".dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
   memoryVariableProto->setMember(".long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
@@ -844,6 +847,34 @@ ResultPtr LanguagePlugin::bank_address(const ContextPtr &context, const GroupedP
   GroupedParameterList params;
   params.push_back(core::NumberClass::createInstance(context, 0xFF0000)->get());
   return context->self()->callDirect("&", context, params);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr LanguagePlugin::compiler_break(const ContextPtr &context, const GroupedParameterList &) {
+  ContextPtr global = context->getInterpreter()->getGlobalContext();
+  if (!global) {
+    context->log().error() << "Unable to access memory block in global context"; 
+    return ResultPtr(new Result());
+  }
+
+  ResultPtr curBlock = global->resolve("::__current_block");
+  if (!curBlock) {
+    context->log().error() << "Unable to access memory block in global context"; 
+    return ResultPtr(new Result());
+  }
+
+  plugin::MemoryBlock* memoryBlock = core::DataBlockClass::memoryBlock(context->getProject(), curBlock->get());
+  if (!memoryBlock) {
+    context->log().error() << "Unable to access memory block in global context"; 
+    return ResultPtr(new Result());
+  }
+
+  auto *symbolMap = context->getProject()->getMemoryAdapter()->getSymbolMap();
+  const auto &ref = symbolMap->createReference("..brk");
+  memoryBlock->reference(ref);
+  symbolMap->addEmulatorBreakpoint(ref);
+
+  return ResultPtr(new Result());
 }
 
 // ----------------------------------------------------------------------------

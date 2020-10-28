@@ -88,6 +88,7 @@ ReferencePtr MemoryBlock::reference() {
 // ----------------------------------------------------------------------------
 ReferencePtr MemoryBlock::reference(const std::string &name) {
   std::cout << "TODO: Reference current offset " << name << std::endl;
+  
 
   return ReferencePtr();
 }

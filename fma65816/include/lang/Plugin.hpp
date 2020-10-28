@@ -59,6 +59,7 @@ protected:
   static FMA::interpret::ResultPtr auto_insert_rts(const FMA::interpret::ContextPtr &context, const FMA::interpret::GroupedParameterList &parameter);
   static FMA::interpret::ResultPtr bank(const FMA::interpret::ContextPtr &context, const FMA::interpret::GroupedParameterList &parameter);
   static FMA::interpret::ResultPtr bank_address(const FMA::interpret::ContextPtr &context, const FMA::interpret::GroupedParameterList &parameter);
+  static FMA::interpret::ResultPtr compiler_break(const FMA::interpret::ContextPtr &context, const FMA::interpret::GroupedParameterList &parameter);
 
   static void testTypeHinting(const FMA::interpret::ContextPtr &context, const FMA::interpret::GroupedParameterList &parameter, const char *registerName);
   static void testTypeHinting(const FMA::interpret::ContextPtr &context, const FMA::interpret::GroupedParameterList &parameter);
