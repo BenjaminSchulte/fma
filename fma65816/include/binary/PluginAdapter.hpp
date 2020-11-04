@@ -50,6 +50,7 @@ protected:
   void implicit(uint8_t opcode, const std::string &name);
   void pcRelative(uint8_t opcode, const std::string &name);
   void srRelative(uint8_t opcode, const std::string &name);
+  void move(uint8_t opcode, const std::string &name);
 };
 
 }

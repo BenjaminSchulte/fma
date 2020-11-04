@@ -63,6 +63,7 @@ public:
 
   inline bool absolute() const { return numArgs == 1 && left->type==InstructionArgument::ADDRESS; }
   inline bool immediate() const { return numArgs == 1 && left->type==InstructionArgument::IMMEDIATE; }
+  inline bool move() const { return numArgs == 2 && left->type==InstructionArgument::IMMEDIATE && right->type==InstructionArgument::IMMEDIATE; }
   inline bool indirect() const { return numArgs == 1 && left->type==InstructionArgument::INDIRECT; }
   inline bool longIndirect() const { return numArgs == 1 && left->type==InstructionArgument::LONG_INDIRECT; }
   inline bool indirectY() const { return numArgs == 2 && left->type==InstructionArgument::INDIRECT && right->type==InstructionArgument::REG_Y; }

@@ -88,7 +88,7 @@ PluginAdapter::PluginAdapter(Project *project)
   absolute  (0x39, "AND(A,[la((#+Y))])");
   implicit  (0x3A, "DEC(A)");
   implicit  (0x3B, "MOV(C,S)");
-
+  absolute  (0x3C, "BIT(A,[la((#+X))])");
   absolute  (0x3D, "AND(A,[la((#+X))])");
   absolute  (0x3E, "ROL([la((#+X))],#)");
   absolute  (0x3F, "AND(A,[(#+X)])");
@@ -96,7 +96,7 @@ PluginAdapter::PluginAdapter(Project *project)
   directPage(0x41, "EOR(A,[la([dp((#+X))])])");
 
   srRelative(0x43, "EOR(A,[sp((#+S))])");
-
+  move      (0x44, "MVP(#,#)");
   directPage(0x45, "EOR(A,[dp(#)])");
   directPage(0x46, "LSR([dp(#)],#)");
   directPage(0x47, "EOR(A,[[dp(#)]])");
@@ -112,7 +112,7 @@ PluginAdapter::PluginAdapter(Project *project)
   directPage(0x51, "EOR(A,[(la([dp([la([dp(#)])])])+Y)])");
   directPage(0x52, "EOR(A,[la([dp(#)])])");
   // EOR
-
+  move      (0x54, "MVN(#,#)");
   directPage(0x55, "EOR(A,[(la([dp([la([dp(#)])])])+X)])");
   directPage(0x56, "LSR([dp((#+X))],#)");
   directPage(0x57, "EOR(A,[([dp([[dp(#)]])]+Y)])");
@@ -409,6 +409,15 @@ OPERAND_TYPE(immediate, {
   default:
     return false;
   }
+
+  return true;
+})
+
+// ----------------------------------------------------------------------------
+OPERAND_TYPE(move, {
+  scope->getLinkerBlock()->write(&generator.opcode, 1);
+  scope->getLinkerBlock()->write(instruct->getOperand(1), 1);
+  scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
 
   return true;
 })

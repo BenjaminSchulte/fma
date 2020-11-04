@@ -57,6 +57,7 @@
 #include <fma/instruct/Rti.hpp>
 #include <fma/instruct/Xchg.hpp>
 #include <fma/instruct/Wai.hpp>
+#include <lang/MoveBlock.hpp>
 
 #include <lang/Plugin.hpp>
 #include <lang/InstructionArguments.hpp>
@@ -486,6 +487,12 @@ bool LanguagePlugin::initialize() {
     VARIANT(directPageX)   CREATE(new instruct::LSR(args.createOperand(), new ConstantNumberOperand(1)))
     VARIANT(absoluteX)     CREATE(new instruct::LSR(args.createOperand(), new ConstantNumberOperand(1)))
   END_INSTRUCTION("LSR");
+  INSTRUCTION("MVN");
+    VARIANT(move)          CREATE(new MoveBlock(false, args.getLeft()->createValueOperand(), args.getRight()->createValueOperand()))
+  END_INSTRUCTION("MVN");
+  INSTRUCTION("MVP");
+    VARIANT(move)          CREATE(new MoveBlock(true, args.getLeft()->createValueOperand(), args.getRight()->createValueOperand()))
+  END_INSTRUCTION("MVP");
   INSTRUCTION("NOP");
     VARIANT(implicit) CREATE(new instruct::NOP());
   END_INSTRUCTION("NOP");
