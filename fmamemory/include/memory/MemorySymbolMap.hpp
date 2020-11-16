@@ -35,9 +35,9 @@ public:
   std::vector<std::string> getSymbolNames() const;
 
   virtual symbol::ReferencePtr createCommand(const std::string &command);
-  void addEmulatorBreakpoint(const symbol::SymbolReferencePtr &) override;
+  void addEmulatorBreakpoint(const symbol::SymbolReferencePtr &, bool notifyOnly, const std::string &comment) override;
   virtual const std::vector<plugin::MemorySymbolMapCommand> &getCommands() const;
-  const std::vector<symbol::SymbolReferencePtr> &getBreakpoints() const override {
+  const std::vector<plugin::MemorySymbolMapBreakpoint> &getBreakpoints() const override {
     return breakPoints;
   }
 
@@ -49,7 +49,7 @@ protected:
   SymbolTypeMap symbolTypes;
   SymbolSizeMap symbolSizes;
   std::vector<plugin::MemorySymbolMapCommand> commands;
-  std::vector<symbol::SymbolReferencePtr> breakPoints;
+  std::vector<plugin::MemorySymbolMapBreakpoint> breakPoints;
 };
 
 }

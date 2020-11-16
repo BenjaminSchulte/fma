@@ -119,8 +119,8 @@ ReferencePtr MemorySymbolMap::createCommand(const std::string &command) {
 }
 
 // ----------------------------------------------------------------------------
-void MemorySymbolMap::addEmulatorBreakpoint(const symbol::SymbolReferencePtr &ref) {
-  breakPoints.push_back(ref);
+void MemorySymbolMap::addEmulatorBreakpoint(const symbol::SymbolReferencePtr &ref, bool notifyOnly, const std::string &comment) {
+  breakPoints.push_back(plugin::MemorySymbolMapBreakpoint(ref, notifyOnly, comment));
 }
 
 // ----------------------------------------------------------------------------

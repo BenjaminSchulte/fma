@@ -857,7 +857,7 @@ ResultPtr LanguagePlugin::bank_address(const ContextPtr &context, const GroupedP
 }
 
 // ----------------------------------------------------------------------------
-ResultPtr LanguagePlugin::compiler_break(const ContextPtr &context, const GroupedParameterList &) {
+ResultPtr LanguagePlugin::compiler_break(const ContextPtr &context, const GroupedParameterList &params) {
   ContextPtr global = context->getInterpreter()->getGlobalContext();
   if (!global) {
     context->log().error() << "Unable to access memory block in global context"; 
@@ -876,10 +876,21 @@ ResultPtr LanguagePlugin::compiler_break(const ContextPtr &context, const Groupe
     return ResultPtr(new Result());
   }
 
+  const auto &kwArgs = params.only_kwargs();
+  bool notifyOnly = false;
+  std::string comment;
+  TypeMap::const_iterator it;
+  if ((it = kwArgs.find("notify_only")) != kwArgs.end()) {
+    notifyOnly = it->second->convertToBoolean(context);
+  }
+  if ((it = kwArgs.find("comment")) != kwArgs.end()) {
+    comment = it->second->convertToString(context);
+  }
+
   auto *symbolMap = context->getProject()->getMemoryAdapter()->getSymbolMap();
   const auto &ref = symbolMap->createReference("..brk");
   memoryBlock->reference(ref);
-  symbolMap->addEmulatorBreakpoint(ref);
+  symbolMap->addEmulatorBreakpoint(ref, notifyOnly, comment);
 
   return ResultPtr(new Result());
 }

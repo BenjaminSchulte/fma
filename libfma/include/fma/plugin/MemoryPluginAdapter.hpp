@@ -46,6 +46,18 @@ struct MemorySymbolMapCommand {
   std::string command;
 };
 
+struct MemorySymbolMapBreakpoint {
+  MemorySymbolMapBreakpoint(const symbol::SymbolReferencePtr &reference, bool notifyOnly, const std::string &comment)
+    : reference(reference)
+    , notifyOnly(notifyOnly)
+    , comment(comment)
+  {}
+
+  symbol::SymbolReferencePtr reference;
+  bool notifyOnly;
+  std::string comment;
+};
+
 class MemorySymbolMap {
 public:
   MemorySymbolMap() {}
@@ -55,14 +67,14 @@ public:
   virtual symbol::SymbolReferencePtr createReference(const std::string &hint) = 0;
 
   virtual symbol::ReferencePtr createCommand(const std::string &command) = 0;
-  virtual void addEmulatorBreakpoint(const symbol::SymbolReferencePtr &) = 0;
+  virtual void addEmulatorBreakpoint(const symbol::SymbolReferencePtr &, bool notifyOnly, const std::string &comment) = 0;
 
   virtual bool hasResolved(const std::string &) const = 0;
   virtual uint64_t getResolved(const std::string &) const = 0;
 
   virtual std::vector<std::string> getSymbolNames() const = 0;
   virtual const std::vector<MemorySymbolMapCommand> &getCommands() const = 0;
-  virtual const std::vector<symbol::SymbolReferencePtr> &getBreakpoints() const = 0;
+  virtual const std::vector<MemorySymbolMapBreakpoint> &getBreakpoints() const = 0;
 
   virtual std::string getSymbolTypeHint(const std::string &) const { return "ANY"; }
   virtual uint32_t getSymbolSizeHint(const std::string &) const { return 1; }

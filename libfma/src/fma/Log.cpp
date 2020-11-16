@@ -37,7 +37,7 @@ void Log::write(LogLevel level, const std::string &message) {
     break;
   }
 
-  if (logAdapter) {
+  if (logAdapter && level >= minimumLogLevel) {
     logAdapter->write(level, message);
   }
 }

@@ -110,6 +110,7 @@ public:
 
 private:
   uint32_t numErrors;
+  LogLevel minimumLogLevel = FMA_LOG_DEBUG;
   LogAdapter *logAdapter;
 };
 
