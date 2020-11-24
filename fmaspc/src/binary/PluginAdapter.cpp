@@ -372,8 +372,8 @@ OPERAND_TYPE(dpImmBit, {
     scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
   } else {
     scope->getLinkerBlock()->write(&generator.opcode, 1);
-    scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
     scope->getLinkerBlock()->write(instruct->getOperand(1), 1);
+    scope->getLinkerBlock()->write(instruct->getOperand(0), 1);
    }
 
   return true;
