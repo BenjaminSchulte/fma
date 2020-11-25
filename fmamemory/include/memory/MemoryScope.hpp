@@ -11,7 +11,7 @@ typedef std::vector<MemoryScopePtr> MemoryScopeList;
 
 class MemoryScope : public MemoryAllocation {  
 public:
-  MemoryScope(MemoryMap *map);
+  MemoryScope(MemoryMap *map, bool shared);
   virtual ~MemoryScope();
 
   virtual MemoryScopePtr asMemoryScope() { return getScopePointer(); }
@@ -20,7 +20,7 @@ public:
 
   virtual void writeSymbolReferences(class MemorySymbolMap *symbols);
 
-  MemoryScopePtr createScope();
+  MemoryScopePtr createScope(bool shared);
   void addChild(const MemoryAllocationPtr &);
   virtual void dump(const std::string &prefix);
 
@@ -28,8 +28,11 @@ public:
     return std::dynamic_pointer_cast<MemoryScope>(getPointer());
   }
 
+  inline bool isShared() const { return mShared; }
+
 protected:
   MemoryAllocationList _children;
+  bool mShared;
 };
 
 }

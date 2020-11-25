@@ -2,6 +2,7 @@
 #include <placer/PlacerMemoryMap.hpp>
 #include <placer/PlacerMemoryMapBank.hpp>
 #include <placer/UsageMap.hpp>
+#include <placer/MergedUsageMap.hpp>
 #include <memory/MemoryMap.hpp>
 #include <memory/MemoryMapBank.hpp>
 #include <memory/MemoryMapBankSection.hpp>
@@ -22,7 +23,15 @@ void PlacerMemoryMap::removeAllBanks() {
     PlacerMemoryMapBank *item = bank.second;
     delete item;
   }
+  for (auto &map : usageMaps) {
+    delete map.second;
+  }
+  for (auto &map : mergedUsageMaps) {
+    delete map.second;
+  }
   ownBanks.clear();
+  usageMaps.clear();
+  mergedUsageMaps.clear();
 }
 
 // ----------------------------------------------------------------------------
@@ -48,18 +57,85 @@ UsageMap *PlacerMemoryMap::createUsageMap(memory::MemoryBankIndex index) {
     usage->free(section->getOffset(), section->getSize());
   }
 
-  updateUsageMap(index, usage);
-
   return usage;
 }
 
 // ----------------------------------------------------------------------------
-void PlacerMemoryMap::updateUsageMap(memory::MemoryBankIndex, UsageMap *) {
-
+bool PlacerMemoryMap::isShared() const {
+  return mShared;
 }
 
 // ----------------------------------------------------------------------------
-PlacerMemoryMapBank *PlacerMemoryMap::getOwnMemoryMap(MemoryBankIndex bank) {
+bool PlacerMemoryMap::isParentShared() const {
+  for (auto &_parent : parents) {
+    auto parent(_parent.lock());
+    if (parent && parent->isShared()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// ----------------------------------------------------------------------------
+bool PlacerMemoryMap::needsOwnUsageMap() const {
+  return isShared() || isParentShared() || parents.empty();
+}
+
+// ----------------------------------------------------------------------------
+PlacerMemoryMap *PlacerMemoryMap::closestMemoryMapOwner() {
+  PlacerMemoryMap *result = closestMemoryMapOwnerOrNull(true);
+  if (result) {
+    return result;
+  }
+
+  return this;
+}
+
+// ----------------------------------------------------------------------------
+PlacerMemoryMap *PlacerMemoryMap::closestMemoryMapOwnerOrNull(bool includeSelf) {
+  if (includeSelf && needsOwnUsageMap()) {
+    return this;
+  }
+
+  for (const auto &_parent : parents) {
+    auto parent = _parent.lock();
+    if (parent) {
+      PlacerMemoryMap *result = parent->closestMemoryMapOwner();
+      if (result) {
+        return result;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
+// ----------------------------------------------------------------------------
+MergedUsageMap *PlacerMemoryMap::getUsageMap(memory::MemoryBankIndex bank) {
+  // Returns the cached result, if present
+  MergedUsageMapList::iterator it(mergedUsageMaps.find(bank));
+  if (it != mergedUsageMaps.end()) {
+    return it->second;
+  }
+
+  // Checks whether we should have a usage map
+  PlacerMemoryMap *closest = closestMemoryMapOwner();
+  if (closest == this) {
+    UsageMap *map = createUsageMap(bank);
+    usageMaps[bank] = map;
+
+    MergedUsageMap *merged = new MergedUsageMap(this, map, bank);
+    mergedUsageMaps[bank] = merged;
+    return merged;
+  }
+
+  // Returns the parent usage map
+  return closest->getUsageMap(bank);
+}
+
+// ----------------------------------------------------------------------------
+PlacerMemoryMapBank *PlacerMemoryMap::getMemoryMap(MemoryBankIndex bank) {
   PlacerMemoryMapBankList::const_iterator it = ownBanks.find(bank);
   
   if (it == ownBanks.end()) {
@@ -74,40 +150,6 @@ PlacerMemoryMapBank *PlacerMemoryMap::getOwnMemoryMap(MemoryBankIndex bank) {
 // ----------------------------------------------------------------------------
 PlacerMemoryMapBank *PlacerMemoryMap::createOwnMemoryMap(MemoryBankIndex bank) {
   return new PlacerMemoryMapBank(this, bank);
-}
-
-// ----------------------------------------------------------------------------
-PlacerMemoryMapBank *PlacerMemoryMap::getWriteMemoryMap(MemoryBankIndex bank) {
-  PlacerMemoryMapBankList::const_iterator it = ownBanks.find(bank);
-  if (it != ownBanks.end()) {
-    return it->second;
-  }
-
-  if (parents.size() == 1) {
-    auto parent = parents.front().lock();
-    if (parent) {
-      return parent->getWriteMemoryMap(bank);
-    }
-  }
-
-  return getOwnMemoryMap(bank);
-}
-
-// ----------------------------------------------------------------------------
-PlacerMemoryMapBank *PlacerMemoryMap::getReadMemoryMap(MemoryBankIndex bank) {
-  PlacerMemoryMapBankList::const_iterator it = ownBanks.find(bank);
-  if (it != ownBanks.end()) {
-    return it->second;
-  }
-
-  if (parents.size() == 1) {
-    auto parent = parents.front().lock();
-    if (parent) {
-      return parent->getReadMemoryMap(bank);
-    }
-  }
-
-  return getOwnMemoryMap(bank);
 }
 
 // ----------------------------------------------------------------------------
@@ -139,7 +181,7 @@ bool PlacerMemoryMap::place(const memory::MemoryBankIndex bankIndex, const memor
 
 // ----------------------------------------------------------------------------
 bool PlacerMemoryMap::placeWithoutShadowTest(const memory::MemoryBankIndex bankIndex, const memory::MemoryBankSize &offset, const memory::MemoryBankSize &size) {
-  PlacerMemoryMapBank *bank = getWriteMemoryMap(bankIndex);
+  PlacerMemoryMapBank *bank = getMemoryMap(bankIndex);
   return bank->block(offset, size);
 }
 
@@ -152,13 +194,13 @@ void PlacerMemoryMap::filterValidLocations(const MemoryLocationConstraint &const
         continue;
       }
 
-      getReadMemoryMap(pair.first)->filterValidLocations(constraint, result, size);
+      getMemoryMap(pair.first)->filterValidLocations(constraint, result, size);
     }
     return;
   }
 
   for (const auto &bank : banks) {
-    getReadMemoryMap(bank)->filterValidLocations(constraint, result, size);
+    getMemoryMap(bank)->filterValidLocations(constraint, result, size);
   }
 }
 

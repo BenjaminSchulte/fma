@@ -19,20 +19,11 @@ public:
   void dump(const std::string &prefix);
 
   void filterValidLocations(const memory::MemoryLocationConstraint &constraint, memory::MemoryLocationList &result, const memory::MemoryBankSize &size);
-  void invalidate();
   bool block(const memory::MemoryBankSize &offset, const memory::MemoryBankSize &size);
-
-  void update();
-
-  UsageMap *getUsageMap();
 
 protected:
   PlacerMemoryMap *owner;
   memory::MemoryBankIndex index;
-
-  bool valid;
-
-  UsageMap *usageMap;
 
   void addCleanedUpLocations(const memory::MemoryLocationConstraint &constraint, memory::MemoryLocationList &result);
   void addAlignedRangeItem(const memory::MemoryLocationRange &range, const memory::MemoryLocationConstraint &constraint, memory::MemoryLocationList &result);

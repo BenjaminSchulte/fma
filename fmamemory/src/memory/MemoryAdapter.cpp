@@ -223,7 +223,7 @@ const plugin::MemoryBlockPlacement *MemoryAdapter::requireStaticBlockPlacement(L
     return NULL;
   }
 
-  MemoryScopePtr scope = map->createMemoryScope();
+  MemoryScopePtr scope = map->createMemoryScope(false);
   scope->setNameHint(block->getNameHint());
   scope->setSize(block->getSize());
 

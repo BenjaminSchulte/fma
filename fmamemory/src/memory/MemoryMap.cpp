@@ -102,15 +102,15 @@ void MemoryMap::useForStaticMemory() {
 }
 
 // ----------------------------------------------------------------------------
-MemoryScopePtr MemoryMap::createMemoryScope() {
-  MemoryScopePtr ptr(new MemoryScope(this));
+MemoryScopePtr MemoryMap::createMemoryScope(bool shared) {
+  MemoryScopePtr ptr(new MemoryScope(this, shared));
   _scopes.push_back(ptr);
   return ptr;
 }
 
 // ----------------------------------------------------------------------------
 MemoryScopePtr MemoryMap::createLooseMemoryScope() {
-  return MemoryScopePtr(new MemoryScope(this));
+  return MemoryScopePtr(new MemoryScope(this, false));
 }
 
 // ----------------------------------------------------------------------------

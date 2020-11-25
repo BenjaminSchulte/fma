@@ -3,8 +3,9 @@
 using namespace FMA::memory;
 
 // ----------------------------------------------------------------------------
-MemoryScope::MemoryScope(MemoryMap *map)
+MemoryScope::MemoryScope(MemoryMap *map, bool shared)
   : MemoryAllocation(map)
+  , mShared(shared)
 {
 }
 
@@ -13,8 +14,8 @@ MemoryScope::~MemoryScope() {
 }
 
 // ----------------------------------------------------------------------------
-MemoryScopePtr MemoryScope::createScope() {
-  MemoryScopePtr scope(new MemoryScope(map));
+MemoryScopePtr MemoryScope::createScope(bool shared) {
+  MemoryScopePtr scope(new MemoryScope(map, shared));
   addChild(scope);
   return scope;
 }

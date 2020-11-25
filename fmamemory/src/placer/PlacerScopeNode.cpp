@@ -48,7 +48,7 @@ const PlacerMemoryMapPtr &PlacerScopeNode::getMemoryMap() {
     return memoryMap;
   }
 
-  memoryMap = PlacerMemoryMapPtr(new PlacerMemoryMap(placer));
+  memoryMap = PlacerMemoryMapPtr(new PlacerMemoryMap(placer, scope->isShared()));
   memoryMap->setNameHint(node->getNameHint());
   if (!parents.size()) {
     state->getMemoryMap()->addChild(memoryMap);

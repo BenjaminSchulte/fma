@@ -55,6 +55,11 @@ ResultPtr MemoryScopeClass::initialize(const ContextPtr &context, const GroupedP
   
   GroupedParameterList emptyParameter;
 
+  bool shared = false;
+  if ((it = kwargs.find("shared")) != kwargs.end()) {
+    shared = it->second->convertToBoolean(context);
+  }
+
   if ((it = kwargs.find("in")) == kwargs.end()) {
     context->log().error() << "Missing argument 'in' for scope declaration";
     return ResultPtr(new Result());
@@ -63,9 +68,9 @@ ResultPtr MemoryScopeClass::initialize(const ContextPtr &context, const GroupedP
   TypePtr parent = it->second;
   MemoryScopePtr scope;
   if (parent->isObjectOfType("MemoryMap")) {
-    scope = MemoryScopePtr(MemoryMapClass::asMemoryMap(context->getProject(), parent)->createMemoryScope());
+    scope = MemoryScopePtr(MemoryMapClass::asMemoryMap(context->getProject(), parent)->createMemoryScope(shared));
   } else if (parent->isObjectOfType("MemoryScope")) {
-    scope = MemoryScopePtr(asMemoryScope(context->getProject(), parent)->createScope());
+    scope = MemoryScopePtr(asMemoryScope(context->getProject(), parent)->createScope(shared));
   } else if (parent->callDirect("nil?", context, emptyParameter)->get()->convertToBoolean(context)) {
     if ((it = kwargs.find("for")) == kwargs.end()) {
       context->log().error() << "Missing argument 'for' for scope loose declaration";

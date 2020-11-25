@@ -1,4 +1,5 @@
 #include <boost/io/ios_state.hpp>
+#include <placer/MergedUsageMap.hpp>
 #include <placer/PlacerMemoryMap.hpp>
 #include <placer/PlacerMemoryMapBank.hpp>
 #include <memory/MemoryLocationList.hpp>
@@ -14,60 +15,25 @@ using namespace FMA::memory;
 PlacerMemoryMapBank::PlacerMemoryMapBank(PlacerMemoryMap *owner, memory::MemoryBankIndex index)
   : owner(owner)
   , index(index)
-  , valid(false)
-  , usageMap(NULL)
 {
 }
 
 // ----------------------------------------------------------------------------
 PlacerMemoryMapBank::~PlacerMemoryMapBank() {
-  if (usageMap) {
-    delete usageMap;
-  }
-}
-
-// ----------------------------------------------------------------------------
-void PlacerMemoryMapBank::update() {
-  if (valid) {
-    return;
-  }
-
-  if (usageMap == NULL) {
-    usageMap = owner->createUsageMap(index);
-  } else {
-    owner->updateUsageMap(index, usageMap);
-  }
-
-  valid = true;
-}
-
-// ----------------------------------------------------------------------------
-UsageMap *PlacerMemoryMapBank::getUsageMap() {
-  update();
-  return usageMap;
-}
-
-// ----------------------------------------------------------------------------
-void PlacerMemoryMapBank::invalidate() {
-  valid = false;
-  //std::cout << "TODO INVALIDATE" << std::endl;
 }
 
 // ----------------------------------------------------------------------------
 bool PlacerMemoryMapBank::block(const MemoryBankSize &offset, const MemoryBankSize &size) {
-  update();
-  invalidate();
-
-  return usageMap->block(offset, size);
+  return owner->getUsageMap(index)->block(offset, size);
 }
 
 // ----------------------------------------------------------------------------
 void PlacerMemoryMapBank::filterValidLocations(const MemoryLocationConstraint &constraint, MemoryLocationList &result, const MemoryBankSize &size) {
-  update();
-
   if (!size) {
     return;
   }
+
+  MergedUsageMap *usageMap = owner->getUsageMap(index);
 
   MemoryLocationConstraint copy(constraint);
   if (constraint.addresses().size()) {
@@ -199,7 +165,7 @@ void PlacerMemoryMapBank::addDefaultRangeItem(const memory::MemoryLocationRange 
 
 // ----------------------------------------------------------------------------
 void PlacerMemoryMapBank::dump(const std::string &prefix) {
-  update();
+  MergedUsageMap *usageMap = owner->getUsageMap(index);
 
   std::ostringstream os;
   os << prefix << "$" << std::hex << std::setw(2) << std::setfill('0') << (int)index << " : ";

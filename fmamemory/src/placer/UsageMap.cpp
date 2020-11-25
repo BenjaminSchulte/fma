@@ -22,6 +22,13 @@ UsageMap::UsageMap(const uint64_t &offset, const uint64_t &size, UsageMapSection
 }
 
 // ----------------------------------------------------------------------------
+UsageMap *UsageMap::clone(UsageMap *other) {
+  UsageMap *result = new UsageMap(other->offset, other->size, UsageMapSection::BLOCKED);
+  result->map = other->map;
+  return result;
+}
+
+// ----------------------------------------------------------------------------
 bool UsageMap::block(const uint64_t &start, const uint64_t &size) {
   return set(start, size, UsageMapSection::BLOCKED);
 }

@@ -9,8 +9,6 @@ namespace placer {
 class RootPlacerMemoryMap : public PlacerMemoryMap {
 public:
   RootPlacerMemoryMap(Placer *placer);
-
-  PlacerMemoryMapBank *getReadMemoryMap(memory::MemoryBankIndex bank);
 };
 
 }

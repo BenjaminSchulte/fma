@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <list>
 #include <vector>
+#include <string>
 
 namespace FMA {
 namespace placer {
@@ -49,6 +50,8 @@ class UsageMap {
 public:
   UsageMap();
   UsageMap(const uint64_t &offset, const uint64_t &size, UsageMapSection::Usage usage=UsageMapSection::FREE);
+
+  static UsageMap *clone(UsageMap *);
 
   inline const UsageMapSectionList &all() const { return map; }
 

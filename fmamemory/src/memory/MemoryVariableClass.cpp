@@ -86,7 +86,7 @@ ResultPtr MemoryVariableClass::initialize(const ContextPtr &context, const Group
   MemoryScopePtr scope;
   TypePtr resultValue = context->self();
   if (parent->isObjectOfType("MemoryScope")) {
-    scope = MemoryScopePtr(MemoryScopeClass::asMemoryScope(context->getProject(), parent)->createScope());
+    scope = MemoryScopePtr(MemoryScopeClass::asMemoryScope(context->getProject(), parent)->createScope(false));
   } else {
     context->log().error() << "Invalid 'in' value for declaration: " << parent->asString();
     return ResultPtr(new Result());
