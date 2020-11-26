@@ -7,6 +7,8 @@
 #include <fma/interpret/BaseContext.hpp>
 #include <fma/interpret/PrototypeContext.hpp>
 #include <fma/interpret/ObjectContext.hpp>
+#include <fma/interpret/NestedContext.hpp>
+#include <fma/interpret/ClassContext.hpp>
 #include <fma/interpret/Result.hpp>
 #include <fma/interpret/ParameterList.hpp>
 #include <fma/Project.hpp>
@@ -27,6 +29,7 @@ ClassPtr ClassClass::create(const RootModulePtr &root, const ClassPtr &Object) {
   klass->setMember("name", TypePtr(new InternalFunctionValue("name", ClassClass::name)));
   klass->setMember("class_eval", TypePtr(new InternalFunctionValue("class_eval", ClassClass::class_eval)));
   klass->setMember("instance_eval", TypePtr(new InternalFunctionValue("instance_eval", ClassClass::instance_eval)));
+  klass->setMember("include_class", TypePtr(new InternalFunctionValue("include", ClassClass::include)));
   klass->setMember("define_method", TypePtr(new InternalFunctionValue("define_method", ClassClass::define_method)));
   klass->setMember("define_prototype_method", TypePtr(new InternalFunctionValue("define_prototype_method", ClassClass::define_prototype_method)));
 
@@ -69,6 +72,28 @@ ResultPtr ClassClass::class_eval(const ContextPtr &context, const GroupedParamet
   ContextPtr ctx(new ObjectContext(context->getInterpreter(), self));
   GroupedParameterList emptyParams;
   return blocks.front()->call(ctx, emptyParams);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr ClassClass::include(const ContextPtr &context, const GroupedParameterList &parameter) {
+  ClassPtr self = context->self()->asClass();
+  if (!self) {
+    return ResultPtr(new Result());
+  }
+
+  const TypeList &args = parameter.only_args();
+  if (!args.size()) {
+    return ResultPtr(new Result());
+  }
+
+  ClassPtr other = args.front()->asClass();
+  if (!other) {
+    context->log().error() << "include_class parameter must be a class";
+    return ResultPtr(new Result());
+  }
+
+  self->extends(other);
+  return ResultPtr(new Result());
 }
 
 // ----------------------------------------------------------------------------
