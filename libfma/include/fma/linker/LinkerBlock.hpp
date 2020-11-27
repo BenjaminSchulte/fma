@@ -42,6 +42,7 @@ public:
   inline void writeNumber(uint64_t number, uint32_t size) { write(&number, size); }
   void write(const assem::Operand *operand, uint32_t size);
   void write(const symbol::ReferencePtr &reference, uint32_t size);
+  void write(const LinkerBlock *other);
   void symbol(const std::string &name);
   symbol::ReferencePtr privateSymbol(plugin::MemorySymbolMap *map);
 

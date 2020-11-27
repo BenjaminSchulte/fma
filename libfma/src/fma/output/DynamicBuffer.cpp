@@ -84,6 +84,11 @@ void DynamicBuffer::write(const void *_data, uint32_t _size) {
 }
 
 // ----------------------------------------------------------------------------
+void DynamicBuffer::writeNumber(int64_t number, uint32_t size) {
+  write(&number, size);
+}
+
+// ----------------------------------------------------------------------------
 void DynamicBuffer::write(const DynamicBufferPtr &buffer) {
   write(buffer->getData(), buffer->getSize());
 }

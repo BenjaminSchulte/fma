@@ -54,6 +54,23 @@ void LinkerBlock::write(const void *_data, uint32_t _size) {
 }
 
 // ----------------------------------------------------------------------------
+void LinkerBlock::write(const LinkerBlock *other) {
+  uint32_t oldSize = size;
+
+  write(other->data, other->size);
+  
+  for (LinkerBlockReference reference : other->references) {
+    reference.offset += oldSize;
+    references.push_back(reference);
+  }
+
+  for (LinkerBlockSymbol symbol : other->symbols) {
+    symbol.offset += oldSize;
+    symbols.push_back(symbol);
+  }
+}
+
+// ----------------------------------------------------------------------------
 void LinkerBlock::write(const ReferencePtr &reference, uint32_t _size) {
   if (reference->isConstant()) {
     writeNumber(reference->asConstant(), _size);

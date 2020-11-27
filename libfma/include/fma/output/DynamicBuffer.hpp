@@ -19,6 +19,7 @@ public:
   void seek(uint32_t offset);
   inline uint32_t tell() const { return offset; }
   void write(const void *data, uint32_t size);
+  void writeNumber(int64_t number, uint32_t size);
   void writeString(const std::string &);
   uint32_t read(void *data, uint32_t size);
   uint32_t read(uint32_t offset, void *data, uint32_t size);
