@@ -59,7 +59,7 @@ PluginAdapter::PluginAdapter(Project *project)
   absolute  (0x1C, "TRB(la(#),A)");
   absolute  (0x1D, "OR(A,[la((#+X))])");
   absolute  (0x1E, "ASL([la((#+X))],#)");
-  absolute  (0x1F, "OR(A,[(#+X)])");
+  absLong   (0x1F, "OR(A,[(#+X)])");
   absolute  (0x20, "CALL(la(#))");
   directPage(0x21, "AND(A,[la([dp((#+X))])])");
   absLong   (0x22, "CALL(#)");
