@@ -91,7 +91,7 @@ PluginAdapter::PluginAdapter(Project *project)
   absolute  (0x3C, "BIT(A,[la((#+X))])");
   absolute  (0x3D, "AND(A,[la((#+X))])");
   absolute  (0x3E, "ROL([la((#+X))],#)");
-  absolute  (0x3F, "AND(A,[(#+X)])");
+  absLong   (0x3F, "AND(A,[(#+X)])");
   implicit  (0x40, "RTI");
   directPage(0x41, "EOR(A,[la([dp((#+X))])])");
 
@@ -123,7 +123,7 @@ PluginAdapter::PluginAdapter(Project *project)
   absLong   (0x5C, "JMP(#)");
   absolute  (0x5D, "EOR(A,[la((#+X))])");
   absolute  (0x5E, "LSR([la((#+X))],#)");
-  absolute  (0x5F, "EOR(A,[(#+X)])");
+  absLong   (0x5F, "EOR(A,[(#+X)])");
   implicit  (0x60, "RTS");
   directPage(0x61, "ADC(A,[la([dp((#+X))])])");
   // PER
@@ -155,7 +155,7 @@ PluginAdapter::PluginAdapter(Project *project)
   absolute  (0x7C, "JMP([(la([dp([la([dp(#)])])])+X)])");
   absolute  (0x7D, "ADC(A,[la((#+X))])");
   absolute  (0x7E, "ROR([la((#+X))],#)");
-  absolute  (0x7F, "ADC(A,[(#+X)])");
+  absLong   (0x7F, "ADC(A,[(#+X)])");
   pcRelative(0x80, "JMP(pcrel(#))");
   directPage(0x81, "MOV([la([dp((#+X))])],A)");
 
@@ -251,7 +251,7 @@ PluginAdapter::PluginAdapter(Project *project)
 
   absolute  (0xDD, "CMP(A,[la((#+X))])");
   absolute  (0xDE, "DEC([la((#+X))])");
-  absolute  (0xDF, "CMP(A,[(#+X)])");
+  absLong   (0xDF, "CMP(A,[(#+X)])");
   immediate (0xE0, "CMP(X,#)");
   directPage(0xE1, "SBC(A,[la([dp((#+X))])])");
   sep       (0xE2, "OR(P,#)");
@@ -283,7 +283,7 @@ PluginAdapter::PluginAdapter(Project *project)
   absolute  (0xFC, "CALL([(la([dp([la([dp(#)])])])+X)])");
   absolute  (0xFD, "SBC(A,[la((#+X))])");
   absolute  (0xFE, "INC([la((#+X))])");
-  absolute  (0xFF, "SBC(A,[(#+X)])");
+  absLong   (0xFF, "SBC(A,[(#+X)])");
 }
 
 // ----------------------------------------------------------------------------
