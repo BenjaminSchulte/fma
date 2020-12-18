@@ -74,6 +74,7 @@ public:
   virtual MacroPtr asMacro() { return NULL; }
   
   virtual bool isModule() const { return false; }
+  virtual ModulePtr asModule() { return NULL; }
 
   virtual bool isDecoratorContainer() const { return false; }
   virtual bool isDecoratable() const { return false; }

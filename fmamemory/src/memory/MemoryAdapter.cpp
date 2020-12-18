@@ -155,10 +155,16 @@ ResultPtr MemoryAdapter::createGlobalDeclaration(const ContextPtr &context, cons
 
   std::string fullName = context->getCallee()->getParentNameHint();
   if (fullName.length()) {
-    fullName += "." + name;
+    fullName += ".";
   } else {
-    fullName = name;
+    fullName = "";
   }
+
+  if (context->getCallee()->isModule()) {
+    fullName += context->getCallee()->asModule()->getName() + ".";
+  }
+
+  fullName += name;
 
   GroupedParameterList parameterCopy(parameter);
   if (parameterCopy.getArgs().size() > 0) {

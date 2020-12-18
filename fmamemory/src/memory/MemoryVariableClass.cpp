@@ -97,8 +97,7 @@ ResultPtr MemoryVariableClass::initialize(const ContextPtr &context, const Group
   }
 
   std::ostringstream os;
-  os << context->getNameHint() << "." << scope->getNameHint();
-  scope->setReference(context->getProject()->getMemoryAdapter()->createReference(os.str()));
+  scope->setReference(context->getProject()->getMemoryAdapter()->createReference(scope->getNameHint()));
 
   if ((it = kwargs.find("as")) == kwargs.end()) {
     context->log().error() << "Missing argument 'as' for declaration";

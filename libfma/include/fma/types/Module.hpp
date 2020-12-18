@@ -11,6 +11,7 @@ public:
   Module(const std::string &name);
   
   virtual bool isModule() const { return true; }
+  virtual ModulePtr asModule() { return std::dynamic_pointer_cast<Module>(getPointer()); }
 
   virtual std::string asString() const;
   virtual void dump(const std::string &prefix);
