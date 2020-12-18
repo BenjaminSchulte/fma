@@ -96,6 +96,9 @@ bool Application::loadMemoryPlugins() {
     if (plugin->getPluginType() == FMA::plugin::TYPE_MEMORY_MANAGER) {
       project.setMemoryAdapter(std::dynamic_pointer_cast<FMA::plugin::MemoryManagerPlugin>(plugin)->createAdapter());
     }
+    if (plugin->getPluginType() == FMA::plugin::TYPE_OUTPUT_FILE_BUILDER) {
+      outputFileWriters.push_back(std::dynamic_pointer_cast<FMA::plugin::OutputFileWriterPlugin>(plugin));
+    }
   }
 
   return true;

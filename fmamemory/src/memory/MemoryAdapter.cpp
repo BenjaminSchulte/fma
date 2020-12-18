@@ -10,6 +10,7 @@
 #include <fma/interpret/Result.hpp>
 #include <fma/interpret/ParameterList.hpp>
 #include <fma/Project.hpp>
+#include <fma/serialize/SerializerRegistry.hpp>
 #include <iostream>
 
 using namespace FMA;
@@ -177,6 +178,37 @@ ResultPtr MemoryAdapter::createGlobalDeclaration(const ContextPtr &context, cons
 }
 
 // ----------------------------------------------------------------------------
+void MemoryAdapter::registerMetaData() {
+  const auto &klasses = project->serializer()->allClasses();
+  FMA::serialize::TypeDeserializerClassMap::const_iterator it(klasses.begin());
+  for (; it != klasses.end(); it++) {
+    ClassPtr klass(it->second.lock());
+    if (!klass) {
+      continue;
+    }
+
+    MemoryClassMembersPtr members(MemoryClassMembers::getClassMembers(klass));
+    if (!members) {
+      continue;
+    }
+
+    uint64_t size = members->getSize();
+    if (size == 0) {
+      continue;
+    }
+
+    for (const auto *member : members->allMembers()) {
+      std::string metaName = "$CLASS." + klass->getFullName() + "[" + member->getName() + "]";
+      uint64_t metaOffset = members->getOffsetOf(member->getName());
+
+      MemoryPlacement placement;
+      placement.set(0, metaOffset, member->getItemSize());
+      symbols->resolve(metaName, placement, "NUMBER", member->getItemSize());
+    }
+  }
+}
+
+// ----------------------------------------------------------------------------
 bool MemoryAdapter::placeDynamicBlocks() {
   for (auto &map : dynamicMemoryMaps) {
     if (!map->place()) {
@@ -194,6 +226,8 @@ bool MemoryAdapter::placeStaticBlocks() {
       return false;
     }
   }
+
+  registerMetaData();
 
   return true;
 }
