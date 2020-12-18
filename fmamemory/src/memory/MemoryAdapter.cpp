@@ -2,6 +2,8 @@
 #include <memory/MemoryBlock.hpp>
 #include <memory/MemorySymbolMap.hpp>
 #include <memory/MemoryClassMembers.hpp>
+#include <fma/core/DataBlock.hpp>
+#include <fma/core/String.hpp>
 #include <fma/types/Class.hpp>
 #include <fma/types/Object.hpp>
 #include <fma/interpret/BaseContext.hpp>
@@ -11,6 +13,7 @@
 #include <iostream>
 
 using namespace FMA;
+using namespace FMA::core;
 using namespace FMA::memory;
 using namespace FMA::interpret;
 using namespace FMA::symbol;
@@ -126,7 +129,7 @@ ResultPtr MemoryAdapter::createDeclaration(const ContextPtr &context, const Grou
     context->log().error() << "Call to 'declare' requires valid callee";
     return ResultPtr(new Result());
   }
-
+  
   if (context->getCallee()->isClass()) {
     return createClassMemberDeclaration(context, parameter, name);
   } else {
@@ -150,7 +153,19 @@ ResultPtr MemoryAdapter::createGlobalDeclaration(const ContextPtr &context, cons
     return ResultPtr(new Result());
   }
 
-  TypePtr type = scopeClass->createInstance(context, parameter);
+  std::string fullName = context->getCallee()->getParentNameHint();
+  if (fullName.length()) {
+    fullName += "." + name;
+  } else {
+    fullName = name;
+  }
+
+  GroupedParameterList parameterCopy(parameter);
+  if (parameterCopy.getArgs().size() > 0) {
+    parameterCopy.getArgs()[0] = StringClass::createInstance(context, fullName)->get();
+  }
+
+  TypePtr type = scopeClass->createInstance(context, parameterCopy);
   context->getCallee()->setMember(name, type);
   return ResultPtr(new Result(context, type));
 }
