@@ -4,7 +4,7 @@ FMA (famicom macro assembler) is a new multi platform cross assembler, mainly us
 
 FMA speeds up development by adding lots of macro features, utilities and improved readability to your project. It allows you to write games in a ruby like syntax, but still keep full control over your application.
 
-WARNING: This project is still in the very, very alpha version! Core features might change without any backwards compatibility.
+Note: For the old JavaScript version see release v1.0
 
 == Overview
 
