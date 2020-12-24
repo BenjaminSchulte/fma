@@ -32,6 +32,8 @@ ResultPtr ModuleDeclarationStatement::execute(const ContextPtr &context) const {
   IdentifierPtr identifier = this->identifier;
   ResultPtr result = Result::executed(context, TypePtr(new Undefined()));
 
+  std::string parentNameHint = current->getNameHint();
+
   while (identifier) {
     const std::string &name = identifier->getName();
     ResultPtr member = current->getMember(name);
@@ -55,6 +57,13 @@ ResultPtr ModuleDeclarationStatement::execute(const ContextPtr &context) const {
           std::dynamic_pointer_cast<DecoratorContainer>(parentDecoratorContainer)->createChild()
         );
       }
+    }
+
+    module->setParentNameHint(parentNameHint);
+    if (parentNameHint.length()) {
+      parentNameHint += "." + name;
+    } else {
+      parentNameHint = name;
     }
 
     current = ContextPtr(new NestedContext(

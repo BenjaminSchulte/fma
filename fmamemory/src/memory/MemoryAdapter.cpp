@@ -2,15 +2,19 @@
 #include <memory/MemoryBlock.hpp>
 #include <memory/MemorySymbolMap.hpp>
 #include <memory/MemoryClassMembers.hpp>
+#include <fma/core/DataBlock.hpp>
+#include <fma/core/String.hpp>
 #include <fma/types/Class.hpp>
 #include <fma/types/Object.hpp>
 #include <fma/interpret/BaseContext.hpp>
 #include <fma/interpret/Result.hpp>
 #include <fma/interpret/ParameterList.hpp>
 #include <fma/Project.hpp>
+#include <fma/serialize/SerializerRegistry.hpp>
 #include <iostream>
 
 using namespace FMA;
+using namespace FMA::core;
 using namespace FMA::memory;
 using namespace FMA::interpret;
 using namespace FMA::symbol;
@@ -126,7 +130,7 @@ ResultPtr MemoryAdapter::createDeclaration(const ContextPtr &context, const Grou
     context->log().error() << "Call to 'declare' requires valid callee";
     return ResultPtr(new Result());
   }
-
+  
   if (context->getCallee()->isClass()) {
     return createClassMemberDeclaration(context, parameter, name);
   } else {
@@ -150,9 +154,58 @@ ResultPtr MemoryAdapter::createGlobalDeclaration(const ContextPtr &context, cons
     return ResultPtr(new Result());
   }
 
-  TypePtr type = scopeClass->createInstance(context, parameter);
+  std::string fullName = context->getCallee()->getParentNameHint();
+  if (fullName.length()) {
+    fullName += ".";
+  } else {
+    fullName = "";
+  }
+
+  if (context->getCallee()->isModule()) {
+    fullName += context->getCallee()->asModule()->getName() + ".";
+  }
+
+  fullName += name;
+
+  GroupedParameterList parameterCopy(parameter);
+  if (parameterCopy.getArgs().size() > 0) {
+    parameterCopy.getArgs()[0] = StringClass::createInstance(context, fullName)->get();
+  }
+
+  TypePtr type = scopeClass->createInstance(context, parameterCopy);
   context->getCallee()->setMember(name, type);
   return ResultPtr(new Result(context, type));
+}
+
+// ----------------------------------------------------------------------------
+void MemoryAdapter::registerMetaData() {
+  const auto &klasses = project->serializer()->allClasses();
+  FMA::serialize::TypeDeserializerClassMap::const_iterator it(klasses.begin());
+  for (; it != klasses.end(); it++) {
+    ClassPtr klass(it->second.lock());
+    if (!klass) {
+      continue;
+    }
+
+    MemoryClassMembersPtr members(MemoryClassMembers::getClassMembers(klass));
+    if (!members) {
+      continue;
+    }
+
+    uint64_t size = members->getSize();
+    if (size == 0) {
+      continue;
+    }
+
+    for (const auto *member : members->allMembers()) {
+      std::string metaName = "$CLASS." + klass->getFullName() + "[" + member->getName() + "]";
+      uint64_t metaOffset = members->getOffsetOf(member->getName());
+
+      MemoryPlacement placement;
+      placement.set(0, metaOffset, member->getItemSize());
+      symbols->resolve(metaName, placement, "NUMBER", member->getItemSize());
+    }
+  }
 }
 
 // ----------------------------------------------------------------------------
@@ -173,6 +226,8 @@ bool MemoryAdapter::placeStaticBlocks() {
       return false;
     }
   }
+
+  registerMetaData();
 
   return true;
 }

@@ -47,6 +47,8 @@ public:
   inline Project *getProject() const { return project; }
 
 protected:
+  void registerMetaData();
+
   MemoryBlockList blocks;
   plugin::MemoryBlockList _result;
   MemorySymbolMap *symbols;

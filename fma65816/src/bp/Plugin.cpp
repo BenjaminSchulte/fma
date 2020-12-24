@@ -30,7 +30,7 @@ bool OutputPlugin::initialize() {
 
 // ----------------------------------------------------------------------------
 bool OutputPlugin::generate(OutputAdapter *adapter) {
-  project->log().info() << "Building SNES symbol file.";
+  project->log().info() << "Building SNES breakpoint file.";
 
   std::ostringstream os;
 

@@ -149,6 +149,20 @@ int64_t MemoryClassMembers::getLocalOffsetOf(const std::string &name) {
 }
 
 // ----------------------------------------------------------------------------
+MemoryClassMemberItems MemoryClassMembers::allMembers() const {
+  MemoryClassMemberItems result;
+
+  for (const ClassPtr &parent : klass->getParents()) {
+    auto other(getClassMembers(parent)->allMembers());
+    result.insert(result.end(), other.begin(), other.end());
+  }
+
+  result.insert(result.end(), memberList.begin(), memberList.end());
+
+  return result;
+}
+
+// ----------------------------------------------------------------------------
 int64_t MemoryClassMembers::getOffsetOfInClass(const types::ClassPtr &klass, const std::string &name) {
   int64_t size=0, offset;
 

@@ -15,6 +15,8 @@ public:
 
   uint64_t size();
 
+  inline uint64_t getItemSize() const { return itemSize;}
+
   inline const std::string &getName() const { return name; }
   inline const types::TypePtr &getTypeHint() const { return typeHint; }
 

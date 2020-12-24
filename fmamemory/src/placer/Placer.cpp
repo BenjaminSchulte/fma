@@ -4,12 +4,15 @@
 #include <placer/PlacerScopeNode.hpp>
 #include <placer/PlacerStatePointer.hpp>
 #include <memory/MemoryMap.hpp>
+#include <memory/MemoryClassMembers.hpp>
+#include <fma/types/Class.hpp>
 #include <fma/Project.hpp>
 #include <iostream>
 
 using namespace FMA;
 using namespace FMA::placer;
 using namespace FMA::memory;
+using namespace FMA::types;
 
 // ----------------------------------------------------------------------------
 Placer::Placer(Project *project, MemoryMap *map)

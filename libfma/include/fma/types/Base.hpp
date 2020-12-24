@@ -74,6 +74,7 @@ public:
   virtual MacroPtr asMacro() { return NULL; }
   
   virtual bool isModule() const { return false; }
+  virtual ModulePtr asModule() { return NULL; }
 
   virtual bool isDecoratorContainer() const { return false; }
   virtual bool isDecoratable() const { return false; }
@@ -110,8 +111,12 @@ public:
 
   virtual void dump(const std::string &prefix);
 
+  inline const std::string &getParentNameHint() const { return parentNameHint; }
+  void setParentNameHint(const std::string &hint) { parentNameHint = hint; }
+
 protected:
   MemberMap members;
+  std::string parentNameHint;
 };
 
 }
