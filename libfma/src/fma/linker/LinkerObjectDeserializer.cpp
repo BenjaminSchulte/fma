@@ -92,6 +92,11 @@ bool LinkerObjectDeserializer::deserializeBlock(output::DynamicBuffer &buffer) c
     LinkerBlockSymbol sym;
     sym.name = buffer.readString();
     sym.offset = buffer.readUnsigned(sizeof(sym.offset));
+
+    if (sym.offset == 0 && block->getNameHint().size() == 0) {
+      block->setNameHint(sym.name);
+    }
+
     block->addSymbol(sym);
   }
 

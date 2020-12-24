@@ -143,10 +143,10 @@ ReferencePtr LinkerBlock::privateSymbol(plugin::MemorySymbolMap *map) {
 
 // ----------------------------------------------------------------------------
 bool LinkerBlock::calculateSymbols(Project *project, const plugin::MemorySymbolMap *map) {
-  bool valid = true;
   bool success = true;
 
   for (const auto &reference : references) {
+    bool valid = true;
     uint64_t number = reference.reference->resolve(map, valid);
     if (!valid) {
       project->log().error() << "Unable to resolve symbol: " << reference.reference->asString() << " (in " << getNameHint() << ")";

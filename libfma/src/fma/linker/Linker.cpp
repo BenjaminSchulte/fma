@@ -39,10 +39,14 @@ bool Linker::link() {
 
   project->log().info() << "Resolving symbols.";
   project->log().debug() << "Collecting symbols in all blocks.";
+  bool registerLinkerBlocksSuceeded = true;
   for (auto &block : object->getBlocks()) {
     if (!project->getMemoryAdapter()->registerLinkerBlockSymbols(block)) {
-      return false;
+      registerLinkerBlocksSuceeded = false;
     }
+  }
+  if (!registerLinkerBlocksSuceeded) {
+    return false;
   }
 
   project->log().debug() << "Replacing symbols in all blocks.";
