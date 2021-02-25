@@ -1,6 +1,7 @@
 #include <placer/PlacerScopeNode.hpp>
 #include <placer/PlacerState.hpp>
 #include <placer/PlacerStatePointer.hpp>
+#include <placer/Placer.hpp>
 #include <memory/MemoryScope.hpp>
 #include <iostream>
 
@@ -22,21 +23,17 @@ PlacerScopeNode::~PlacerScopeNode() {
 
 // ----------------------------------------------------------------------------
 const PlacerNodeList &PlacerScopeNode::getChildren() {
-  if (!didCollectChildren) {
-    didCollectChildren = true;
+  if (didCollectChildren) {
+    return children;
+  }
 
-    for (const auto &child : scope->children()) {
-      const MemoryScopePtr &ptr = child->asMemoryScope();
-      PlacerNodePtr node;
-      if (ptr) {
-        node = PlacerNodePtr(new PlacerScopeNode(placer, state, ptr));
-      } else {
-        node = PlacerNodePtr(new PlacerNode(placer, state, child));
-      }
+  didCollectChildren = true;
 
-      node->addParent(std::dynamic_pointer_cast<PlacerScopeNode>(shared_from_this()));
-      children.push_back(node);
-    }
+  for (const auto &child : scope->children()) {
+    PlacerNodePtr node = state->createPlacerNode(state, child);
+
+    node->addParent(std::dynamic_pointer_cast<PlacerScopeNode>(shared_from_this()));
+    children.push_back(node);
   }
 
   return children;

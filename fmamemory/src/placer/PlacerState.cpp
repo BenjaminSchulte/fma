@@ -48,3 +48,23 @@ void PlacerState::dumpMemoryUsage() {
 }
 
 // ----------------------------------------------------------------------------
+PlacerNodePtr PlacerState::createPlacerNode(const PlacerStatePtr &state, const FMA::memory::MemoryAllocationPtr &child) {
+  const memory::MemoryAllocation *key = child.get();
+  std::map<const memory::MemoryAllocation*, PlacerNodePtr>::iterator it = nodePointerMap.find(key);
+  if (it != nodePointerMap.end()) {
+    return it->second;
+  }
+
+  const auto &ptr = child->asMemoryScope();
+  PlacerNodePtr node;
+  if (ptr) {
+    node = PlacerNodePtr(new PlacerScopeNode(placer, state, ptr));
+  } else {
+    node = PlacerNodePtr(new PlacerNode(placer, state, child));
+  }
+
+  nodePointerMap[key] = node;
+  return node;
+}
+
+// ----------------------------------------------------------------------------

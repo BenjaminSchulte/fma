@@ -4,10 +4,15 @@
 #include "PlacerNode.hpp"
 
 namespace FMA {
+namespace memory {
+class MemoryAllocation;
+typedef std::shared_ptr<MemoryAllocation> MemoryAllocationPtr;
+}
 namespace placer {
 
 class PlacerMemoryMap;
 
+class PlacerStatePtr;
 class PlacerState {
 public:
   PlacerState(class Placer*);
@@ -23,10 +28,13 @@ public:
 
   inline const PlacerMemoryMapPtr &getMemoryMap() const { return memoryMap; }
 
+  PlacerNodePtr createPlacerNode(const PlacerStatePtr &state, const FMA::memory::MemoryAllocationPtr &child);
+
 protected:
   Placer *placer;
   PlacerNodeList nodes;
   PlacerMemoryMapPtr memoryMap;
+  std::map<const memory::MemoryAllocation*, PlacerNodePtr> nodePointerMap;
 
   void removeAllNodes();
 };

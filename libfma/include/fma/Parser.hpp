@@ -28,6 +28,8 @@ public:
     return errors;
   }
 
+  inline const FilePtr &getCurrentFile() const { return currentFile; }
+
 protected:
   Project *project;
   FilePtr currentFile;
