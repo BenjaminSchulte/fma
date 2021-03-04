@@ -34,6 +34,12 @@ ALL .
 %%
 
 <STRING>[^\\\"#]+ { yylval->string = new std::string(yytext); return T_STRINGLITERAL; }
+<STRING>\\\" { yylval->string = new std::string("\""); return T_STRINGLITERAL; }
+<STRING>\\\\ { yylval->string = new std::string("\\"); return T_STRINGLITERAL; }
+<STRING>\\n { yylval->string = new std::string("\n"); return T_STRINGLITERAL; }
+<STRING>\\t { yylval->string = new std::string("\t"); return T_STRINGLITERAL; }
+<STRING>\\r { yylval->string = new std::string("\r"); return T_STRINGLITERAL; }
+<STRING>\\x[a-fA-F0-9]+ { yylval->string = new std::string(std::string("") + (char)strtol(yytext+2, NULL, 16)); return T_STRINGLITERAL; }
 <STRING>[\"] { yy_pop_state(yyscanner); return T_END_STRING; }
 <STRING>[#][^{] { yylval->string = new std::string(yytext); return T_STRINGLITERAL; }
 <STRING>[#][{] { yy_push_state(INLINE_EXPRESSION, yyscanner); yy_push_state(UNARYTEST, yyscanner); return T_BEGIN_INLINEEXPRESSION; }
