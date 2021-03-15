@@ -38,6 +38,7 @@ bool OutputPlugin::generate(OutputAdapter *adapter) {
   for (const auto &bp : symbols->getBreakpoints()) {
     uint64_t address = symbols->getResolved(bp.reference->asString());
     os << std::hex << std::setw(6) << std::setfill('0') << (address & 0xFFFFFF) << ":x" << (bp.notifyOnly ? "n" : "") << ":cpu#" << bp.comment << std::endl;
+    os << std::hex << std::setw(6) << std::setfill('0') << (address & 0xFFFFFF) << ":x" << (bp.notifyOnly ? "n" : "") << ":sa1#" << bp.comment << std::endl;
   }
 
   adapter->openWithExtension(".bp")->write(os.str());

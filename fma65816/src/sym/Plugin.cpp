@@ -52,6 +52,7 @@ bool OutputPlugin::generate(OutputAdapter *adapter) {
   }
 
   adapter->openWithExtension(".cpu.sym")->write(os.str());
+  adapter->openWithExtension(".sa1.sym")->write(os.str());
 
   return true;
 }
