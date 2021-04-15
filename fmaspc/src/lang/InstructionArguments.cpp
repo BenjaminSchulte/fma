@@ -73,6 +73,9 @@ Operand *InstructionArgument::createOperand(InstructionArgument *other) const {
   case REG_S:
     return new RegisterOperand("S");
 
+  case REG_PSW:
+    return new RegisterOperand("PSW");
+
   default:
     return createValueOperand();
   }
@@ -124,6 +127,9 @@ std::string InstructionArgument::asString() const {
 
   case REG_S:
     return "S";
+
+  case REG_PSW:
+    return "PSW";
 
   default:
     return "?";
@@ -376,6 +382,8 @@ InstructionArgument *InstructionArguments::analyzeRegister(const ObjectPtr &valu
     return new InstructionArgument(InstructionArgument::REG_YA);
   } else if (typeName == "SP") {
     return new InstructionArgument(InstructionArgument::REG_S);
+  } else if (typeName == "PSW") {
+    return new InstructionArgument(InstructionArgument::REG_PSW);
   }
 
   valid = false;

@@ -455,11 +455,13 @@ bool SpcLanguagePlugin::initialize() {
     VARIANT1(regA)            CREATE(new instruct::PUSH(new RegisterOperand("A")));
     VARIANT1(regX)            CREATE(new instruct::PUSH(new RegisterOperand("X")));
     VARIANT1(regY)            CREATE(new instruct::PUSH(new RegisterOperand("Y")));
+    VARIANT1(regPSW)          CREATE(new instruct::PUSH(new RegisterOperand("PSW")));
   END_INSTRUCTION("PUSH");
   INSTRUCTION("POP");
     VARIANT1(regA)            CREATE(new instruct::POP(new RegisterOperand("A")));
     VARIANT1(regX)            CREATE(new instruct::POP(new RegisterOperand("X")));
     VARIANT1(regY)            CREATE(new instruct::POP(new RegisterOperand("Y")));
+    VARIANT1(regPSW)          CREATE(new instruct::POP(new RegisterOperand("PSW")));
   END_INSTRUCTION("POP");
   INSTRUCTION("SET0");
     VARIANT1(dp)              CREATE(new instruct::OR(args.createLeftOperand(), new ConstantNumberOperand(1 << 0)))
@@ -512,6 +514,7 @@ bool SpcLanguagePlugin::initialize() {
   root->setMember("Y", RegisterClass::createInstance(context, "Y")->get());
   root->setMember("YA", RegisterClass::createInstance(context, "YA")->get());
   root->setMember("SP", RegisterClass::createInstance(context, "SP")->get());
+  root->setMember("PSW", RegisterClass::createInstance(context, "PSW")->get());
   root->setMember("dp", TypePtr(new InternalFunctionValue("dp", SpcLanguagePlugin::dp)));
   root->setMember("addr", TypePtr(new InternalFunctionValue("addr", SpcLanguagePlugin::addr)));
   root->setMember("indirect", TypePtr(new InternalFunctionValue("indirect", SpcLanguagePlugin::indirect)));

@@ -28,7 +28,8 @@ struct InstructionArgument {
     REG_X,
     REG_Y,
     REG_YA,
-    REG_S
+    REG_S,
+    REG_PSW
   };
 
   enum ValueType {
@@ -53,6 +54,7 @@ struct InstructionArgument {
   inline bool regX() const { return type == REG_X; }
   inline bool regY() const { return type == REG_Y; }
   inline bool regS() const { return type == REG_S; }
+  inline bool regPSW() const { return type == REG_PSW; }
   inline bool regYA() const { return type == REG_YA; }
   inline bool flagC() const { return type == FLAG_C; }
   inline bool address() const { return type == ADDRESS; }

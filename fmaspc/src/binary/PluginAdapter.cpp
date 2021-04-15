@@ -42,6 +42,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   dpCopy    (0x09, "OR([dp(#)],[dp(#)])");
   directPage(0x0B, "ASL([dp(#)],#)");
   absolute  (0x0C, "ASL(la(#),#)");
+  implicit  (0x0D, "PUSH(PSW)");
   implicit  (0x0F, "BRK");
   pcRelative(0x10, "JNS(pcrel(#))");
   clrSetBit (0x12, "ANDNOT([dp(#)],#)");
@@ -111,6 +112,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   directPage(0x8B, "DEC([dp(#)])");
   absolute  (0x8C, "DEC([la(#)])");
   immediate (0x8D, "MOV(Y,#)");
+  implicit  (0x8E, "POP(PSW)");
   dpImm     (0x8F, "MOV([dp(#)],#)");
   pcRelative(0x90, "JNC(pcrel(#))");
   absolute  (0x95, "ADC(A,[la((#+X))])");
