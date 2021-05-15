@@ -51,7 +51,7 @@ bool OutputPlugin::generateOutputFile(const DynamicBufferPtr &buffer, OutputAdap
 // ----------------------------------------------------------------------------
 void OutputPlugin::setMinimumBufferSize(const DynamicBufferPtr &buffer, OutputAdapter *adapter) {
   uint64_t size = buffer->getSize();
-  uint64_t currentTargetSize = 2 * 1024 * 1028 / 8;
+  uint64_t currentTargetSize = 2 * 1024 * 1024 / 8;
   uint8_t currentTargetByte = 0x08;
 
   while (size > currentTargetSize) {
@@ -64,7 +64,7 @@ void OutputPlugin::setMinimumBufferSize(const DynamicBufferPtr &buffer, OutputAd
 
   buffer->forceSize(currentTargetSize);
 
-  project->log().debug() << "Using ROM size configuration " << (int)currentTargetByte;
+  project->log().debug() << "Using ROM size configuration " << (int)currentTargetByte << " size " << currentTargetSize;
 }
 
 // ----------------------------------------------------------------------------

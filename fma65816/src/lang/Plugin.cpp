@@ -143,9 +143,10 @@ bool LanguagePlugin::initialize() {
   const ClassPtr &number = root->getMember("Number")->asClass();
   const ClassPtr &typedNumber = root->getMember("TypedNumber")->asClass();
   const ClassPtr &memoryVariable = root->getMember("MemoryVariable")->asClass();
+  const ClassPtr &memoryVariablePointer = root->getMember("MemoryVariable$Pointer")->asClass();
   const ClassPtr &function = root->getMember("Function")->asClass();
   const ClassPtr &symbolRef = root->getMember("SymbolReference")->asClass();
-  if (!dataBlock || !klass || !number || !typedNumber || !compiler || !function || !memoryVariable || !symbolRef) {
+  if (!dataBlock || !klass || !number || !typedNumber || !compiler || !function || !memoryVariable || !memoryVariablePointer || !symbolRef) {
     project->log().error() << "Could not find DataBlock class";
     return false;
   }
@@ -758,6 +759,12 @@ bool LanguagePlugin::initialize() {
   memoryVariableProto->setMember(".long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
   memoryVariableProto->setMember(".long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
   memoryVariableProto->setMember(".indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
+
+  ClassPrototypePtr memoryVariablePointerProto(memoryVariablePointer->getPrototype());
+  memoryVariablePointerProto->setMember(".dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
+  memoryVariablePointerProto->setMember(".long", TypePtr(new InternalFunctionValue("long", LanguagePlugin::number_long_address)));
+  memoryVariablePointerProto->setMember(".long_address", TypePtr(new InternalFunctionValue("long_address", LanguagePlugin::number_long_address)));
+  memoryVariablePointerProto->setMember(".indirect", TypePtr(new InternalFunctionValue("indirect", LanguagePlugin::number_indirect)));
 
   ClassPrototypePtr numberProto(number->getPrototype());
   numberProto->setMember(".dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
