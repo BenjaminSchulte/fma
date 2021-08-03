@@ -79,7 +79,7 @@ bool PlacerMemoryMap::isParentShared() const {
 
 // ----------------------------------------------------------------------------
 bool PlacerMemoryMap::needsOwnUsageMap() const {
-  return isShared() || isParentShared() || parents.empty();
+  return isShared() || isParentShared() || parents.empty() || parents.size() > 1;
 }
 
 // ----------------------------------------------------------------------------
