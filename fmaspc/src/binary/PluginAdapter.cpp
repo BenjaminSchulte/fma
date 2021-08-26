@@ -91,7 +91,7 @@ SpcPluginAdapter::SpcPluginAdapter(Project *project)
   implicit  (0x5D, "MOV(X,A)");
   absolute  (0x5F, "JMP(#)");
   directPage(0x64, "CMP(A,[dp(#)])");
-  directPage(0x67, "OR(A,[la([dp((#+X))])])");
+  directPage(0x67, "CMP(A,[la([dp((#+X))])])");
   immediate (0x68, "CMP(A,#)");
   dpCopy    (0x69, "CMP([dp(#)],[dp(#)])");
   directPage(0x6B, "ROR([dp(#)],#)");

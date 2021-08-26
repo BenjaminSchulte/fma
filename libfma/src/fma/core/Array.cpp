@@ -46,7 +46,7 @@ ClassPtr ArrayClass::create(const RootModulePtr &root, const ClassPtr &ClassObje
   proto->setMember("initialize", TypePtr(new InternalFunctionValue("initialize", ArrayClass::initialize)));
   proto->setMember("last", TypePtr(new InternalFunctionValue("last", ArrayClass::last)));
   proto->setMember("length", TypePtr(new InternalFunctionValue("length", ArrayClass::count)));
-  proto->setMember("pop", TypePtr(new InternalFunctionValue("pop", ArrayClass::count)));
+  proto->setMember("pop", TypePtr(new InternalFunctionValue("pop", ArrayClass::pop)));
   proto->setMember("size", TypePtr(new InternalFunctionValue("size", ArrayClass::count)));
   proto->setMember("map", TypePtr(new InternalFunctionValue("map", ArrayClass::map)));
   proto->setMember("to_s", TypePtr(new InternalFunctionValue("to_s", ArrayClass::to_s)));
