@@ -31,7 +31,7 @@ SymbolReferencePtr MemorySymbolMap::createReference(const std::string &hint) {
   
   while (true) {
     std::ostringstream os;
-    os << hint << "#" << (counter++);
+    os << hint << ".@." << (counter++);
     std::string name = os.str();
 
     if (symbols.find(name) == symbols.end()) {
