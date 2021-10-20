@@ -19,11 +19,11 @@ typedef std::vector<CallStackItem> CallStackItemList;
 class CallStack;
 
 struct CallStackContext {
-  CallStackContext(CallStack &stack) : stack(stack) {}
+  CallStackContext(CallStack *stack) : stack(stack) {}
   ~CallStackContext();
 
 protected:
-  CallStack &stack;
+  CallStack *stack;
 };
 
 typedef std::shared_ptr<CallStackContext> CallStackContextPtr;
@@ -36,7 +36,7 @@ public:
 
   inline CallStackContextPtr enter(const CodeReference &ref) {
     stack.push_back(CallStackItem(ref));
-    return CallStackContextPtr(new CallStackContext(*this));
+    return CallStackContextPtr(new CallStackContext(this));
   }
 
   inline void leave() {

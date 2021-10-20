@@ -39,7 +39,6 @@ ResultPtr Macro::callInDecorator(const ContextPtr &callContext, const interpret:
   if (!children) {
     return ResultPtr(new Result());
   }
-
   ContextPtr runContext;
   BlockPtr block(new Block());
   const interpret::TypeList &contextArgs = params.only_context();

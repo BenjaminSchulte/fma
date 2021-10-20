@@ -27,6 +27,7 @@ protected:
   bool loadPlugins();
   bool loadOptions();
   bool loadLanguagePlugins();
+  bool loadCppPlugins();
   bool loadMemoryPlugins();
   bool loadPlugins(const PluginList &);
   void unloadPlugins();

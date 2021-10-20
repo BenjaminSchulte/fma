@@ -8,7 +8,7 @@ endif()
 
 add_executable(fma ${FMA_SRC})
 target_include_directories(fma PUBLIC include)
-target_link_libraries(fma fma65816 fmaspc fmamemory fmacsv fmajson fmafs)
+target_link_libraries(fma fma65816 fmaspc fmamemory fmacsv fmajson fmafs fmasuperfx)
 
 if(WITH_FMAIMAGE)
   target_link_libraries(fma fmaimage)

@@ -31,6 +31,7 @@ add_subdirectory(fmacsv)
 add_subdirectory(fmafs)
 add_subdirectory(fmajson)
 add_subdirectory(fmaimage)
+add_subdirectory(fmasuperfx)
 
 if (CMAKE_JS_VERSION)
   add_subdirectory(fmajs)

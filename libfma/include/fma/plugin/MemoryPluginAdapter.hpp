@@ -112,6 +112,9 @@ public:
 
   virtual void markIsUsed(bool used=true) = 0;
 
+  inline void writeByte(uint8_t byte) {
+    write(&byte, 1);
+  }
   virtual void write(void *data, uint32_t size) = 0;
   virtual void write(const symbol::ReferencePtr &reference, uint32_t size) = 0;
   virtual void write(assem::Instruction *instruct) = 0;

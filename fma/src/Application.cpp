@@ -11,12 +11,14 @@
 #include <iostream>
 #include "Application.hpp"
 
+//FMA::plugin::PluginList fmacpp_fmaGetPlugins(FMA::Project *project);
 FMA::plugin::PluginList fma65816_fmaGetPlugins(FMA::Project *project);
 FMA::plugin::PluginList fmaspc_fmaGetPlugins(FMA::Project *project);
 FMA::plugin::PluginList fmamemory_fmaGetPlugins(FMA::Project *project);
 FMA::plugin::PluginList fmacsv_fmaGetPlugins(FMA::Project *project);
 FMA::plugin::PluginList fmajson_fmaGetPlugins(FMA::Project *project);
 FMA::plugin::PluginList fmafs_fmaGetPlugins(FMA::Project *project);
+FMA::plugin::PluginList fmasuperfx_fmaGetPlugins(FMA::Project *project);
 #ifdef WITH_FMAIMAGE
 FMA::plugin::PluginList fmaimage_fmaGetPlugins(FMA::Project *project);
 #endif
@@ -76,6 +78,24 @@ bool Application::loadLanguagePlugins() {
 }
 
 // ----------------------------------------------------------------------------
+bool Application::loadCppPlugins() {
+  PluginList plugins;
+  //plugins = fmacpp_fmaGetPlugins(&project);
+
+  for (auto &plugin : plugins) {
+    if (!loadPlugin(plugin)) {
+      return false;
+    }
+
+    if (plugin->getPluginType() == FMA::plugin::TYPE_BINARY_BUILDER) {
+      project.removeAllByteCodeGenerators();
+      project.addByteCodeGenerator(std::dynamic_pointer_cast<FMA::plugin::BinaryGeneratorPlugin>(plugin)->createAdapter());
+    }
+  }
+
+  return true;
+}
+// ----------------------------------------------------------------------------
 bool Application::loadPlugins(const PluginList &all) {
   for (auto &plugin : all) {
     if (!loadPlugin(plugin)) {
@@ -126,6 +146,10 @@ bool Application::loadPlugins() {
     return false;
   }
 
+  if (!loadPlugins(fmasuperfx_fmaGetPlugins(&project))) {
+    return false;
+  }
+
 # ifdef WITH_FMAIMAGE
     if (!loadPlugins(fmaimage_fmaGetPlugins(&project))) {
       return false;
@@ -134,6 +158,12 @@ bool Application::loadPlugins() {
 
   if (!loadLanguagePlugins()) {
     return false;
+  }
+
+  if (!options.args()["output-cpp"].empty()) {
+    if (!loadCppPlugins()) {
+      return false;
+    }
   }
 
   return true;

@@ -26,11 +26,16 @@ DecoratorCall::DecoratorCall(const DecoratablePtr &macro, const ContextPtr &call
 
 // ----------------------------------------------------------------------------
 ResultPtr DecoratorCall::call(const ContextPtr&, const interpret::GroupedParameterList&) {
+  return callWithContext(callContext, parameters);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr DecoratorCall::callWithContext(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameters) {
   if (Decoratable::isCorrectDecoratorMode(macro->getDecoratorCallType(), type)) {
-    return macro->callInDecoratorIfCorrectMode(callContext, parameters, type);
+    return macro->callInDecoratorIfCorrectMode(context, parameters, type);
   }
 
-  return Decoratable::skipDecorator(callContext, parameters);
+  return Decoratable::skipDecorator(context, parameters);
 }
 
 // ----------------------------------------------------------------------------

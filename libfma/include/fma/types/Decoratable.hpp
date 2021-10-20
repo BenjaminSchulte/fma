@@ -11,10 +11,14 @@ class DecoratorCall : public Base {
 public:
   DecoratorCall(const DecoratablePtr &macro, const interpret::ContextPtr &callContext, const interpret::GroupedParameterList &parameters, DecoratorCallType type);
   virtual interpret::ResultPtr call(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameters);
+  interpret::ResultPtr callWithContext(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameters);
   virtual std::string asString() const;
 
   virtual const DecoratablePtr &getDecoratable() const { return macro; }
   virtual DecoratorCallType getDecoratorCallType() const { return type; }
+
+  // Returns the call context
+  inline const interpret::ContextPtr &getCallContext() const { return callContext; }
   
 protected:
   DecoratablePtr macro;

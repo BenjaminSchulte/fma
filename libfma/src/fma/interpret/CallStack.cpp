@@ -5,5 +5,5 @@ using namespace FMA::interpret;
 
 // ----------------------------------------------------------------------------
 CallStackContext::~CallStackContext() {
-  stack.leave();
+  stack->leave();
 }

@@ -57,8 +57,7 @@ ContextPtr BaseContext::getRootLevelContext() {
 
 // ----------------------------------------------------------------------------
 ResultPtr BaseContext::getMember(const std::string&) {
-  interpreter->getProject()->log().error() << "Unable to access member in " << asString();
-  return ResultPtr(new Result());
+  return ResultPtr(new Result(getPointer(), TypePtr(new Undefined())));
 }
 
 // ----------------------------------------------------------------------------
