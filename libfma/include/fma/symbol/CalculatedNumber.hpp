@@ -25,12 +25,12 @@ public:
     : left(left), op(op), right(right) {}
   virtual ~CalculatedNumber() {}
 
-  virtual std::string asString() const;
-  virtual bool isConstant() const;
-  virtual uint64_t asConstant() const;
+  virtual std::string asString() const override;
+  virtual bool isConstant() const override;
+  virtual uint64_t asConstant() const override;
   uint64_t asConstant(uint64_t leftValue, uint64_t rightValue) const;
 
-  virtual uint64_t resolve(const plugin::MemorySymbolMap *map, bool &valid) const;
+  virtual uint64_t resolve(const plugin::MemorySymbolMap *map, bool &valid) const override;
 
   bool serialize(FMA::output::DynamicBuffer &) const override;
   static ReferencePtr deserialize(Log *log, FMA::output::DynamicBuffer &);

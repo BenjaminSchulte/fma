@@ -14,11 +14,11 @@ public:
     , max(max) {}
   virtual ~SignedAssertRangeReference() {}
 
-  virtual std::string asString() const;
-  virtual bool isConstant() const { return other->isConstant(); }
-  virtual uint64_t asConstant() const { return other->asConstant(); }
+  virtual std::string asString() const override;
+  virtual bool isConstant() const override { return other->isConstant(); }
+  virtual uint64_t asConstant() const override { return other->asConstant(); }
 
-  virtual uint64_t resolve(const plugin::MemorySymbolMap *map, bool &valid) const;
+  virtual uint64_t resolve(const plugin::MemorySymbolMap *map, bool &valid) const override;
 
   bool serialize(FMA::output::DynamicBuffer &) const override;
   

@@ -12,9 +12,9 @@ typedef std::vector<MemoryLocationConstraint> MemoryLocationConstraints;
 
 class MemoryLocationList : public plugin::MemoryLocation {  
 public:
-  virtual void overrideAllow(const interpret::ContextPtr &, const interpret::GroupedParameterList &);
-  virtual void allow(const interpret::ContextPtr &, const interpret::GroupedParameterList &);
-  virtual void deny(const interpret::ContextPtr &, const interpret::GroupedParameterList &);
+  virtual void overrideAllow(const interpret::ContextPtr &, const interpret::GroupedParameterList &) override;
+  virtual void allow(const interpret::ContextPtr &, const interpret::GroupedParameterList &) override;
+  virtual void deny(const interpret::ContextPtr &, const interpret::GroupedParameterList &) override;
 
   inline void clearAllowed() { allowed.clear(); }
 

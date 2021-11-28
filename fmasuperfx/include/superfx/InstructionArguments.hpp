@@ -18,7 +18,8 @@ struct InstructionArgument {
   enum Type {
     INVALID,
     IMMEDIATE,
-    ADDRESS
+    ADDRESS,
+    REGISTER
   };
 
   enum ValueType {
@@ -51,6 +52,16 @@ public:
 
   inline InstructionArgument *getLeft() const { return left; }
   inline InstructionArgument *getRight() const { return right; }
+
+  inline bool isValid() const { return valid; }
+
+  inline bool implicit() const { return numArgs == 0; }
+  inline bool immediate() const { return numArgs == 1 && left->type==InstructionArgument::IMMEDIATE; }
+  inline bool address() const { return numArgs == 1 && left->type==InstructionArgument::ADDRESS; }
+  inline bool reg() const { return numArgs == 1 && left->type==InstructionArgument::REGISTER; }
+  inline bool regImmediate() const { return numArgs == 2 && left->type==InstructionArgument::REGISTER && right->type==InstructionArgument::IMMEDIATE; }
+  inline bool regAddress() const { return numArgs == 2 && left->type==InstructionArgument::REGISTER && right->type==InstructionArgument::ADDRESS; }
+  inline bool regReg() const { return numArgs == 2 && left->type==InstructionArgument::REGISTER && right->type==InstructionArgument::REGISTER; }
  
 protected:
   InstructionArgument *analyzeArgs(const FMA::types::TypePtr &param);

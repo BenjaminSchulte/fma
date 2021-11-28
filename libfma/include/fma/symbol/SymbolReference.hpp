@@ -11,12 +11,12 @@ public:
   SymbolReference(const std::string &name) : name(name) {}
   virtual ~SymbolReference() {}
 
-  virtual std::string asString() const { return name; }
+  virtual std::string asString() const override { return name; }
   inline const std::string &getName() const { return name; }
 
-  virtual bool isSymbolReference() const { return true; }
+  virtual bool isSymbolReference() const override { return true; }
 
-  virtual uint64_t resolve(const plugin::MemorySymbolMap *map, bool &valid) const;
+  virtual uint64_t resolve(const plugin::MemorySymbolMap *map, bool &valid) const override;
 
   bool serialize(FMA::output::DynamicBuffer &) const override;
 

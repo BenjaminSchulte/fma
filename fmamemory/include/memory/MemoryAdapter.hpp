@@ -17,13 +17,13 @@ public:
   MemoryAdapter(Project *project);
   virtual ~MemoryAdapter();
 
-  FMA::plugin::MemoryBlock *allocateBlock(MemoryBlock::Usage usage, const std::string &name);
+  FMA::plugin::MemoryBlock *allocateBlock(MemoryBlock::Usage usage, const std::string &name) override;
   inline MemorySymbolMap *getSymbols() const { return symbols; }
 
-  plugin::MemorySymbolMap *getSymbolMap() const;
-  const plugin::MemoryBlockList &getBlocks();
+  plugin::MemorySymbolMap *getSymbolMap() const override;
+  const plugin::MemoryBlockList &getBlocks() override;
   
-  symbol::SymbolReferencePtr createReference(const std::string &name);
+  symbol::SymbolReferencePtr createReference(const std::string &name) override;
   plugin::MemoryLocationPtr deserializeLocation(Log *, output::DynamicBuffer &) const override;
 
   interpret::ResultPtr createScope(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
@@ -31,14 +31,14 @@ public:
   interpret::ResultPtr createClassMemberDeclaration(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter, const std::string &);
   interpret::ResultPtr createGlobalDeclaration(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter, const std::string &);
 
-  uint64_t translateAddress(uint64_t address);
+  uint64_t translateAddress(uint64_t address) override;
   
   inline void addDynamicMemoryMap(MemoryMap *map) { dynamicMemoryMaps.push_back(map); }
   inline void addStaticMemoryMap(MemoryMap *map) { staticMemoryMaps.push_back(map); }
-  bool placeDynamicBlocks();
-  bool placeStaticBlocks();
-  bool registerLinkerBlockSymbols(linker::LinkerBlock *block);
-  const FMA::plugin::MemoryBlockPlacement *requireStaticBlockPlacement(linker::LinkerBlock *block);
+  bool placeDynamicBlocks() override;
+  bool placeStaticBlocks() override;
+  bool registerLinkerBlockSymbols(linker::LinkerBlock *block) override;
+  const FMA::plugin::MemoryBlockPlacement *requireStaticBlockPlacement(linker::LinkerBlock *block) override;
 
   MemoryMap *createMemoryMap();
   MemoryMap *getStaticMemoryMap();

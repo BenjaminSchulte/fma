@@ -59,7 +59,7 @@ InstructionArgument *InstructionArguments::analyzeArgs(const TypePtr &param) {
   ClassPtr ImmediateNumber = project->root()->getMember("ImmediateNumber")->asClass();
   ClassPtr TypedNumber = project->root()->getMember("TypedNumber")->asClass();
   ClassPtr Number = project->root()->getMember("Number")->asClass();
-  ClassPtr Register = project->root()->getMember("Register")->asClass();
+  ClassPtr SuperFxRegister = project->root()->getMember("SuperFxRegister")->asClass();
   ClassPtr SymbolReference = project->root()->getMember("SymbolReference")->asClass();
 
   const ClassPtr &self = value->getClass();
@@ -72,7 +72,7 @@ InstructionArgument *InstructionArguments::analyzeArgs(const TypePtr &param) {
     return analyzeSymbol(value);
   } else if (self->isInstanceOf(TypedNumber)) {
     return analyzeTypedNumber(value);
-  } else if (self->isInstanceOf(Register)) {
+  } else if (self->isInstanceOf(SuperFxRegister)) {
     return analyzeRegister(value);
   } else if (value->hasMember("to_sym")) {
     GroupedParameterList empty;
@@ -129,14 +129,17 @@ InstructionArgument *InstructionArguments::analyzeTypedNumber(const ObjectPtr &v
 
 // ----------------------------------------------------------------------------
 InstructionArgument *InstructionArguments::analyzeRegister(const ObjectPtr &value) {
-  TypePtr valueObject = value->getMember("name")->getMember("__value");
-  if (!valueObject->isInternalObjectOfType("String")) {
+  TypePtr valueObject = value->getMember("index")->getMember("__value");
+  if (!valueObject->isInternalObjectOfType("Number")) {
     valid = false;
     return NULL;
   }
 
-  valid = false;
-  return NULL;
+  InternalNumberValue *number = dynamic_cast<InternalNumberValue*>(valueObject.get());
+  return new InstructionArgument(
+    InstructionArgument::REGISTER,
+    number->getValue()
+  );
 }
 
 // ----------------------------------------------------------------------------
