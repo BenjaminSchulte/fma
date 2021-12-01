@@ -35,7 +35,7 @@ public:
   std::vector<std::string> getSymbolNames() const override;
 
   virtual symbol::ReferencePtr createCommand(const std::string &command) override;
-  void addEmulatorBreakpoint(const symbol::SymbolReferencePtr &, bool notifyOnly, const std::string &comment) override;
+  void addEmulatorBreakpoint(const symbol::ReferencePtr &, bool notifyOnly, const std::string &comment) override;
   virtual const std::vector<plugin::MemorySymbolMapCommand> &getCommands() const override;
   const std::vector<plugin::MemorySymbolMapBreakpoint> &getBreakpoints() const override {
     return breakPoints;

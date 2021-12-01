@@ -37,6 +37,9 @@ namespace {
   ReferencePtr CALC_ADD(const ReferencePtr &l, const ReferencePtr &r) {
     return ReferencePtr(new CalculatedNumber(l, CalculatedNumber::ADD, r));
   }
+  ReferencePtr CALC_LSR(const ReferencePtr &l, const ReferencePtr &r) {
+    return ReferencePtr(new CalculatedNumber(l, CalculatedNumber::RSHIFT, r));
+  }
   ReferencePtr CALC_AND(const ReferencePtr &l, const ReferencePtr &r) {
     return ReferencePtr(new CalculatedNumber(l, CalculatedNumber::AND, r));
   }
@@ -256,7 +259,7 @@ ClassPtr SuperFxDataBlockClass::create(const ModulePtr &root, const ClassPtr &Cl
     VARIANT(regAddress) ALT1(); WRITESYM(CALC_OR(CALC_CONST(0xF0), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1); WRITESYM(CALC_ARG(args.getRight()), 2);
   END_INSTRUCTION("LM")
   INSTRUCTION("LMS")
-    VARIANT(regAddress) ALT1(); WRITESYM(CALC_OR(CALC_CONST(0xA0), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1); WRITESYM(CALC_ARG(args.getRight()), 2);
+    VARIANT(regAddress) ALT1(); WRITESYM(CALC_OR(CALC_CONST(0xA0), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1); WRITESYM(CALC_LSR(CALC_ARG(args.getRight()), CALC_CONST(1)), 1);
   END_INSTRUCTION("LMS")
   INSTRUCTION("LMULT")
     VARIANT(implicit) ALT1(); WRITE(0x9F);
@@ -325,7 +328,7 @@ ClassPtr SuperFxDataBlockClass::create(const ModulePtr &root, const ClassPtr &Cl
     VARIANT(regAddress) ALT2(); WRITESYM(CALC_OR(CALC_CONST(0xF0), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1); WRITESYM(CALC_ARG(args.getRight()), 2);
   END_INSTRUCTION("SM")
   INSTRUCTION("SMS")
-    VARIANT(regAddress) ALT2(); WRITESYM(CALC_OR(CALC_CONST(0xA0), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1); WRITESYM(CALC_ARG(args.getRight()), 2);
+    VARIANT(regAddress) ALT2(); WRITESYM(CALC_OR(CALC_CONST(0xA0), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1); WRITESYM(CALC_LSR(CALC_ARG(args.getRight()), CALC_CONST(1)), 1);
   END_INSTRUCTION("SMS")
   INSTRUCTION("STB")
     VARIANT(reg) ALT1(); WRITESYM(CALC_OR(CALC_CONST(0x30), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1);
@@ -340,6 +343,9 @@ ClassPtr SuperFxDataBlockClass::create(const ModulePtr &root, const ClassPtr &Cl
     VARIANT(reg) IS1BYTE(); WRITESYM(CALC_OR(CALC_CONST(0x60), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1);
     VARIANT(immediate) ALT2(); WRITESYM(CALC_OR(CALC_CONST(0x60), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1);
   END_INSTRUCTION("SUB")
+  INSTRUCTION("SWAP")
+    VARIANT(implicit) IS1BYTE(); WRITE(0x4D);
+  END_INSTRUCTION("SWAP")
   INSTRUCTION("TO")
     VARIANT(reg) IS1BYTE(); WRITESYM(CALC_OR(CALC_CONST(0x10), CALC_AND(CALC_ARG(args.getLeft()), CALC_CONST(0x0F))), 1);
   END_INSTRUCTION("TO")
