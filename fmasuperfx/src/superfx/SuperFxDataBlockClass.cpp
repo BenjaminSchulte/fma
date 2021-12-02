@@ -42,6 +42,7 @@ namespace {
   }
   ReferencePtr CALC_ARG(InstructionArgument *arg) {
     switch (arg->valueType) {
+    default:
     case InstructionArgument::VALUE_NONE:
       return ReferencePtr(new ConstantNumber(0));
 
