@@ -47,13 +47,13 @@ struct MemorySymbolMapCommand {
 };
 
 struct MemorySymbolMapBreakpoint {
-  MemorySymbolMapBreakpoint(const symbol::SymbolReferencePtr &reference, bool notifyOnly, const std::string &comment)
+  MemorySymbolMapBreakpoint(const symbol::ReferencePtr &reference, bool notifyOnly, const std::string &comment)
     : reference(reference)
     , notifyOnly(notifyOnly)
     , comment(comment)
   {}
 
-  symbol::SymbolReferencePtr reference;
+  symbol::ReferencePtr reference;
   bool notifyOnly;
   std::string comment;
 };
@@ -67,7 +67,7 @@ public:
   virtual symbol::SymbolReferencePtr createReference(const std::string &hint) = 0;
 
   virtual symbol::ReferencePtr createCommand(const std::string &command) = 0;
-  virtual void addEmulatorBreakpoint(const symbol::SymbolReferencePtr &, bool notifyOnly, const std::string &comment) = 0;
+  virtual void addEmulatorBreakpoint(const symbol::ReferencePtr &, bool notifyOnly, const std::string &comment) = 0;
 
   virtual bool hasResolved(const std::string &) const = 0;
   virtual uint64_t getResolved(const std::string &) const = 0;

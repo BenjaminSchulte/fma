@@ -18,6 +18,8 @@
 #include <fma/interpret/Interpreter.hpp>
 #include <fma/interpret/ProjectContext.hpp>
 #include <fma/interpret/ParameterList.hpp>
+#include <fma/symbol/ConstantNumber.hpp>
+#include <fma/symbol/SymbolReference.hpp>
 #include <fma/Project.hpp>
 
 #include <fma/instruct/Adc.hpp>
@@ -753,6 +755,7 @@ bool LanguagePlugin::initialize() {
   root->setMember("returns", TypePtr(new InternalFunctionValue("returns", LanguagePlugin::returns, DECORATORCALL_OUTER)));
 
   compiler->setMember("brk", TypePtr(new InternalFunctionValue("brk", LanguagePlugin::compiler_break)));
+  compiler->setMember("brk_at", TypePtr(new InternalFunctionValue("brk", LanguagePlugin::compiler_break_at)));
 
   ClassPrototypePtr memoryVariableProto(memoryVariable->getPrototype());
   memoryVariableProto->setMember(".dp", TypePtr(new InternalFunctionValue("dp", LanguagePlugin::number_dp)));
@@ -899,6 +902,33 @@ ResultPtr LanguagePlugin::compiler_break(const ContextPtr &context, const Groupe
   memoryBlock->reference(ref);
   symbolMap->addEmulatorBreakpoint(ref, notifyOnly, comment);
 
+  return ResultPtr(new Result());
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr LanguagePlugin::compiler_break_at(const ContextPtr &context, const GroupedParameterList &params) {
+  InstructionArguments args(context, context->getProject(), params);
+  if (!args.getLeft()) {
+    context->log().error() << "Missing symbol for brk_at"; 
+    return ResultPtr(new Result());
+  }
+
+  FMA::symbol::ReferencePtr ref;
+  switch (args.getLeft()->valueType) {
+    case InstructionArgument::VALUE_NONE:
+      return ResultPtr(new Result());
+
+    case InstructionArgument::VALUE_NUMBER:
+      ref = FMA::symbol::ReferencePtr(new FMA::symbol::ConstantNumber(args.getLeft()->number));
+      break;
+
+    case InstructionArgument::VALUE_SYMBOL:
+      ref = args.getLeft()->reference;
+      break;
+  }
+
+  auto *symbolMap = context->getProject()->getMemoryAdapter()->getSymbolMap();
+  symbolMap->addEmulatorBreakpoint(ref, false, "Custom Breakpoint");
   return ResultPtr(new Result());
 }
 
