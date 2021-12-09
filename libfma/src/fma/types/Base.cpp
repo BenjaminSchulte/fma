@@ -137,7 +137,7 @@ ResultPtr Base::callWithoutDecoratorTest(const ContextPtr& context, const Groupe
 ResultPtr Base::callDirect(const std::string &name, const ContextPtr& context, const GroupedParameterList &parameter) {
   const TypePtr &callback = getMember(name);
   if (callback->isUndefined() || !(isObject() || isClass())) {
-    context->log().error() << "Call to undefined function: " << name;
+    context->log().error() << "Call to undefined function " << name << " in context " << context->asString();
     return ResultPtr(new Result());
   }
 

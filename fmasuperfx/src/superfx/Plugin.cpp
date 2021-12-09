@@ -112,7 +112,10 @@ ResultPtr SuperFxPlugin::superfx(const ContextPtr &context, const GroupedParamet
 
   std::shared_ptr<DecoratorCall> decoratorCall(std::dynamic_pointer_cast<DecoratorCall>(blocks.front()));
   GroupedParameterList empty;
-  ResultPtr result = decoratorCall->callWithContext(instanceContext, empty);
 
+  ContextPtr oldContext = instanceContext->getInterpreter()->getGlobalContext();
+  instanceContext->getInterpreter()->setGlobalContext(instanceContext);
+  ResultPtr result = decoratorCall->callWithContext(instanceContext, empty);
+  instanceContext->getInterpreter()->setGlobalContext(oldContext);
   return result;
 }

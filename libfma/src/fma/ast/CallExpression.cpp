@@ -40,9 +40,8 @@ std::string CallExpression::asString(const std::string &) const {
 ResultPtr CallExpression::execute(const ContextPtr &context) const {
   ResultPtr callback = context->execute(expression);
   callback->pretendExecuted();
-  
   if (callback->isUndefined()) {
-    context->log().error() << location << "Call to undefined function: " << expression->asString("");
+    context->log().error() << location << "Call to undefined function: " << expression->asString("") << " in context " << context->asString();
     return ResultPtr(new Result());
   }
 

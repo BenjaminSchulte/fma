@@ -115,7 +115,7 @@ namespace {
     } \
     return ResultPtr(new Result()); \
   }))); \
-  //proto->setMember("::" name, proto->getMember(name))
+  proto->setMember("::" name, proto->getMember(name));
 
 
 // ----------------------------------------------------------------------------
