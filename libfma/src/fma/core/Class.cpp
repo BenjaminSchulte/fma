@@ -1,4 +1,5 @@
 #include <fma/core/Class.hpp>
+#include <fma/core/Boolean.hpp>
 #include <fma/core/String.hpp>
 #include <fma/types/InternalValue.hpp>
 #include <fma/types/Object.hpp>
@@ -32,6 +33,7 @@ ClassPtr ClassClass::create(const RootModulePtr &root, const ClassPtr &Object) {
   klass->setMember("include_class", TypePtr(new InternalFunctionValue("include", ClassClass::include)));
   klass->setMember("define_method", TypePtr(new InternalFunctionValue("define_method", ClassClass::define_method)));
   klass->setMember("define_prototype_method", TypePtr(new InternalFunctionValue("define_prototype_method", ClassClass::define_prototype_method)));
+  klass->setMember("nil?", TypePtr(new InternalFunctionValue("define_prototype_method", ClassClass::nil_qm)));
 
   root->setMember("Class", klass);
   return klass;
@@ -148,5 +150,11 @@ ResultPtr ClassClass::define_prototype_method(const ContextPtr &context, const G
 
   return ResultPtr(new Result());
 }
+
+// ----------------------------------------------------------------------------
+ResultPtr ClassClass::nil_qm(const ContextPtr &context, const GroupedParameterList&) {
+  return BooleanClass::createInstance(context, false);
+}
+
 
 // ----------------------------------------------------------------------------

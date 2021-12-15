@@ -105,6 +105,7 @@ ResultPtr RegisterClass::op_index(const ContextPtr &context, const GroupedParame
   
   GroupedParameterList callParam;
   callParam.push_back(args.front());
+
   uint64_t index = typeHint->callDirect("offset_of", context, callParam)->get()->convertToNumber(context);
 
   TypePtr indexInstance = NumberClass::createInstance(context, index)->get();

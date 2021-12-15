@@ -227,7 +227,7 @@ std::map<std::string, TypePtr> Base::convertToMap(const ContextPtr &context) {
 }
 
 // ----------------------------------------------------------------------------
-long double Base::convertToNumber(const ContextPtr &context) {
+long double Base::convertToNumber(const ContextPtr &context, const std::string &functionName) {
   if (isInternalObjectOfType("Number")) {
     InternalNumberValue *value = dynamic_cast<InternalNumberValue*>(this);
     return value->getValue();
@@ -236,7 +236,7 @@ long double Base::convertToNumber(const ContextPtr &context) {
   ContextPtr objectContext(new ObjectContext(context->getInterpreter(), getPointer()));
   interpret::GroupedParameterList parameter;
 
-  TypePtr stringObject = getMember("to_n")->call(objectContext, parameter)->asObjectOfType("Number");
+  TypePtr stringObject = getMember(functionName)->call(objectContext, parameter)->asObjectOfType("Number");
   if (!stringObject) {
     context->log().error() << "Could not call to_n on object " << asString();
     return 0;

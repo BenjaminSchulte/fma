@@ -70,9 +70,13 @@ void Result::requireExecuted() {
     return;
   }
 
+  if (!executeContext) {
+    pretendExecuted();
+    return;
+  }
+
   GroupedParameterList parameter;
   ContextPtr callContext;
-  
   if (hasContextObject()) {
     callContext = ContextPtr(new ObjectContext(executeContext->getInterpreter(), getContextObject()));
   } else {

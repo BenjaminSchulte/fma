@@ -92,7 +92,7 @@ public:
   virtual std::vector<TypePtr> convertToArray(const interpret::ContextPtr &context);
   virtual std::map<std::string, TypePtr> convertToMap(const interpret::ContextPtr &context);
   virtual std::string convertToString(const interpret::ContextPtr &context);
-  virtual long double convertToNumber(const interpret::ContextPtr &context);
+  virtual long double convertToNumber(const interpret::ContextPtr &context, const std::string &functionName="to_n");
   virtual bool convertToBoolean(const interpret::ContextPtr &context);
   virtual struct InternalRange convertToRange(const interpret::ContextPtr &context);
 

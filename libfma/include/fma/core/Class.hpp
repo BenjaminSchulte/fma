@@ -19,6 +19,7 @@ public:
   static interpret::ResultPtr include(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr define_method(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr define_prototype_method(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr nil_qm(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
 };
 
 }

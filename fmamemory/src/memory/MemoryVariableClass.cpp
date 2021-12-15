@@ -119,6 +119,8 @@ ResultPtr MemoryVariableClass::initialize(const ContextPtr &context, const Group
     scope->setClass(as->asClass());
   } else if (as->hasMember("to_n")) {
     scope->setSize(as->convertToNumber(context));
+  } else if (as->hasMember("size")) {
+    scope->setSize(as->convertToNumber(context, "size"));
   } else {
     context->log().error() << "Unsupported `as` parameter";
   }
