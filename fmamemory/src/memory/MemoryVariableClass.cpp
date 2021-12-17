@@ -38,6 +38,7 @@ ClassPtr MemoryVariableClass::create(const RootModulePtr &root, const ClassPtr &
 
   ClassPrototypePtr proto(klass->getPrototype());
   proto->setMember("initialize", TypePtr(new InternalFunctionValue("initialize", MemoryVariableClass::initialize)));
+  proto->setMember("size", TypePtr(new InternalFunctionValue("to_sym", MemoryVariableClass::size)));
   proto->setMember("to_sym", TypePtr(new InternalFunctionValue("to_sym", MemoryVariableClass::to_sym)));
   proto->setMember("[]", TypePtr(new InternalFunctionValue("[]", MemoryVariableClass::op_index)));
   proto->setMember(".", TypePtr(new InternalFunctionValue(".", MemoryVariableClass::op_index)));
@@ -135,6 +136,12 @@ ResultPtr MemoryVariableClass::initialize(const ContextPtr &context, const Group
   scope->locations().allow(context, parameter);
 
   return Result::executed(context, resultValue);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr MemoryVariableClass::size(const ContextPtr &context, const GroupedParameterList &) {
+  const MemoryAllocationPtr &memory = asMemoryAllocation(context);
+  return NumberClass::createInstance(context, memory->getSize());
 }
 
 // ----------------------------------------------------------------------------

@@ -22,6 +22,7 @@ public:
   // PROTOTYPE
   static interpret::ResultPtr initialize(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr to_sym(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr size(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr op_index(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   
   static interpret::ResultPtr op_index_array(const MemoryAllocationPtr &memory, const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
