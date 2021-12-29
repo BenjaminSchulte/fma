@@ -33,6 +33,7 @@ ClassPtr RangeClass::create(const RootModulePtr &root, const ClassPtr &ClassObje
   proto->setMember("first", TypePtr(new InternalFunctionValue("first", RangeClass::first)));
   proto->setMember("initialize", TypePtr(new InternalFunctionValue("initialize", RangeClass::initialize)));
   proto->setMember("last", TypePtr(new InternalFunctionValue("last", RangeClass::last)));
+  proto->setMember("each", TypePtr(new InternalFunctionValue("each", RangeClass::each)));
   proto->setMember("to_s", TypePtr(new InternalFunctionValue("to_s", RangeClass::to_s)));
 
   root->setMember("Range", klass);
@@ -82,6 +83,26 @@ ResultPtr RangeClass::first(const ContextPtr &context, const GroupedParameterLis
 // ----------------------------------------------------------------------------
 ResultPtr RangeClass::last(const ContextPtr &context, const GroupedParameterList &) {
   return NumberClass::createInstance(context, context->self()->convertToRange(context).last);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr RangeClass::each(const ContextPtr &context, const GroupedParameterList &parameter) {
+  const TypeList &blocks = parameter.only_blocks();
+  if (!blocks.size()) {
+    return ResultPtr(new Result());
+  }
+
+  ResultPtr result(new Result());
+  const TypePtr &block = blocks.front();
+
+  InternalRange range = context->self()->convertToRange(context);
+  for (int64_t cur=range.first; cur<=range.last; cur++) {
+    GroupedParameterList yieldParams;
+    yieldParams.push_back(Parameter(NumberClass::createInstance(context, cur)->get()));
+    result = block->call(context, yieldParams);
+  }
+  
+  return result;
 }
 
 // ----------------------------------------------------------------------------
