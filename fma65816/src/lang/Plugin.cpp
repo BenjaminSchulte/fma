@@ -104,12 +104,13 @@ LanguagePlugin::LanguagePlugin(Project *project)
     testTypeHinting(context, params, registerName); \
     INSTRUCTION_START_VARIANTS()
 
+/*
 #define INSTRUCTION_TYPE_HINT_ANY(name) \
     INSTRUCTION_START(name) \
     block->setLastIsReturn(false); \
     testTypeHinting(context, params); \
     INSTRUCTION_START_VARIANTS()
-
+*/
 #define VARIANT(name) \
     } else if (args.name()) {
 
@@ -381,12 +382,12 @@ bool LanguagePlugin::initialize() {
     VARIANT(absolute)      CREATE(new instruct::JMP(args.getLeft()->createValueOperand()));
     VARIANT(longAddress)   CREATE(new instruct::JMP(args.getLeft()->createValueOperand()));
   END_INSTRUCTION("JML");
-  INSTRUCTION_TYPE_HINT_ANY("JSR");
+  INSTRUCTION("JSR");
     VARIANT(absolute)      CREATE(new instruct::CALL(new LocalAddressOperand(args.getLeft()->createValueOperand())));
     VARIANT(longAddress)   CREATE(new instruct::CALL(args.getLeft()->createValueOperand()));
     VARIANT(indirectX)     CREATE(new instruct::CALL(args.createOperand()))
   END_INSTRUCTION("JSR");
-  INSTRUCTION_TYPE_HINT_ANY("JSL");
+  INSTRUCTION("JSL");
     VARIANT(absolute)      CREATE(new instruct::CALL(args.getLeft()->createValueOperand()));
     VARIANT(longAddress)   CREATE(new instruct::CALL(args.getLeft()->createValueOperand()));
   END_INSTRUCTION("JSL");
@@ -1024,7 +1025,7 @@ ResultPtr LanguagePlugin::function_jsr(const ContextPtr &context, const GroupedP
 
       jsr->pretendExecuted();
       jsr->get()->call(global, params);
-      testTypeHinting(context);
+      //testTypeHinting(context);
     }
   }
 
@@ -1041,6 +1042,10 @@ ResultPtr LanguagePlugin::auto_insert_rts(const ContextPtr &context, const Group
   if (type->isObjectOfType("Function") && !block->isReturned()) {
     context->getInterpreter()->getGlobalContext()->resolve("::RTS")->get();
   }
+
+  context->getRootLevelContext()->getMember("A")->get()->removeMember("__register_type");
+  context->getRootLevelContext()->getMember("X")->get()->removeMember("__register_type");
+  context->getRootLevelContext()->getMember("Y")->get()->removeMember("__register_type");
 
   return ResultPtr(new Result());
 }
