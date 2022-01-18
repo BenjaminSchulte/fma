@@ -25,6 +25,9 @@ public:
   Project();
   virtual ~Project();
 
+  inline void setTargetName(const std::string &name) { targetName = name; }
+  const std::string &getTargetName() const { return targetName; }
+
   inline class FileMap *getFiles() const { return files; }
   inline Log &log() const { return *_log; }
 
@@ -42,12 +45,13 @@ public:
 
 protected:
   class FileMap *files;
-  plugin::MemoryPluginAdapter *memoryAdapter;
+  plugin::MemoryPluginAdapter *memoryAdapter = nullptr;
   BinaryGeneratorAdapterList binaryAdapters;
   Log *_log;
   ConsoleLog *_defaultLogAdapter;
   serialize::SerializerRegistry *_serializer;
   std::shared_ptr<types::RootModule> _root;
+  std::string targetName;
 };
 
 }

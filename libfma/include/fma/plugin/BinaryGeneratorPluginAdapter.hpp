@@ -19,6 +19,7 @@ public:
 
   virtual bool supports(const std::string &name) const = 0;
   virtual bool generate(assem::BinaryCodeGeneratorScope *scope, assem::Instruction *instruct, const std::string &name) = 0;
+  virtual bool finish() { return true; }
 
 protected:
   Project *project;

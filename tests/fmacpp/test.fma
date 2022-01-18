@@ -1,0 +1,54 @@
+require "snes"
+
+Debug.enabled!
+
+test = Function.new "test" do
+  NOP
+  NOP
+  NOP
+  RTS
+end
+
+
+test2 = Function.new "test" do
+  LDA   datatest
+  LDA   datatest.to_sym + 1
+  LDA   datatest.to_sym + 2
+  RTS
+end
+
+datablock datatest
+  db 1
+  db 1
+  db 1
+  db 1
+end
+
+
+def nmi
+  Debug.log "NMI"
+  NOP
+  NOP
+  NOP
+  RTI
+end
+
+def main
+  Debug.log "MAIN"
+  NOP
+  NOP
+  NOP
+  
+  JSR   test
+  JSR   test2
+  LDX   #datatest
+
+_loop:
+  BRA   _loop
+end
+
+
+
+SNES.configure :exhirom do
+  on :IRQ, nmi
+end

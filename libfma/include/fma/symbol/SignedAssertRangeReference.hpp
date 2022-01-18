@@ -14,6 +14,9 @@ public:
     , max(max) {}
   virtual ~SignedAssertRangeReference() {}
 
+  static std::string ReferenceTypeId() { return "FMA::symbol::SignedAssertRangeReference"; }
+  std::string referenceTypeId() const override { return ReferenceTypeId(); }
+
   virtual std::string asString() const override;
   virtual bool isConstant() const override { return other->isConstant(); }
   virtual uint64_t asConstant() const override { return other->asConstant(); }

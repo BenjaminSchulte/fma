@@ -21,11 +21,15 @@ public:
     RSHIFT
   };
 
+  static std::string ReferenceTypeId() { return "FMA::symbol::CalculatedNumber"; }
+  std::string referenceTypeId() const override { return ReferenceTypeId(); }
+
   CalculatedNumber(const ReferencePtr &left, Operand op, const ReferencePtr &right)
     : left(left), op(op), right(right) {}
   virtual ~CalculatedNumber() {}
 
   virtual std::string asString() const override;
+  std::string operandAsString() const;
   virtual bool isConstant() const override;
   virtual uint64_t asConstant() const override;
   uint64_t asConstant(uint64_t leftValue, uint64_t rightValue) const;
@@ -34,6 +38,9 @@ public:
 
   bool serialize(FMA::output::DynamicBuffer &) const override;
   static ReferencePtr deserialize(Log *log, FMA::output::DynamicBuffer &);
+
+  inline const ReferencePtr &getLeft() const { return left; }
+  inline const ReferencePtr &getRight() const { return right; }
 
 protected:
   ReferencePtr left;

@@ -115,7 +115,7 @@ public:
   inline void writeByte(uint8_t byte) {
     write(&byte, 1);
   }
-  virtual void write(void *data, uint32_t size) = 0;
+  virtual void write(const void *data, uint32_t size) = 0;
   virtual void write(const symbol::ReferencePtr &reference, uint32_t size) = 0;
   virtual void write(assem::Instruction *instruct) = 0;
   virtual symbol::ReferencePtr reference() = 0;
@@ -123,6 +123,7 @@ public:
   virtual symbol::ReferencePtr reference(const std::string &) { return reference(); }
 
   virtual bool buildByteCode(assem::BinaryCodeGeneratorScope *scope) = 0;
+  virtual bool buildByteCode(assem::BinaryCodeGeneratorScope *scope, assem::Instruction *instruct) = 0;
 
   virtual MemoryLocationPtr location() = 0;
 

@@ -8,7 +8,7 @@ using namespace FMA::assem;
 using namespace FMA::instruct;
 
 // ----------------------------------------------------------------------------
-BinaryData::BinaryData(void *_data, uint32_t size)
+BinaryData::BinaryData(const void *_data, uint32_t size)
   : size(size)
   , memoryOffset(size)
   , memorySize(size)
@@ -18,7 +18,7 @@ BinaryData::BinaryData(void *_data, uint32_t size)
 }
 
 // ----------------------------------------------------------------------------
-void BinaryData::appendBinaryData(void *_data, uint32_t _size) {
+void BinaryData::appendBinaryData(const void *_data, uint32_t _size) {
   if (memoryOffset + _size > memorySize) {
     memorySize = memoryOffset + _size + 1024;
     

@@ -30,7 +30,7 @@ enum PluginType {
 
 class Plugin {
 public:
-  Plugin(Project *project) : project(project) {}
+  Plugin(Project *_project) : project(_project) {}
   virtual ~Plugin() {}
 
   virtual PluginType getPluginType() const = 0;
@@ -42,7 +42,7 @@ public:
   virtual void release() = 0;
 
 protected:
-  Project *project;
+  Project *project = nullptr;
 };
 
 

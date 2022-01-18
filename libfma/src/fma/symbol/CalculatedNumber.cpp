@@ -5,22 +5,27 @@
 using namespace FMA::symbol;
 
 // ----------------------------------------------------------------------------
+std::string CalculatedNumber::operandAsString() const {
+  switch (op) {
+    case CalculatedNumber::ADD: return "+";
+    case CalculatedNumber::SUB: return "-";
+    case CalculatedNumber::DIV: return "/";
+    case CalculatedNumber::MUL: return "*";
+    case CalculatedNumber::REM: return "%";
+    case CalculatedNumber::AND: return "&";
+    case CalculatedNumber::OR: return "|";
+    case CalculatedNumber::XOR: return "^";
+    case CalculatedNumber::LSHIFT: return "<<";
+    case CalculatedNumber::RSHIFT: return ">>";
+    default: return "???";
+  }
+}
+
+// ----------------------------------------------------------------------------
 std::string CalculatedNumber::asString() const {
   std::ostringstream os;
   os << left->asString();
-  switch (op) {
-    case CalculatedNumber::ADD: os << "+"; break;
-    case CalculatedNumber::SUB: os << "-"; break;
-    case CalculatedNumber::DIV: os << "/"; break;
-    case CalculatedNumber::MUL: os << "*"; break;
-    case CalculatedNumber::REM: os << "%"; break;
-    case CalculatedNumber::AND: os << "&"; break;
-    case CalculatedNumber::OR: os << "|"; break;
-    case CalculatedNumber::XOR: os << "^"; break;
-    case CalculatedNumber::LSHIFT: os << "<<"; break;
-    case CalculatedNumber::RSHIFT: os << ">>"; break;
-    default: os << "???"; break;
-  }
+  os << operandAsString();
   os << right->asString();
   return os.str();
 }

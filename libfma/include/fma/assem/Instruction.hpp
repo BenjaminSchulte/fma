@@ -28,7 +28,7 @@ public:
   virtual std::string getIdentifier();
 
   virtual bool containsBinaryData() const { return false; }
-  virtual void appendBinaryData(void*, uint32_t) {}
+  virtual void appendBinaryData(const void*, uint32_t) {}
 
   virtual const boost::any &getAttribute(const std::string &);
   virtual void setAttribute(const std::string &, const boost::any &value);

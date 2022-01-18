@@ -1,10 +1,10 @@
-#ifndef __FMA65816_BINARY_PLUGIN_H__
-#define __FMA65816_BINARY_PLUGIN_H__
+#ifndef __FMACPP_BINARY_PLUGIN_H__
+#define __FMACPP_BINARY_PLUGIN_H__
 
 #include <fma/plugin/Plugin.hpp>
 #include <fma/plugin/BinaryGeneratorPluginAdapter.hpp>
 
-namespace FMA65816 {
+namespace FMACPP {
 namespace binary {
 
 class BinaryPlugin : public FMA::plugin::BinaryGeneratorPlugin {  
@@ -12,11 +12,11 @@ public:
   BinaryPlugin(FMA::Project *project);
 
   const char *getName() const {
-    return "65816 binary generator";
+    return "C++ generator";
   }
 
   const char *getDescription() const {
-    return "Compiles instructions into bytecode";
+    return "Compiles instructions into C++";
   }
 
   FMA::plugin::BinaryGeneratorPluginAdapter *createAdapter();

@@ -8,7 +8,7 @@ namespace instruct {
 
 class BinaryData : public assem::Instruction0 {
 public:
-  BinaryData(void *data, uint32_t size);
+  BinaryData(const void *data, uint32_t size);
   ~BinaryData();
 
   virtual std::string getName();
@@ -16,10 +16,10 @@ public:
   virtual std::string getIdentifier() { return "$DATA"; }
 
   virtual bool containsBinaryData() const { return true; }
-  virtual void appendBinaryData(void*, uint32_t);
+  virtual void appendBinaryData(const void*, uint32_t);
 
   virtual uint32_t getSize() const { return size; }
-  virtual void *getData() const { return data; }
+  virtual const void *getData() const { return data; }
 
 protected:
   void *data;

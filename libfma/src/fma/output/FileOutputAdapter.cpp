@@ -2,6 +2,8 @@
 #include <fma/linker/LinkerObject.hpp>
 #include <fma/plugin/Plugin.hpp>
 #include <fma/output/FileOutputAdapter.hpp>
+#include <fma/Project.hpp>
+#include <iostream>
 
 using namespace FMA;
 using namespace FMA::output;
@@ -55,6 +57,7 @@ BufferPtr FileOutputAdapter::open(const std::string &name, bool binary) {
 
   FILE *fh = fopen(fullPath.c_str(), binary ? "wb" : "w");
   if (!fh) {
+    project->log().error() << "Unable to open file for writing: " << fullPath;
     return BufferPtr();
   }
 

@@ -1,9 +1,11 @@
 #include <fma/Project.hpp>
 #include <fma/assem/BinaryCodeGenerator.hpp>
 #include <fma/assem/BinaryCodeGeneratorScope.hpp>
+#include <fma/assem/LabelInstruction.hpp>
 #include <fma/linker/LinkerObject.hpp>
 #include <fma/linker/LinkerBlock.hpp>
 #include <fma/plugin/MemoryPluginAdapter.hpp>
+#include <fma/plugin/BinaryGeneratorPluginAdapter.hpp>
 #include <fma/symbol/SymbolReference.hpp>
 #include <iostream>
 
@@ -40,6 +42,12 @@ bool BinaryCodeGenerator::generate() {
     }
   }
 
+  for (BinaryGeneratorPluginAdapter *adapter : project->getByteCodeGenerators()) {
+    if (!adapter->finish()) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -49,10 +57,16 @@ bool BinaryCodeGenerator::generate(MemoryBlock *source) {
   project->log().trace() << "Generate bytecode for " << name;
 
   LinkerBlock *target = object->createBlock();
-  target->symbol(name);
+  //target->symbol(name);
   target->setLocation(source->location());
 
+  LabelInstruction label(name);
+
   BinaryCodeGeneratorScope scope(this, target);
+  if (!source->buildByteCode(&scope, &label)) {
+    return false;
+  }
+
   return source->buildByteCode(&scope);
 }
 

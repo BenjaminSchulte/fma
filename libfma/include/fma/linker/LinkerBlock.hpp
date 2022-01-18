@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <vector>
+#include <map>
+#include <memory>
 #include <fma/symbol/Reference.hpp>
 #include <fma/assem/Operand.hpp>
 #include <fma/plugin/MemoryPluginAdapter.hpp>
@@ -31,6 +33,13 @@ struct LinkerBlockSymbol {
   uint32_t offset;
 };
 typedef std::vector<LinkerBlockSymbol> LinkerBlockSymbolList;
+
+struct LinkerBlockUserData {
+  virtual ~LinkerBlockUserData() = default;
+  virtual std::string typeId() const = 0;
+};
+
+typedef std::shared_ptr<LinkerBlockUserData> LinkerBlockUserDataPtr;
 
 class LinkerBlock {
 public:
@@ -68,6 +77,9 @@ public:
   inline void addSymbol(const LinkerBlockSymbol &symbol) { symbols.push_back(symbol); }
   inline void addReference(const LinkerBlockReference &reference) { references.push_back(reference); }
 
+  inline std::map<std::string, LinkerBlockUserDataPtr> &getUserData() { return userData; }
+  inline const std::map<std::string, LinkerBlockUserDataPtr> &getUserData() const { return userData; }
+
 protected:
   void allocate(uint32_t size);
 
@@ -75,6 +87,8 @@ protected:
   uint32_t size;
   uint32_t memorySize;
   std::string name;
+
+  std::map<std::string, LinkerBlockUserDataPtr> userData;
 
   LinkerBlockReferenceList references;
   LinkerBlockSymbolList symbols;

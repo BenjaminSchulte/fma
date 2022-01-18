@@ -38,8 +38,8 @@ bool OutputSchemaPlugin::generate(OutputAdapter *adapter) {
   std::ostringstream os;
   os << "{";
   os << "\"types\":{\n";
-
   bool isFirstClass = true;
+
   const auto &klasses = project->serializer()->allClasses();
   FMA::serialize::TypeDeserializerClassMap::const_iterator it = klasses.begin();
   while (it != klasses.end()) {
@@ -82,7 +82,12 @@ bool OutputSchemaPlugin::generate(OutputAdapter *adapter) {
   os << "\n}";
   os << "}";
 
-  adapter->openWithExtension(".schema.json")->write(os.str());
+  BufferPtr buffer(adapter->openWithExtension(".schema.json"));
+  if (!buffer) {
+    project->log().warn() << "Unable to store schema.json file.";
+    return true;
+  }
+  buffer->write(os.str());
 
   return true;
 }

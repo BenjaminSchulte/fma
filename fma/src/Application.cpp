@@ -6,6 +6,7 @@
 #include <fma/linker/Linker.hpp>
 #include <fma/linker/LinkerObjectDeserializer.hpp>
 #include <fma/assem/BinaryCodeGenerator.hpp>
+#include <fma/types/RootModule.hpp>
 #include <fma/Parser.hpp>
 #include <fma/FileMap.hpp>
 #include <iostream>
@@ -19,6 +20,7 @@ FMA::plugin::PluginList fmacsv_fmaGetPlugins(FMA::Project *project);
 FMA::plugin::PluginList fmajson_fmaGetPlugins(FMA::Project *project);
 FMA::plugin::PluginList fmafs_fmaGetPlugins(FMA::Project *project);
 FMA::plugin::PluginList fmasuperfx_fmaGetPlugins(FMA::Project *project);
+FMA::plugin::PluginList fmacpp_fmaGetPlugins(FMA::Project *project);
 #ifdef WITH_FMAIMAGE
 FMA::plugin::PluginList fmaimage_fmaGetPlugins(FMA::Project *project);
 #endif
@@ -65,12 +67,14 @@ bool Application::loadLanguagePlugins() {
       return false;
     }
 
-    if (plugin->getPluginType() == FMA::plugin::TYPE_BINARY_BUILDER) {
-      project.addByteCodeGenerator(std::dynamic_pointer_cast<FMA::plugin::BinaryGeneratorPlugin>(plugin)->createAdapter());
-    }
+    if (target == "binary") {
+      if (plugin->getPluginType() == FMA::plugin::TYPE_BINARY_BUILDER) {
+        project.addByteCodeGenerator(std::dynamic_pointer_cast<FMA::plugin::BinaryGeneratorPlugin>(plugin)->createAdapter());
+      }
 
-    if (plugin->getPluginType() == FMA::plugin::TYPE_OUTPUT_FILE_BUILDER) {
-      outputFileWriters.push_back(std::dynamic_pointer_cast<FMA::plugin::OutputFileWriterPlugin>(plugin));
+      if (plugin->getPluginType() == FMA::plugin::TYPE_OUTPUT_FILE_BUILDER) {
+        outputFileWriters.push_back(std::dynamic_pointer_cast<FMA::plugin::OutputFileWriterPlugin>(plugin));
+      }
     }
   }
 
@@ -80,7 +84,7 @@ bool Application::loadLanguagePlugins() {
 // ----------------------------------------------------------------------------
 bool Application::loadCppPlugins() {
   PluginList plugins;
-  //plugins = fmacpp_fmaGetPlugins(&project);
+  plugins = fmacpp_fmaGetPlugins(&project);
 
   for (auto &plugin : plugins) {
     if (!loadPlugin(plugin)) {
@@ -90,6 +94,9 @@ bool Application::loadCppPlugins() {
     if (plugin->getPluginType() == FMA::plugin::TYPE_BINARY_BUILDER) {
       project.removeAllByteCodeGenerators();
       project.addByteCodeGenerator(std::dynamic_pointer_cast<FMA::plugin::BinaryGeneratorPlugin>(plugin)->createAdapter());
+    }
+    if (plugin->getPluginType() == FMA::plugin::TYPE_OUTPUT_FILE_BUILDER) {
+      outputFileWriters.push_back(std::dynamic_pointer_cast<FMA::plugin::OutputFileWriterPlugin>(plugin));
     }
   }
 
@@ -116,8 +123,11 @@ bool Application::loadMemoryPlugins() {
     if (plugin->getPluginType() == FMA::plugin::TYPE_MEMORY_MANAGER) {
       project.setMemoryAdapter(std::dynamic_pointer_cast<FMA::plugin::MemoryManagerPlugin>(plugin)->createAdapter());
     }
-    if (plugin->getPluginType() == FMA::plugin::TYPE_OUTPUT_FILE_BUILDER) {
-      outputFileWriters.push_back(std::dynamic_pointer_cast<FMA::plugin::OutputFileWriterPlugin>(plugin));
+
+    if (target == "binary") {
+      if (plugin->getPluginType() == FMA::plugin::TYPE_OUTPUT_FILE_BUILDER) {
+        outputFileWriters.push_back(std::dynamic_pointer_cast<FMA::plugin::OutputFileWriterPlugin>(plugin));
+      }
     }
   }
 
@@ -126,6 +136,12 @@ bool Application::loadMemoryPlugins() {
 
 // ----------------------------------------------------------------------------
 bool Application::loadPlugins() {
+  if (!options.args()["generator"].empty()) {
+    target = options.args()["generator"].as<std::string>();
+  }
+
+  project.setTargetName(target);
+
   if (!loadPlugin(PluginPtr(new FMA::core::CorePlugin(&project)))) {
     return false;
   }
@@ -160,7 +176,7 @@ bool Application::loadPlugins() {
     return false;
   }
 
-  if (!options.args()["output-cpp"].empty()) {
+  if (target == "c++") {
     if (!loadCppPlugins()) {
       return false;
     }

@@ -11,6 +11,9 @@ public:
   SymbolReference(const std::string &name) : name(name) {}
   virtual ~SymbolReference() {}
 
+  static std::string ReferenceTypeId() { return "FMA::symbol::SymbolReference"; }
+  std::string referenceTypeId() const override { return ReferenceTypeId(); }
+
   virtual std::string asString() const override { return name; }
   inline const std::string &getName() const { return name; }
 

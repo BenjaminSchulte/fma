@@ -61,7 +61,7 @@ SymbolReferencePtr MemoryBlock::createReference() {
 }
 
 // ----------------------------------------------------------------------------
-void MemoryBlock::write(void *data, uint32_t size) {
+void MemoryBlock::write(const void *data, uint32_t size) {
   if (!instructions.size() || !instructions.back()->containsBinaryData()) {
     write(new instruct::BinaryData(data, size));
     return;

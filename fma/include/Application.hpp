@@ -43,6 +43,8 @@ protected:
   PluginList plugins;
   std::vector<OutputFileWriterPluginPtr> outputFileWriters;
   FMA::Project project;
+
+  std::string target = "binary";
 };
 
 #endif

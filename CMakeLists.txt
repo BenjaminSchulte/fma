@@ -30,6 +30,7 @@ add_subdirectory(fmamemory)
 add_subdirectory(fmacsv)
 add_subdirectory(fmafs)
 add_subdirectory(fmajson)
+add_subdirectory(fmacpp)
 add_subdirectory(fmaimage)
 add_subdirectory(fmasuperfx)
 

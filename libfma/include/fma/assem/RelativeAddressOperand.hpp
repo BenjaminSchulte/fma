@@ -25,6 +25,9 @@ public:
   virtual bool isWriteable() { return left->isWriteable(); }
   virtual bool isReadable() { return left->isReadable(); }
 
+  inline Operand *getLeft() const { return left; }
+  inline Operand *getRight() const { return right; }
+
 protected:
   Operand *left;
   Operand *right;

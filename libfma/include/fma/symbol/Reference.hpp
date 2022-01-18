@@ -30,6 +30,8 @@ public:
   Reference() {}
   virtual ~Reference() {}
 
+  virtual std::string referenceTypeId() const = 0;
+
   virtual std::string asString() const=0;
   virtual bool isConstant() const { return false; }
   virtual uint64_t asConstant() const { return 0; }

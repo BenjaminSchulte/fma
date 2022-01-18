@@ -16,7 +16,7 @@ public:
   MemoryBlock(class MemoryAdapter *adapter, Usage usage, const std::string &name);
   virtual ~MemoryBlock();
 
-  virtual void write(void *data, uint32_t size);
+  virtual void write(const void *data, uint32_t size);
   virtual void write(const symbol::ReferencePtr &reference, uint32_t size);
   virtual void write(assem::Instruction *instruct);
   virtual symbol::ReferencePtr reference();
@@ -27,7 +27,7 @@ public:
   bool shouldBeLinked() const { return isUsed; }
 
   virtual bool buildByteCode(assem::BinaryCodeGeneratorScope *scope);
-  bool buildByteCode(assem::BinaryCodeGeneratorScope *scope, assem::Instruction *instruct);
+  virtual bool buildByteCode(assem::BinaryCodeGeneratorScope *scope, assem::Instruction *instruct);
 
   void clear();
   void setNameHint(const std::string &);

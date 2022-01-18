@@ -3,6 +3,7 @@
 #include <fma/core/Compiler.hpp>
 #include <fma/core/String.hpp>
 #include <fma/core/SymbolReference.hpp>
+#include <fma/core/DataBlock.hpp>
 #include <fma/types/InternalValue.hpp>
 #include <fma/interpret/Result.hpp>
 #include <fma/interpret/Parameter.hpp>
@@ -10,6 +11,7 @@
 #include <fma/interpret/Interpreter.hpp>
 #include <fma/interpret/BaseContext.hpp>
 #include <fma/interpret/InstanceContext.hpp>
+#include <fma/instruct/RawCode.hpp>
 #include <fma/plugin/MemoryPluginAdapter.hpp>
 #include <fma/Project.hpp>
 
@@ -17,6 +19,7 @@ using namespace FMA;
 using namespace FMA::core;
 using namespace FMA::types;
 using namespace FMA::interpret;
+using namespace FMA::plugin;
 
 #include <iostream>
 #include <sstream>
@@ -27,12 +30,15 @@ ClassPtr CompilerClass::create(const RootModulePtr &root, const ClassPtr &ClassO
   klass->extends(ClassObject);
 
   klass->setMember("PROJECT_DIR", TypePtr(new InternalFunctionValue("PROJECT_DIR", CompilerClass::PROJECT_DIR)));
+  klass->setMember("TARGET", TypePtr(new InternalFunctionValue("target", CompilerClass::target)));
 
   klass->setMember("assert", TypePtr(new InternalFunctionValue("assert", CompilerClass::_assert)));
   klass->setMember("dump", TypePtr(new InternalFunctionValue("dump", CompilerClass::dump)));
   klass->setMember("print", TypePtr(new InternalFunctionValue("print", CompilerClass::print)));
   klass->setMember("command", TypePtr(new InternalFunctionValue("command", CompilerClass::command)));
   klass->setMember("with_global_context", TypePtr(new InternalFunctionValue("with_global_context", CompilerClass::with_global_context)));
+  klass->setMember("raw", TypePtr(new InternalFunctionValue("raw", CompilerClass::raw)));
+  klass->setMember("escape", TypePtr(new InternalFunctionValue("escape", CompilerClass::escape)));
 
   klass->setMember("trace", TypePtr(new InternalFunctionValue("trace", CompilerClass::trace)));
   klass->setMember("debug", TypePtr(new InternalFunctionValue("debug", CompilerClass::debug)));
@@ -49,6 +55,11 @@ ClassPtr CompilerClass::create(const RootModulePtr &root, const ClassPtr &ClassO
 // ----------------------------------------------------------------------------
 ResultPtr CompilerClass::PROJECT_DIR(const ContextPtr &context, const GroupedParameterList &) {
   return StringClass::createInstance(context, boost::filesystem::current_path().string());
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr CompilerClass::target(const ContextPtr &context, const GroupedParameterList &) {
+  return StringClass::createInstance(context, context->getProject()->getTargetName());
 }
 
 // ----------------------------------------------------------------------------
@@ -159,6 +170,49 @@ ResultPtr CompilerClass::command(const ContextPtr &context, const GroupedParamet
   }
 
   return SymbolReferenceClass::createInstance(context, context->getProject()->getMemoryAdapter()->getSymbolMap()->createCommand(os.str()));
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr CompilerClass::raw(const ContextPtr &context, const GroupedParameterList &parameter) {
+  Interpreter *interpreter = context->getInterpreter();
+  MemoryBlock *block = DataBlockClass::memoryBlock(context->getProject(), interpreter->getGlobalContext()->self());
+  if (block == nullptr) {
+    context->log().error() << "Could not access memory block";
+    return ResultPtr(new Result());
+  }
+
+  const TypeList &args = parameter.only_args();
+  if (!args.size()) {
+    return ResultPtr(new Result());
+  }
+
+  for (const TypePtr &arg : args) {
+    block->write(new FMA::instruct::RawCode(arg->convertToString(context)));
+  }
+  return ResultPtr(new Result());
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr CompilerClass::escape(const ContextPtr &context, const GroupedParameterList &parameter) {
+  const TypeList &args = parameter.only_args();
+  if (!args.size()) {
+    return ResultPtr(new Result());
+  }
+
+  std::string input = args.front()->convertToString(context);
+  std::string s = "\"";
+  for(char c : input) {
+    if (isprint((unsigned char)c)) {
+      s += c;
+    } else {
+      std::stringstream stream;
+      stream << std::hex << (unsigned int)(unsigned char)(c);
+      std::string code = stream.str();
+      s += std::string("\\x")+(code.size()<2?"0":"")+code;
+    }
+  }
+
+  return StringClass::createInstance(context, s + "\"");
 }
 
 // ----------------------------------------------------------------------------

@@ -22,7 +22,7 @@ bool Options::parse(int argc, char **argv) {
     ("include-dir,I", po::value<std::vector<std::string>>(), "add include directories")
     ("output,o", po::value<std::string>()->default_value("a.bin"), "the output binary file")
     ("no-output", po::value<bool>()->default_value(false), "prevents generating a binary file")
-    ("output-cpp", po::value<std::string>(), "generates a C++ file of the ROM")
+    ("generator", po::value<std::string>(), "selects the binary generator")
   ;
 
   po::positional_options_description p;
