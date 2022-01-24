@@ -2,11 +2,12 @@
 
 #include <string>
 #include <iostream>
-#include <fmacpplib.hpp>
+#include "fmacpplib.hpp"
 
 using namespace FmaCpp;
 
 namespace {
+EngineAdapter lib;
 
 void printLog(const std::string &message, LogLevel level);
 
@@ -65,6 +66,10 @@ inline uint16_t dataRead16(uint32_t address) {
 void dataWrite8(uint32_t address, uint8_t value) {
   if (address >= 0x0000 && address < 0x2000) {
     ram[address] = value;
+  } else if (address >= 0x2100 && address < 0x2140) {
+    if (lib.setGraphicRegister) { lib.setGraphicRegister((GraphicRegister)address, value); }
+  } else if (address >= 0x4200 && address < 0x4220) {
+    if (lib.setSystemRegister) { lib.setSystemRegister((SystemRegister)address, value); }
   } else if (address >= 0x7E0000 && address <= 0x7FFFFF) {
     ram[address & 0x1FFFF] = value;
   } else {
@@ -203,7 +208,7 @@ inline int32_t currentBank(int32_t value) {
 //   Engine callbacks
 // -----------------------------------------------------------------------------
 void printLog(const std::string &message, LogLevel level) {
-  std::cout << message << std::endl;
+  if (lib.log) { lib.log(message, level); }
 }
 
 }
@@ -211,7 +216,8 @@ void printLog(const std::string &message, LogLevel level) {
 // -----------------------------------------------------------------------------
 //   Direct setup
 // -----------------------------------------------------------------------------
-void FmaCpp::gameAllocate() {
+void FmaCpp::gameAllocate(const EngineAdapter &adapter) {
+  lib = adapter;
   ram = (uint8_t*)malloc(0x10000 * 2);
 }
 

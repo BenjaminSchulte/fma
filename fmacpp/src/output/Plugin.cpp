@@ -37,7 +37,7 @@ bool OutputPlugin::generate(OutputAdapter *adapter) {
   }
 
   std::stringstream sout;
-  sout << "#include <fmacppdriver.hpp>\n";
+  sout << "#include <fmacpp/fmacppdriver.hpp>\n";
 
   // Registers all data blocks
   std::stringstream sdeclare;
@@ -115,7 +115,8 @@ bool OutputPlugin::generate(OutputAdapter *adapter) {
 
   // Global
   sout << "uint8_t FmaCpp::romRead(uint32_t address) {\n";
-  sout << "  if (false) {}\n";
+  sout << "  uint8_t bank = address >> 16;\n";
+  sout << "  if (bank < 0x40) { return romRead(address | 0xC00000); }\n";
   sout << sdataregister.str();
   sout << "  printLog(std::string(\"Invalid ROM access at address \") + std::to_string(address), LOG_ERROR);\n";
   sout << "  return 255;\n";

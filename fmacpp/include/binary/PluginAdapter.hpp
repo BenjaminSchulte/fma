@@ -33,8 +33,8 @@ public:
   PluginAdapter(FMA::Project *project);
   ~PluginAdapter();
 
-  bool supports(const std::string &name) const;
-  bool generate(FMA::assem::BinaryCodeGeneratorScope *scope, FMA::assem::Instruction *instruct, const std::string &name);
+  bool supports(const std::string &name) const override;
+  bool generate(FMA::assem::BinaryCodeGeneratorScope *scope, FMA::assem::Instruction *instruct, const std::string &name) override;
   bool finish() override;
 
 protected:

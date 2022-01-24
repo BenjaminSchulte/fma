@@ -44,11 +44,14 @@ PluginAdapter::PluginAdapter(Project *project)
 
   code      ("  SEP($2);", "OR(P,#)");
   code      ("  REP($2);", "ANDNOT(P,#)");
+  code      ("  R_S = R_A;", "MOV(S,C)");
 
   code      ("  P_M ? LDA8($2) : LDA16($2);", "MOV(A,#)");
   code      ("  P_M ? LDA8(dataRead8(currentBank($2))) : LDA16(dataRead16(currentBank($2)));", "MOV(A,[la(#)])");
   code      ("  P_X ? LDX8($2) : LDX16($2);", "MOV(X,#)");
   code      ("  P_M ? dataWrite8($1, R_A) : dataWrite16($1, R_A);", "MOV([#],A)");
+  code      ("  P_M ? dataWrite8(currentBank($1), R_A) : dataWrite16(currentBank($1), R_A);", "MOV([la(#)],A)");
+  code      ("  P_M ? dataWrite8(currentBank($1), $2) : dataWrite16(currentBank($1), $2);", "MOV([la(#)],#)");
 
 
   ignore    ("", "NOP");
@@ -147,6 +150,7 @@ OPERAND_TYPE(symbol, {
 
 // ----------------------------------------------------------------------------
 OPERAND_TYPE(ignore, {
+  (void)this;
   (void)scope;
   (void)instruct;
   (void)generator;
