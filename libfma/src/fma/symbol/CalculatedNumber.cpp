@@ -17,6 +17,10 @@ std::string CalculatedNumber::operandAsString() const {
     case CalculatedNumber::XOR: return "^";
     case CalculatedNumber::LSHIFT: return "<<";
     case CalculatedNumber::RSHIFT: return ">>";
+    case CalculatedNumber::LESS_THAN: return "<";
+    case CalculatedNumber::GREATER_THAN: return ">";
+    case CalculatedNumber::LESS_OR_EQUAL_THAN: return "<=";
+    case CalculatedNumber::GREATER_OR_EQUAL_THAN: return ">=";
     default: return "???";
   }
 }
@@ -53,6 +57,10 @@ uint64_t CalculatedNumber::asConstant(uint64_t leftValue, uint64_t rightValue) c
     case CalculatedNumber::XOR: return leftValue ^ rightValue;
     case CalculatedNumber::LSHIFT: return leftValue << rightValue;
     case CalculatedNumber::RSHIFT: return leftValue >> rightValue;
+    case CalculatedNumber::GREATER_THAN: return (leftValue > rightValue) ? 1 : 0;
+    case CalculatedNumber::LESS_THAN: return (leftValue < rightValue) ? 1 : 0;
+    case CalculatedNumber::GREATER_OR_EQUAL_THAN: return (leftValue >= rightValue) ? 1 : 0;
+    case CalculatedNumber::LESS_OR_EQUAL_THAN: return (leftValue <= rightValue) ? 1 : 0;
 
     default:
       return 0;

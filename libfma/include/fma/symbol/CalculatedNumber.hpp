@@ -18,7 +18,11 @@ public:
     OR,
     XOR,
     LSHIFT,
-    RSHIFT
+    RSHIFT,
+    LESS_THAN,
+    GREATER_THAN,
+    LESS_OR_EQUAL_THAN,
+    GREATER_OR_EQUAL_THAN,
   };
 
   static std::string ReferenceTypeId() { return "FMA::symbol::CalculatedNumber"; }
