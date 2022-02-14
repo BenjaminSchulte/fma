@@ -25,6 +25,7 @@ using namespace FMA::serialize;
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <float.h>
 
 TypeList __emptyList;
 
@@ -51,6 +52,8 @@ ClassPtr ArrayClass::create(const RootModulePtr &root, const ClassPtr &ClassObje
   proto->setMember("map", TypePtr(new InternalFunctionValue("map", ArrayClass::map)));
   proto->setMember("to_s", TypePtr(new InternalFunctionValue("to_s", ArrayClass::to_s)));
   proto->setMember("join", TypePtr(new InternalFunctionValue("join", ArrayClass::join)));
+  proto->setMember("max", TypePtr(new InternalFunctionValue("max", ArrayClass::max)));
+  proto->setMember("min", TypePtr(new InternalFunctionValue("min", ArrayClass::min)));
 
   proto->setMember("+", TypePtr(new InternalFunctionValue("+", ArrayClass::op_add)));
   proto->setMember("<<", TypePtr(new InternalFunctionValue("<<", ArrayClass::op_lshift)));
@@ -364,6 +367,34 @@ ResultPtr ArrayClass::op_add(const ContextPtr &context, const GroupedParameterLi
   }
 
   return createInstance(context, newArray);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr ArrayClass::min(const ContextPtr &context, const GroupedParameterList&) {
+  double result = DBL_MAX;
+  
+  for (auto &item : values(context)) {
+    double num = item->convertToNumber(context);
+    if (num < result) {
+      result = num;
+    }
+  }
+
+  return NumberClass::createInstance(context, result);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr ArrayClass::max(const ContextPtr &context, const GroupedParameterList&) {
+  double result = DBL_MIN;
+  
+  for (auto &item : values(context)) {
+    double num = item->convertToNumber(context);
+    if (num > result) {
+      result = num;
+    }
+  }
+
+  return NumberClass::createInstance(context, result);
 }
 
 // ----------------------------------------------------------------------------

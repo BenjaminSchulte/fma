@@ -29,6 +29,8 @@ public:
   static interpret::ResultPtr last(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr map(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr pop(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr min(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr max(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   
   static interpret::ResultPtr op_add(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr op_eq(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
