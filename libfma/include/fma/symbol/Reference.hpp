@@ -23,6 +23,7 @@ enum class SerializeReferenceId {
   CONST32_REFERENCE,
   CONST64_REFERENCE,
   SIGNED_ASSET_RANGE_REFERENCE,
+  STRING_CHARACTER_REFERENCE,
 };
 
 class Reference {

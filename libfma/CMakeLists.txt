@@ -105,6 +105,7 @@ set(LIBFMA_SRC
   ./src/fma/symbol/ConstantNumber.cpp
   ./src/fma/symbol/SignedAssertRangeReference.cpp
   ./src/fma/symbol/SymbolReference.cpp
+  ./src/fma/symbol/StringCharacterReference.cpp
   ./src/fma/symbol/Reference.cpp
   ./src/fma/symbol/CalculatedNumber.cpp
   ./src/fma/Project.cpp
@@ -209,6 +210,7 @@ set(LIBFMA_HEADERS
   ./include/fma/symbol/SignedAssertRangeReference.hpp
   ./include/fma/symbol/Reference.hpp
   ./include/fma/symbol/SymbolReference.hpp
+  ./include/fma/symbol/StringCharacterReference.hpp
   ./include/fma/symbol/ConstantNumber.hpp
   ./include/fma/parser/ParserHeading.hpp
   ./include/fma/Error.hpp

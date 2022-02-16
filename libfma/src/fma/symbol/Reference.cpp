@@ -2,6 +2,7 @@
 #include <fma/symbol/SymbolReference.hpp>
 #include <fma/symbol/ConstantNumber.hpp>
 #include <fma/symbol/CalculatedNumber.hpp>
+#include <fma/symbol/StringCharacterReference.hpp>
 #include <fma/Log.hpp>
 #include <fma/output/DynamicBuffer.hpp>
 
@@ -29,6 +30,9 @@ ReferencePtr Reference::deserialize(Log *log, FMA::output::DynamicBuffer &buffer
 
   case SerializeReferenceId::CALCULATE_REFERENCE:
     return CalculatedNumber::deserialize(log, buffer);
+
+  case SerializeReferenceId::STRING_CHARACTER_REFERENCE:
+    return StringCharacterReference::deserialize(log, buffer);
 
   case SerializeReferenceId::SIGNED_ASSET_RANGE_REFERENCE:
   default:
