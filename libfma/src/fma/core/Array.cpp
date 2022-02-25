@@ -25,6 +25,7 @@ using namespace FMA::serialize;
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <algorithm>
 #include <float.h>
 
 TypeList __emptyList;
@@ -54,6 +55,7 @@ ClassPtr ArrayClass::create(const RootModulePtr &root, const ClassPtr &ClassObje
   proto->setMember("join", TypePtr(new InternalFunctionValue("join", ArrayClass::join)));
   proto->setMember("max", TypePtr(new InternalFunctionValue("max", ArrayClass::max)));
   proto->setMember("min", TypePtr(new InternalFunctionValue("min", ArrayClass::min)));
+  proto->setMember("sort", TypePtr(new InternalFunctionValue("sort", ArrayClass::sort)));
 
   proto->setMember("+", TypePtr(new InternalFunctionValue("+", ArrayClass::op_add)));
   proto->setMember("<<", TypePtr(new InternalFunctionValue("<<", ArrayClass::op_lshift)));
@@ -381,6 +383,37 @@ ResultPtr ArrayClass::min(const ContextPtr &context, const GroupedParameterList&
   }
 
   return NumberClass::createInstance(context, result);
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr ArrayClass::sort(const ContextPtr &context, const GroupedParameterList&) {
+  TypeList input = values(context);
+  std::sort(input.begin(), input.end(), [context](const TypePtr &left, const TypePtr &right) -> bool {
+    if (left->hasMember("<")) {
+      GroupedParameterList rightList;
+      rightList.push_back(right);
+      auto result = left->callDirect("<", context, rightList);
+      if (!result->isObject()) {
+        context->log().warn() << "Operator < did not return an object";
+        return false;
+      }
+      return result->asObject()->convertToBoolean(context);
+    } else if (right->hasMember("<")) {
+      GroupedParameterList rightList;
+      rightList.push_back(left);
+      auto result = right->callDirect("<", context, rightList);
+      if (!result->isObject()) {
+        context->log().warn() << "Operator < did not return an object";
+        return true;
+      }
+      return !result->asObject()->convertToBoolean(context);
+    } else {
+      context->log().warn() << "Can not compare values of types";
+      return false;
+    }
+  });
+
+  return ArrayClass::createInstance(context, input);
 }
 
 // ----------------------------------------------------------------------------

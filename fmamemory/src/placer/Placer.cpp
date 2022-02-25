@@ -86,8 +86,9 @@ bool Placer::place() {
   PlacerRoute route;
   int32_t routeCounter = 0;
   bool succeeded = false;
+  bool dumpFailed = false;
 
-  while (route.more() && routeCounter < PLACER_MAX_ITERATIONS) {
+  while (route.more()) {
     project->log().debug() << "Placer: Current route index is " << ++routeCounter;
 
     PlacerState state(this);
@@ -108,10 +109,15 @@ bool Placer::place() {
     project->log().debug() << "Placer: Route " << routeCounter << " failed. Trying next route.";
 
     if (routeCounter == PLACER_MAX_ITERATIONS) {
+      dumpFailed = true;
+      route.rewind();
+    } else if (dumpFailed) {
       project->log().error() << "Could not place all items after testing " << PLACER_MAX_ITERATIONS << " variants.";
       ptr->dumpNodes();
       ptr->dumpMemoryUsage();
       map->dump();
+      map->dumpScopes();
+      break;
     }
   }
 

@@ -356,3 +356,46 @@ Compiler.assert MergedAB.new.from_a == "LA"
 Compiler.assert MergedAB.global_b == "GB"
 Compiler.assert MergedAB.new.local_b == "LB"
 Compiler.assert MergedAB.new.from_b == "LB"
+
+
+
+class SharedMemberBase
+  macro self.add(value)
+    @list ||= []
+    @list << value
+  end
+
+  macro self.__extended_class
+    @list = @list.dup if @respond_to?(:list)
+  end
+end
+
+class MemberClassA < SharedMemberBase
+  add :klass_a
+end
+
+class MemberClassB < SharedMemberBase
+  add :klass_b
+end
+
+class CommonClass < SharedMemberBase
+  add :common
+end
+
+class CommonMemberClassA < CommonClass
+  add :klass_a
+end
+
+class CommonMemberClassB < CommonClass
+  add :klass_b
+end
+
+class NestedCommonMemberClassB < CommonMemberClassB
+  add :nested_b
+end
+
+Compiler.assert MemberClassA.list == [:klass_a]
+Compiler.assert MemberClassB.list == [:klass_b]
+Compiler.assert CommonMemberClassA.list == [:common, :klass_a]
+Compiler.assert CommonMemberClassB.list == [:common, :klass_b]
+Compiler.assert NestedCommonMemberClassB.list == [:common, :klass_b, :nested_b]

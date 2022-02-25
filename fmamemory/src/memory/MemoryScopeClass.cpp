@@ -83,7 +83,7 @@ ResultPtr MemoryScopeClass::initialize(const ContextPtr &context, const GroupedP
       return ResultPtr(new Result());
     }
 
-    scope = MemoryScopePtr(MemoryMapClass::asMemoryMap(context->getProject(), targetMap)->createLooseMemoryScope());
+    scope = MemoryScopePtr(MemoryMapClass::asMemoryMap(context->getProject(), targetMap)->createLooseMemoryScope(shared));
   } else {
     context->log().error() << "Invalid 'in' value for scope: " << parent->asString();
     return ResultPtr(new Result());

@@ -26,7 +26,7 @@ public:
 
   MemoryMapShadow *createShadow(MemoryBankIndex left, MemoryBankSize leftAddress, MemoryBankIndex right, MemoryBankSize rightAddress, MemoryBankSize size);
   MemoryScopePtr createMemoryScope(bool shared);
-  MemoryScopePtr createLooseMemoryScope();
+  MemoryScopePtr createLooseMemoryScope(bool shared);
 
   bool place();
 

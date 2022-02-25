@@ -109,8 +109,8 @@ MemoryScopePtr MemoryMap::createMemoryScope(bool shared) {
 }
 
 // ----------------------------------------------------------------------------
-MemoryScopePtr MemoryMap::createLooseMemoryScope() {
-  return MemoryScopePtr(new MemoryScope(this, false));
+MemoryScopePtr MemoryMap::createLooseMemoryScope(bool shared) {
+  return MemoryScopePtr(new MemoryScope(this, shared));
 }
 
 // ----------------------------------------------------------------------------

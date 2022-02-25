@@ -6,6 +6,7 @@
 #include <fma/interpret/BaseContext.hpp>
 #include <fma/interpret/NestedContext.hpp>
 #include <fma/interpret/ClassContext.hpp>
+#include <fma/interpret/ParameterList.hpp>
 #include <fma/serialize/SerializerRegistry.hpp>
 #include <fma/types/Module.hpp>
 #include <fma/types/Class.hpp>
@@ -53,6 +54,10 @@ ResultPtr ClassDeclarationStatement::execute(const ContextPtr &context) const {
     }
 
     klass->extends(parentKlass);
+    if (klass->hasMember("__extended_class")) {
+      GroupedParameterList empty;
+      klass->callDirect("__extended_class", context, empty);
+    }
 
     member->assign(klass);
   } else if (member->isClass()) {

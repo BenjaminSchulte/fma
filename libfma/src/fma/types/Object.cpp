@@ -99,6 +99,5 @@ void Object::serialize(const SerializeObjectPtr &object) {
     object->getContext()->log().error() << "Unable to serialize object of class " << getClass()->getName();
   }
 }
-
 // ----------------------------------------------------------------------------
 
