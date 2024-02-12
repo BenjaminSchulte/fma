@@ -23,7 +23,8 @@ using namespace FMA::interpret;
 // ----------------------------------------------------------------------------
 ClassPtr ObjectClass::create(const RootModulePtr &root) {
   ClassPtr klass = ClassPtr(new Class("Object", "Object"));
-  klass->setMember("respond_to?", TypePtr(new InternalFunctionValue("respond_to?", ObjectClass::has_attribute_qm)));
+  klass->setMember("respond_to?", TypePtr(new InternalFunctionValue("respond_to?", ObjectClass::respond_to_qm)));
+  klass->setMember("has_attribute?", TypePtr(new InternalFunctionValue("has_attribute?", ObjectClass::has_attribute_qm)));
 
   ClassPrototypePtr proto(klass->getPrototype());
   proto->setMember("__dump__", TypePtr(new InternalFunctionValue("__dump__", ObjectClass::__dump__)));

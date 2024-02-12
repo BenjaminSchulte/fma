@@ -1,6 +1,7 @@
 #ifndef __FMAIMAGE_IMAGE_CANVASACCESSOR_H__
 #define __FMAIMAGE_IMAGE_CANVASACCESSOR_H__
 
+#include <string>
 #include "Canvas.hpp"
 #include "CanvasView.hpp"
 
