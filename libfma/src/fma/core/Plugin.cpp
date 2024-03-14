@@ -7,6 +7,7 @@
 #include <fma/core/String.hpp>
 #include <fma/core/Number.hpp>
 #include <fma/core/Range.hpp>
+#include <fma/core/Math.hpp>
 #include <fma/core/Array.hpp>
 #include <fma/core/Buffer.hpp>
 #include <fma/core/SerializerBuffer.hpp>
@@ -41,6 +42,7 @@ bool CorePlugin::initialize() {
   NumberClass::create(root, Klass);
   ImmediateNumberClass::create(root, Klass);
   
+  MathClass::create(root, Klass);
   CompilerClass::create(root, Klass);
   StringClass::create(root, Klass);
   RangeClass::create(root, Klass);

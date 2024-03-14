@@ -22,6 +22,7 @@ set(LIBFMA_SRC
   ./src/fma/core/Plugin.cpp
   ./src/fma/core/Object.cpp
   ./src/fma/core/Range.cpp
+  ./src/fma/core/Math.cpp
   ./src/fma/core/String.cpp
   ./src/fma/types/Decorator.cpp
   ./src/fma/types/DecoratorContainer.cpp
