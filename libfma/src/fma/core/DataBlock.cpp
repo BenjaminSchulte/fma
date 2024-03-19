@@ -50,6 +50,7 @@ ClassPtr DataBlockClass::create(const RootModulePtr &root, const ClassPtr &Class
   proto->setMember("allow_located_at", TypePtr(new InternalFunctionValue("allow_located_at", DataBlockClass::allow)));
   proto->setMember("deny_located_at", TypePtr(new InternalFunctionValue("deny_located_at", DataBlockClass::deny)));
 
+  proto->setMember("write", TypePtr(new InternalFunctionValue("write", DataBlockClass::write)));
   proto->setMember("db", TypePtr(new InternalFunctionValue("db", DataBlockClass::db)));
   proto->setMember("dw", TypePtr(new InternalFunctionValue("dw", DataBlockClass::dw)));
   proto->setMember("dd", TypePtr(new InternalFunctionValue("dd", DataBlockClass::dd)));
@@ -61,6 +62,7 @@ ClassPtr DataBlockClass::create(const RootModulePtr &root, const ClassPtr &Class
   proto->setMember("to_b", TypePtr(new InternalFunctionValue("to_b", DataBlockClass::to_b)));
   proto->setMember("__current_block", TypePtr(new InternalFunctionValue("__current_block", DataBlockClass::__current_block)));
 
+  proto->setMember("::write", proto->getMember("write"));
   proto->setMember("::db", proto->getMember("db"));
   proto->setMember("::dw", proto->getMember("dw"));
   proto->setMember("::dd", proto->getMember("dd"));
@@ -136,6 +138,27 @@ ResultPtr DataBlockClass::initialize(const ContextPtr &context, const GroupedPar
 
     if (second->isObjectOfType("Buffer")) {
       const DynamicBufferPtr &buf = BufferClass::getBuffer(context->getProject(), second);
+      if (buf) {
+        block->write(buf->getData(), buf->getSize());
+      }
+    }
+  }
+
+  return Result::executed(context, context->self());
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr DataBlockClass::write(const ContextPtr &context, const GroupedParameterList &parameter) {
+  MemoryBlock *block = memoryBlock(context);
+  if (!block) {
+    return ResultPtr(new Result());
+  }
+
+  const TypeList &args = parameter.only_args();
+
+  for (const auto &arg : args) {
+    if (arg->isObjectOfType("Buffer")) {
+      const DynamicBufferPtr &buf = BufferClass::getBuffer(context->getProject(), arg);
       if (buf) {
         block->write(buf->getData(), buf->getSize());
       }
