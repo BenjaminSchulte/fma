@@ -23,7 +23,7 @@ using namespace FMA::interpret;
 // ----------------------------------------------------------------------------
 ClassPtr ObjectClass::create(const RootModulePtr &root) {
   ClassPtr klass = ClassPtr(new Class("Object", "Object"));
-  klass->setMember("respond_to?", TypePtr(new InternalFunctionValue("respond_to?", ObjectClass::respond_to_qm)));
+  klass->setMember("respond_to?", TypePtr(new InternalFunctionValue("respond_to?", ObjectClass::respond_to_class_qm)));
   klass->setMember("has_attribute?", TypePtr(new InternalFunctionValue("has_attribute?", ObjectClass::has_attribute_qm)));
 
   ClassPrototypePtr proto(klass->getPrototype());
@@ -59,7 +59,6 @@ ResultPtr ObjectClass::has_attribute_qm(const ContextPtr &context, const Grouped
   return BooleanClass::createInstance(context, context->self()->hasMember(args.front()->convertToString(context)));
 }
 
-
 // ----------------------------------------------------------------------------
 ResultPtr ObjectClass::respond_to_qm(const ContextPtr &context, const GroupedParameterList &params) {
   const TypeList &args = params.only_args();
@@ -68,6 +67,16 @@ ResultPtr ObjectClass::respond_to_qm(const ContextPtr &context, const GroupedPar
   }
 
   return BooleanClass::createInstance(context, context->self()->asObject()->getClass()->hasMember(args.front()->convertToString(context)));
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr ObjectClass::respond_to_class_qm(const ContextPtr &context, const GroupedParameterList &params) {
+  const TypeList &args = params.only_args();
+  if (!args.size()) {
+    return BooleanClass::createInstance(context, false);
+  }
+  
+  return BooleanClass::createInstance(context, context->self()->asClass()->hasMember(args.front()->convertToString(context)));
 }
 
 // ----------------------------------------------------------------------------
