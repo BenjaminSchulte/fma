@@ -16,7 +16,7 @@ public:
   static interpret::ResultPtr PROJECT_DIR(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
 
   static interpret::ResultPtr _assert(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
-  static interpret::ResultPtr dump(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr dumpFunction(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr print(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr command(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr with_global_context(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);

@@ -383,7 +383,7 @@ void DataBlockClass::writeDataRecursive(MemoryBlock *block, const ContextPtr &co
       }
     }
   } else if (obj->isObjectOfType("SymbolReference")) {
-    const ReferencePtr &reference = SymbolReferenceClass::reference(obj);
+    const ReferencePtr reference = SymbolReferenceClass::reference(obj);
     
     if (!reference) {
       context->log().error() << "SymbolReference has invalid symbol";

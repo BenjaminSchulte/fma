@@ -42,7 +42,7 @@ ClassPtr PaletteClass::create(const ModulePtr &root, const ClassPtr &ClassObject
   proto->setMember("add", TypePtr(new InternalFunctionValue("add", PaletteClass::add)));
   proto->setMember("colors", TypePtr(new InternalFunctionValue("colors", PaletteClass::colors)));
   proto->setMember("chunk", TypePtr(new InternalFunctionValue("chunk", PaletteClass::chunk)));
-  proto->setMember("dump", TypePtr(new InternalFunctionValue("dump", PaletteClass::dump)));
+  proto->setMember("dump", TypePtr(new InternalFunctionValue("dump", PaletteClass::dumpFunction)));
   proto->setMember("num_colors", TypePtr(new InternalFunctionValue("num_colors", PaletteClass::num_colors)));
   proto->setMember("size", TypePtr(new InternalFunctionValue("size", PaletteClass::num_colors)));
   proto->setMember("length", TypePtr(new InternalFunctionValue("length", PaletteClass::num_colors)));
@@ -147,7 +147,7 @@ ResultPtr PaletteClass::num_colors(const ContextPtr &context, const GroupedParam
 }
 
 // ----------------------------------------------------------------------------
-ResultPtr PaletteClass::dump(const ContextPtr &context, const GroupedParameterList &) {
+ResultPtr PaletteClass::dumpFunction(const ContextPtr &context, const GroupedParameterList &) {
   PalettePtr pal(palette(context));
   PaletteAccessor access(pal);
   access.dump();

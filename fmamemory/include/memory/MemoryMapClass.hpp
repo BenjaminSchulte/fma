@@ -27,7 +27,7 @@ public:
   static interpret::ResultPtr has_banks(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr banks(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr address(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
-  static interpret::ResultPtr dump(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr dumpFunction(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr include_object(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
 
 

@@ -29,7 +29,7 @@ public:
   static interpret::ResultPtr chunk(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr required_palette(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr apply_palette(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
-  static interpret::ResultPtr dump(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr dumpFunction(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr __serialize(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
 
   static BaseCanvasAccessorPtr allocateAccessor(const interpret::ContextPtr &context);

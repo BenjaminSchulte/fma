@@ -33,7 +33,7 @@ ClassPtr CompilerClass::create(const RootModulePtr &root, const ClassPtr &ClassO
   klass->setMember("TARGET", TypePtr(new InternalFunctionValue("target", CompilerClass::target)));
 
   klass->setMember("assert", TypePtr(new InternalFunctionValue("assert", CompilerClass::_assert)));
-  klass->setMember("dump", TypePtr(new InternalFunctionValue("dump", CompilerClass::dump)));
+  klass->setMember("dump", TypePtr(new InternalFunctionValue("dump", CompilerClass::dumpFunction)));
   klass->setMember("print", TypePtr(new InternalFunctionValue("print", CompilerClass::print)));
   klass->setMember("command", TypePtr(new InternalFunctionValue("command", CompilerClass::command)));
   klass->setMember("with_global_context", TypePtr(new InternalFunctionValue("with_global_context", CompilerClass::with_global_context)));
@@ -216,7 +216,7 @@ ResultPtr CompilerClass::escape(const ContextPtr &context, const GroupedParamete
 }
 
 // ----------------------------------------------------------------------------
-ResultPtr CompilerClass::dump(const ContextPtr &, const GroupedParameterList &parameter) {
+ResultPtr CompilerClass::dumpFunction(const ContextPtr &, const GroupedParameterList &parameter) {
   for (auto &param : parameter.only_args()) {
     param->dump("");
   }

@@ -28,7 +28,7 @@ public:
   static interpret::ResultPtr colors(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr num_colors(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr chunk(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
-  static interpret::ResultPtr dump(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
+  static interpret::ResultPtr dumpFunction(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
   static interpret::ResultPtr __serialize(const interpret::ContextPtr &context, const interpret::GroupedParameterList &parameter);
 
   static const PalettePtr &palette(const interpret::ContextPtr &context);

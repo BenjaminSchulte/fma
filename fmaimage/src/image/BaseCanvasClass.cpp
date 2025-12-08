@@ -34,7 +34,7 @@ ClassPtr BaseCanvasClass::create(const ModulePtr &root, const ClassPtr &ClassObj
   proto->setMember("chunk", TypePtr(new InternalFunctionValue("chunk", BaseCanvasClass::chunk)));
   proto->setMember("required_palette", TypePtr(new InternalFunctionValue("required_palette", BaseCanvasClass::required_palette)));
   proto->setMember("apply_palette", TypePtr(new InternalFunctionValue("apply_palette", BaseCanvasClass::apply_palette)));
-  proto->setMember("dump", TypePtr(new InternalFunctionValue("dump", BaseCanvasClass::dump)));
+  proto->setMember("dump", TypePtr(new InternalFunctionValue("dump", BaseCanvasClass::dumpFunction)));
   proto->setMember("__serialize", TypePtr(new InternalFunctionValue("__serialize", BaseCanvasClass::__serialize)));
 
   root->setMember("BaseCanvas", klass);
@@ -91,7 +91,7 @@ ResultPtr BaseCanvasClass::apply_palette(const ContextPtr &context, const Groupe
 }
 
 // ----------------------------------------------------------------------------
-ResultPtr BaseCanvasClass::dump(const ContextPtr &context, const GroupedParameterList &) {
+ResultPtr BaseCanvasClass::dumpFunction(const ContextPtr &context, const GroupedParameterList &) {
   BaseCanvasAccessorPtr canvas(allocateAccessor(context));
   if (!canvas) {
     return ResultPtr(new Result());

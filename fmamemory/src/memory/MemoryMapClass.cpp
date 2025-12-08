@@ -37,7 +37,7 @@ ClassPtr MemoryMapClass::create(const RootModulePtr &root, const ClassPtr &Class
   proto->setMember("has_banks", TypePtr(new InternalFunctionValue("has_banks", MemoryMapClass::has_banks)));
   proto->setMember("banks", TypePtr(new InternalFunctionValue("banks", MemoryMapClass::banks)));
   proto->setMember("address", TypePtr(new InternalFunctionValue("address", MemoryMapClass::address)));
-  proto->setMember("dump", TypePtr(new InternalFunctionValue("dump", MemoryMapClass::dump)));
+  proto->setMember("dump", TypePtr(new InternalFunctionValue("dump", MemoryMapClass::dumpFunction)));
   proto->setMember("include_object", TypePtr(new InternalFunctionValue("include_object", MemoryMapClass::include_object)));
 
   root->setMember("MemoryMap", klass);
@@ -237,7 +237,7 @@ ResultPtr MemoryMapClass::address(const ContextPtr &context, const GroupedParame
 }
 
 // ----------------------------------------------------------------------------
-ResultPtr MemoryMapClass::dump(const ContextPtr &context, const GroupedParameterList &) {
+ResultPtr MemoryMapClass::dumpFunction(const ContextPtr &context, const GroupedParameterList &) {
   asMemoryMap(context)->dump();
   return ResultPtr(new Result());
 }
