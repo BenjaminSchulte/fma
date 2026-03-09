@@ -9,15 +9,20 @@ using namespace FMA::core;
 using namespace FMA::interpret;
 
 // ----------------------------------------------------------------------------
-ConstantNumber::ConstantNumber(const int64_t number)
+ConstantNumber::ConstantNumber(const long double number)
   : number(number)
 {
 }
 
 // ----------------------------------------------------------------------------
 std::string ConstantNumber::asString(const std::string &) const {
+  int64_t integerValue = number;
   std::ostringstream os;
-  os << number;
+  if (integerValue == number) {
+    os << integerValue;
+  } else {
+    os << number;
+  }
   return os.str();
 }
 

@@ -25,6 +25,7 @@ COMMENT ;[^\r\n]*
 ANYUNARY ([+\-\&~!\[]|\*{1,2})
 
 DECIMALCONSTANT (([1-9][0-9]*)|0)
+FLOATCONSTANT ({DECIMALCONSTANT}[.]([0-9]+))
 HEXCONSTANT [$]([a-fA-F0-9]+)
 
 WHITESPACE [ \t]+
@@ -47,16 +48,19 @@ ALL .
 
 <CALL_OR_IDENT>[\(] { yy_pop_state(yyscanner); yy_push_state(UNARYTEST, yyscanner); return T_LRB_CALL; }
 <CALL_OR_IDENT>{WHITESPACE} { yy_pop_state(yyscanner); yy_push_state(UNARYTEST, yyscanner); }
-<CALL_OR_IDENT>.|\n { yyless(0); yy_pop_state(yyscanner); }
+<CALL_OR_IDENT>{NEWLINE} { yy_pop_state(yyscanner); yy_push_state(UNARYTEST, yyscanner); return T_NEWLINE; }
+<CALL_OR_IDENT>. { yyless(0); yy_pop_state(yyscanner); }
 
 <UNARYTEST>{ANYUNARY}/{WHITESPACE} { yyless(0); yy_pop_state(yyscanner); }
 <UNARYTEST>{ANYUNARY}/[\$\"\:a-zA-Z0-9_\(\[\{] { yyless(0); yy_pop_state(yyscanner); return T_UNARY; }
 <UNARYTEST>[\[]/{WHITESPACE}*[\]] { yyless(0); yy_pop_state(yyscanner); return T_UNARY; }
 <UNARYTEST>{WHITESPACE} { ; }
-<UNARYTEST>.|\n { yyless(0); yy_pop_state(yyscanner); }
+<UNARYTEST>{NEWLINE} { yy_pop_state(yyscanner); yy_push_state(UNARYTEST, yyscanner); return T_NEWLINE; }
+<UNARYTEST>. { yyless(0); yy_pop_state(yyscanner); }
 
 <MACRO>{WHITESPACE} { ; }
 <MACRO>(self) { yy_pop_state(yyscanner); return T_SELF; }
+<MACRO>{NEWLINE} { yy_pop_state(yyscanner); yy_push_state(UNARYTEST, yyscanner); return T_NEWLINE; }
 
 (macro) { yy_push_state(MACRO, yyscanner); return T_MACRO; }
 (raise) { return T_RAISE; }
@@ -90,6 +94,11 @@ ALL .
 [\"] { yy_push_state(STRING, yyscanner); return T_BEGIN_STRING; }
 
 {SYMBOL} { yylval->string = new std::string(yytext + 1); return T_SYMBOL; }
+
+{FLOATCONSTANT} {
+  yylval->number = strtod(yytext, NULL);
+  return T_FLOAT_CONST;
+}
 
 {DECIMALCONSTANT} {
   yylval->number = strtol(yytext, NULL, 10);
@@ -150,7 +159,7 @@ ALL .
 <MACRO>[@] { return T_DECORATOR; }
 [@][@] { return T_CLASS_ACCESSOR; }
 [@] { return T_DECORATOR; }
-<MACRO>.|\n { yyless(0); yy_pop_state(yyscanner); }
+<MACRO>. { yyless(0); yy_pop_state(yyscanner); }
 
 {COMMENT} { ; }
 

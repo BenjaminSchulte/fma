@@ -177,8 +177,9 @@ PluginAdapter::PluginAdapter(Project *project)
   directPage(0x92, "MOV([la([dp(#)])],A)");
   // MOV
 
+  directPage(0x94, "MOV([dp((#+X))],Y)");
   directPage(0x95, "MOV([dp((#+X))],A)");
-
+  directPage(0x96, "MOV([dp((#+Y))],X)");
   directPage(0x97, "MOV([([dp([[dp(#)]])]+Y)],A)");
   implicit  (0x98, "MOV(A,Y)");
   absolute  (0x99, "MOV([la((#+Y))],A)");
@@ -210,7 +211,7 @@ PluginAdapter::PluginAdapter(Project *project)
   // MOV
   directPage(0xB4, "MOV(Y,[dp((#+X))])");
   directPage(0xB5, "MOV(A,[dp((#+X))])");
-  absolute  (0xB6, "MOV(X,[dp((#+Y))])");
+  directPage(0xB6, "MOV(X,[dp((#+Y))])");
   directPage(0xB7, "MOV(A,[([dp([[dp(#)]])]+Y)])");
 
   absolute  (0xB9, "MOV(A,[la((#+Y))])");

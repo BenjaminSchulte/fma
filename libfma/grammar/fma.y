@@ -50,7 +50,7 @@ template<class Node> Node *_WITHLOC(unsigned int line, unsigned int col, Node *n
   CaseStatementCase *caseItem;
 }
 
-%token T_INT_CONST T_NEWLINE T_COLCOL T_MODULE T_END T_IDENTIFIER T_REQUIRE T_INCLUDE
+%token T_INT_CONST T_FLOAT_CONST T_NEWLINE T_COLCOL T_MODULE T_END T_IDENTIFIER T_REQUIRE T_INCLUDE
 %token T_BEGIN_STRING T_END_STRING T_STRINGLITERAL T_LRB T_RRB T_LSHIFT T_RSHIFT
 %token T_AND T_REM T_TILDE T_NOT T_OR T_MULT T_DIV T_SUB T_ADD T_XOR T_EXPR_CONST
 %token T_LSB T_RSB T_DOT T_IF T_UNLESS T_ELSE T_LOG_AND T_LOG_OR T_SYMBOL T_COMMA
@@ -75,7 +75,7 @@ template<class Node> Node *_WITHLOC(unsigned int line, unsigned int col, Node *n
 %type <expression> NoAssignExpression AssignExpressionChild InlineBlockDeclaration 
 %type <decoratorStatement> Decorator DecoratorList DecoratorDeclarationStatement DecoratedContent
 
-%type <number> T_INT_CONST T_BOOL_CONST
+%type <number> T_INT_CONST T_FLOAT_CONST T_BOOL_CONST
 %type <string> T_IDENTIFIER T_STRINGLITERAL T_SYMBOL
 %type <identifier> Identifier FullIdentifier ClassParent FullIdentifierList
 %type <parameters> ParameterList ParameterListWithBlock ExpressionList NamedExpressionList InBraceParameterListWithBlock
@@ -530,6 +530,7 @@ PrimaryExpression:
 
 ConstantNumber:
     T_INT_CONST { $$ = WL(new ConstantNumber($1)); }
+  | T_FLOAT_CONST { $$ = WL(new ConstantNumber($1)); }
   | T_BOOL_CONST { $$ = WL(new ConstantBoolean($1)); }
   ;
 

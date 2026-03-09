@@ -268,10 +268,10 @@ public:
  */
 class ConstantNumber : public UnaryExpression {
 private:
-  int64_t number;
+  long double number;
 
 public:
-  ConstantNumber(const int64_t number);
+  ConstantNumber(const long double number);
 
   virtual std::string getNodeName() const { return "ConstantNumber"; }
   virtual interpret::ResultPtr execute(const interpret::ContextPtr &context) const;

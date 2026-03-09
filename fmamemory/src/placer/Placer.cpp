@@ -100,8 +100,8 @@ bool Placer::place() {
     if (placeRoute(ptr, route)) {
       succeeded = true;
 
-      project->log().info() << "Successfully placed all nodes using " << routeCounter << " iteration(s)";
-      ptr->dumpNodes();
+      // project->log().info() << "Successfully placed all nodes using " << routeCounter << " iteration(s)";
+      // ptr->dumpNodes();
   
       break;
     }

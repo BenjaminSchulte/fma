@@ -2,6 +2,7 @@
 #include <fma/core/Boolean.hpp>
 #include <fma/core/Number.hpp>
 #include <fma/core/String.hpp>
+#include <fma/core/Nil.hpp>
 #include <fma/core/SymbolReference.hpp>
 #include <fma/symbol/ConstantNumber.hpp>
 #include <fma/types/InternalValue.hpp>
@@ -36,6 +37,7 @@ ClassPtr NumberClass::create(const RootModulePtr &root, const ClassPtr &ClassObj
   proto->setMember("even?", TypePtr(new InternalFunctionValue("even?", NumberClass::even_qm)));
   proto->setMember("floor", TypePtr(new InternalFunctionValue("floor", NumberClass::floor)));
   proto->setMember("round", TypePtr(new InternalFunctionValue("round", NumberClass::round)));
+  proto->setMember("pow", TypePtr(new InternalFunctionValue("pow", NumberClass::pow)));
   proto->setMember("initialize", TypePtr(new InternalFunctionValue("initialize", NumberClass::initialize)));
   proto->setMember("odd?", TypePtr(new InternalFunctionValue("odd?", NumberClass::odd_qm)));
   proto->setMember("times", TypePtr(new InternalFunctionValue("times", NumberClass::times)));
@@ -97,6 +99,19 @@ ResultPtr NumberClass::initialize(const ContextPtr &context, const GroupedParame
 // ----------------------------------------------------------------------------
 ResultPtr NumberClass::ceil(const ContextPtr &context, const GroupedParameterList&) {
   return NumberClass::createInstance(context, std::ceil(context->self()->convertToNumber(context)));
+}
+
+// ----------------------------------------------------------------------------
+ResultPtr NumberClass::pow(const ContextPtr &context, const GroupedParameterList &params) {
+  const TypeList &args = params.only_args();
+  if (!args.size()) { return to_n(context, params); }
+
+  TypePtr right = args.front();
+  if (!right->hasMember("to_n")) {
+    return NilClass::createInstance(context);
+  }
+
+  return NumberClass::createInstance(context, std::pow(context->self()->convertToNumber(context), right->convertToNumber(context)));
 }
 
 // ----------------------------------------------------------------------------
