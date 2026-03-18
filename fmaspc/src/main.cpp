@@ -3,6 +3,7 @@
 #include <binary/Plugin.hpp>
 #include <output/Plugin.hpp>
 #include <sym/Plugin.hpp>
+#include <bp/Plugin.hpp>
 #include <string>
 
 using namespace FMA::plugin;
@@ -16,6 +17,7 @@ PluginList fmaspc_fmaGetPlugins(FMA::Project *project) {
   plugins.push_back(PluginPtr(new FMASPC::binary::SpcBinaryPlugin(project)));
   plugins.push_back(PluginPtr(new FMASPC::output::SpcOutputPlugin(project)));
   plugins.push_back(PluginPtr(new FMASPC::sym::SpcOutputPlugin(project)));
+  plugins.push_back(PluginPtr(new FMASPC::bp::OutputPlugin(project)));
 
   return plugins;
 }

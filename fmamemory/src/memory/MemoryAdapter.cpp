@@ -291,7 +291,12 @@ const plugin::MemoryBlockPlacement *MemoryAdapter::requireStaticBlockPlacement(L
 
 // ----------------------------------------------------------------------------
 uint64_t MemoryAdapter::translateAddress(uint64_t address) {
-  return getStaticMemoryMap()->translateAddress(address >> 16, address & 0xFFFF);
+  MemoryMap *map = getStaticMemoryMap();
+  if (!map) {
+    return 0;
+  }
+
+  return map->translateAddress(address >> 16, address & 0xFFFF);
 }
 
 // ----------------------------------------------------------------------------

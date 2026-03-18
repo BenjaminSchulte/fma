@@ -17,6 +17,7 @@
 #include <fma/types/DecoratorContainer.hpp>
 #include <fma/interpret/Interpreter.hpp>
 #include <fma/interpret/ProjectContext.hpp>
+#include <fma/symbol/SymbolReference.hpp>
 #include <fma/interpret/InstanceContext.hpp>
 
 #include <fma/instruct/Adc.hpp>
@@ -128,11 +129,12 @@ bool SpcLanguagePlugin::initialize() {
   const ClassPtr &klass = root->getMember("Class")->asClass();
   const ClassPtr &dataBlock = root->getMember("DataBlock")->asClass();
   const ClassPtr &number = root->getMember("Number")->asClass();
+  const ClassPtr &compiler = root->getMember("Compiler")->asClass();
   const ClassPtr &typedNumber = root->getMember("TypedNumber")->asClass();
   const ClassPtr &memoryVariable = root->getMember("MemoryDeclaration")->asClass();
   const ClassPtr &function = root->getMember("Function")->asClass();
   const ClassPtr &symbolRef = root->getMember("SymbolReference")->asClass();
-  if (!dataBlock || !klass || !number || !typedNumber || !memoryVariable || !symbolRef || !function) {
+  if (!dataBlock || !klass || !number || !typedNumber || !memoryVariable || !symbolRef || !function || !compiler) {
     project->log().error() << "Could not find DataBlock class";
     return false;
   }
@@ -519,6 +521,8 @@ bool SpcLanguagePlugin::initialize() {
   root->setMember("addr", TypePtr(new InternalFunctionValue("addr", SpcLanguagePlugin::addr)));
   root->setMember("indirect", TypePtr(new InternalFunctionValue("indirect", SpcLanguagePlugin::indirect)));
 
+  compiler->setMember("brk", TypePtr(new InternalFunctionValue("brk", SpcLanguagePlugin::compiler_break)));
+
   ClassPrototypePtr memoryVariableProto(memoryVariable->getPrototype());
   memoryVariableProto->setMember("dp", TypePtr(new InternalFunctionValue("dp", SpcLanguagePlugin::number_dp)));
   memoryVariableProto->setMember("indirect", TypePtr(new InternalFunctionValue("indirect", SpcLanguagePlugin::number_indirect)));
@@ -555,6 +559,7 @@ bool SpcLanguagePlugin::initialize() {
     containerPtr->registerCallback(decorator);
   }
 
+  
   return true;
 }
 
@@ -570,6 +575,44 @@ ResultPtr SpcLanguagePlugin::number_dp(const ContextPtr &context, const GroupedP
   return result;
 }
 
+// ----------------------------------------------------------------------------
+ResultPtr SpcLanguagePlugin::compiler_break(const ContextPtr &context, const GroupedParameterList &params) {
+  ContextPtr global = context->getInterpreter()->getGlobalContext();
+  if (!global) {
+    context->log().error() << "Unable to access memory block in global context"; 
+    return ResultPtr(new Result());
+  }
+
+  ResultPtr curBlock = global->resolve("::__current_block");
+  if (!curBlock) {
+    context->log().error() << "Unable to access memory block in global context"; 
+    return ResultPtr(new Result());
+  }
+
+  plugin::MemoryBlock* memoryBlock = core::DataBlockClass::memoryBlock(context->getProject(), curBlock->get());
+  if (!memoryBlock) {
+    context->log().error() << "Unable to access memory block in global context"; 
+    return ResultPtr(new Result());
+  }
+
+  const auto &kwArgs = params.only_kwargs();
+  bool notifyOnly = false;
+  std::string comment;
+  TypeMap::const_iterator it;
+  if ((it = kwArgs.find("notify_only")) != kwArgs.end()) {
+    notifyOnly = it->second->convertToBoolean(context);
+  }
+  if ((it = kwArgs.find("comment")) != kwArgs.end()) {
+    comment = it->second->convertToString(context);
+  }
+
+  auto *symbolMap = context->getProject()->getMemoryAdapter()->getSymbolMap();
+  const auto &ref = symbolMap->createReference("..spc_brk");
+  memoryBlock->reference(ref);
+  symbolMap->addEmulatorBreakpoint(ref, notifyOnly, comment);
+
+  return ResultPtr(new Result());
+}
 // ----------------------------------------------------------------------------
 ResultPtr SpcLanguagePlugin::number_indirect(const ContextPtr &context, const GroupedParameterList &parameter) {
   const TypeList &args = parameter.only_args();
