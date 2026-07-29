@@ -67,14 +67,10 @@ void OutputPlugin::setMinimumBufferSize(const DynamicBufferPtr &buffer, OutputAd
   project->log().debug() << "Using ROM size configuration " << (int)currentTargetByte << " size " << currentTargetSize;
 }
 
-// ----------------------------------------------------------------------------
-uint16_t OutputPlugin::getCalculatedChecksumMirror(const char *data, uint64_t start, uint64_t size, uint32_t mask) {
-  while (!(size & mask)) {
-    if (mask == 0) {
-      std::cerr << "Error while calculating checksum" << std::endl;
-      return 0;
-    }
 
+// ----------------------------------------------------------------------------
+uint16_t OutputPlugin::getCalculatedChecksumMirror(const char *data, uint64_t start, uint64_t &size, uint32_t mask) {
+  while (!(size & mask) && mask) {
     mask >>= 1;
   }
 
@@ -83,12 +79,14 @@ uint16_t OutputPlugin::getCalculatedChecksumMirror(const char *data, uint64_t st
 
   uint64_t nextLength = size - mask;
   if (nextLength) {
-    part2 = getCalculatedChecksumDefault(data, start + mask, nextLength);
+    part2 = getCalculatedChecksumMirror(data, start + mask, nextLength, mask >> 1);
 
     while (nextLength < mask) {
       nextLength += nextLength;
       part2 += part2;
     }
+
+    size = mask + mask;
   }
 
   return part1 + part2;
@@ -97,15 +95,26 @@ uint16_t OutputPlugin::getCalculatedChecksumMirror(const char *data, uint64_t st
 // ----------------------------------------------------------------------------
 uint16_t OutputPlugin::getCalculatedChecksumDefault(const char *data, uint64_t start, uint64_t size) {
   uint16_t result = 0;
+
   while (size--) {
-    result += data[start++];
+    result += (uint8_t)data[start++];
   }
+
   return result;
 }
 
 // ----------------------------------------------------------------------------
 uint16_t OutputPlugin::getCalculatedChecksum(const DynamicBufferPtr &buffer) {
-  return getCalculatedChecksumMirror(reinterpret_cast<const char *>(buffer->getData()), 0, buffer->getSize(), 0x800000);
+  uint64_t calculatedSize = buffer->getSize();
+  uint16_t sum = 0;
+
+  if (calculatedSize & 0x7FFF) {
+    sum = getCalculatedChecksumDefault(reinterpret_cast<const char *>(buffer->getData()), 0, calculatedSize);
+  } else {
+    sum = getCalculatedChecksumMirror(reinterpret_cast<const char *>(buffer->getData()), 0, calculatedSize, 0x800000);
+  }
+
+  return sum;
 }
 
 // ----------------------------------------------------------------------------

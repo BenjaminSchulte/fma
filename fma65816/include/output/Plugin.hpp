@@ -30,7 +30,7 @@ protected:
   
   void calculateChecksum(const FMA::output::DynamicBufferPtr &buffer, FMA::output::OutputAdapter *adapter);
   uint16_t getCalculatedChecksum(const FMA::output::DynamicBufferPtr &buffer);
-  uint16_t getCalculatedChecksumMirror(const char *data, uint64_t start, uint64_t size, uint32_t mask);
+  uint16_t getCalculatedChecksumMirror(const char *data, uint64_t start, uint64_t &size, uint32_t mask);
   uint16_t getCalculatedChecksumDefault(const char *data, uint64_t start, uint64_t size);
   
   bool generateOutputFile(const FMA::output::DynamicBufferPtr &buffer, FMA::output::OutputAdapter *adapter);
